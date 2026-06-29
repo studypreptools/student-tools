@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>HiSET Social Studies Study Tool</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;color:#1a1a1a;background:#f3f2ee;min-height:100vh}
+.app{max-width:840px;margin:0 auto;padding:1rem 1rem 5rem}
+.header{background:#1a1a1a;color:#fff;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem}
+.header h1{font-size:22px;font-weight:700}
+.header p{font-size:13px;opacity:0.55;margin-top:3px}
+.weight-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:1rem}
+.wpill{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600}
+.wp1{background:#fee2e2;color:#991b1b}
+.wp2{background:#dbeafe;color:#1e3a8a}
+.wp3{background:#d1fae5;color:#064e3b}
+.wp4{background:#fef9c3;color:#713f12}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:11px 15px;border:none;border-radius:10px;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 1px 3px rgba(0,0,0,0.07);transition:all 0.12s;white-space:nowrap}
+.nav-btn:active{transform:scale(0.97)}
+.nav-btn.active{background:#1a1a1a;color:#fff}
+.section{display:none}.section.active{display:block}
+.card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.sec-header{margin-bottom:1.25rem}
+.sec-header h2{font-size:19px;font-weight:700;margin-bottom:3px}
+.sec-header p{font-size:13px;color:#666;line-height:1.55}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:1.25rem}
+.topic-card{border-radius:14px;padding:1.25rem;cursor:pointer;transition:all 0.15s;border:2px solid transparent}
+.topic-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,0.1)}
+.topic-card:active{transform:scale(0.98)}
+.tc1{background:#fff5f5;border-color:#fecaca}
+.tc2{background:#eff6ff;border-color:#bfdbfe}
+.tc3{background:#ecfdf5;border-color:#a7f3d0}
+.tc4{background:#fefce8;border-color:#fde68a}
+.tc-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.tc1 .tc-lbl{color:#b91c1c}.tc2 .tc-lbl{color:#1d4ed8}.tc3 .tc-lbl{color:#047857}.tc4 .tc-lbl{color:#a16207}
+.tc-title{font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.tc-sub{font-size:12px;color:#666;line-height:1.5}
+.tc-pct{font-size:30px;font-weight:800;margin-top:8px;line-height:1}
+.tc1 .tc-pct{color:#dc2626}.tc2 .tc-pct{color:#3b82f6}.tc3 .tc-pct{color:#059669}.tc4 .tc-pct{color:#ca8a04}
+.tc-pct-lbl{font-size:11px;color:#888;margin-top:2px}
+.proc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:1rem}
+.proc-card{padding:1rem;border-radius:12px;border-left:4px solid}
+.proc-a{background:#ecfdf5;border-color:#10b981}.proc-b{background:#eff6ff;border-color:#3b82f6}.proc-c{background:#fdf4ff;border-color:#9333ea}
+.proc-card .pt{font-size:13px;font-weight:700;margin-bottom:4px}
+.proc-card .pd{font-size:12px;color:#555;line-height:1.5}
+.strat-section{margin-bottom:1.5rem}
+.strat-header{font-size:15px;font-weight:700;margin-bottom:0.75rem;padding:10px 14px;border-radius:10px;display:flex;align-items:center;gap:8px}
+.sh1{background:#fff5f5;color:#b91c1c}.sh2{background:#eff6ff;color:#1d4ed8}
+.sh3{background:#ecfdf5;color:#047857}.sh4{background:#fefce8;color:#a16207}
+.shp{background:#fdf4ff;color:#7e22ce}
+.strat-card{background:#f8f8f6;border-radius:10px;padding:1rem 1.1rem;margin-bottom:0.75rem;font-size:14px;line-height:1.65;color:#333;border-left:4px solid}
+.sc1{border-left-color:#dc2626}.sc2{border-left-color:#3b82f6}
+.sc3{border-left-color:#059669}.sc4{border-left-color:#ca8a04}.scp{border-left-color:#9333ea}
+.strat-steps{margin-top:6px;padding-left:1.1rem}
+.strat-steps li{margin-bottom:5px;font-size:13px;color:#444;line-height:1.55}
+.fc-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.fc-filter button{padding:7px 13px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#555;font-family:inherit}
+.fc-filter button.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.flashcard{border-radius:16px;padding:2rem 1.5rem;min-height:230px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;margin-bottom:1rem;text-align:center;transition:all 0.18s}
+.flashcard:active{transform:scale(0.98)}
+.fc-front{background:#1a1a1a;color:#fff}
+.fc-back1{background:#fff5f5;color:#7f1d1d;border:2px solid #fecaca}
+.fc-back2{background:#eff6ff;color:#1e3a8a;border:2px solid #bfdbfe}
+.fc-back3{background:#ecfdf5;color:#064e3b;border:2px solid #a7f3d0}
+.fc-back4{background:#fefce8;color:#713f12;border:2px solid #fde68a}
+.fc-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;opacity:0.45;margin-bottom:10px}
+.fc-term{font-size:21px;font-weight:700;line-height:1.3}
+.fc-hint{font-size:12px;opacity:0.35;margin-top:10px}
+.fc-def{font-size:14px;line-height:1.7;max-width:500px}
+.fc-ex{margin-top:10px;font-size:13px;background:rgba(0,0,0,0.06);padding:6px 12px;border-radius:8px;display:inline-block;font-style:italic}
+.fc-nav{display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.fc-nav button{padding:12px 22px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;font-size:14px;cursor:pointer;font-family:inherit;font-weight:600}
+.fc-nav button:active{transform:scale(0.97)}
+.fc-counter{font-size:13px;color:#888}
+.drill-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.drill-tab{padding:10px 15px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all 0.12s}
+.drill-tab:active{transform:scale(0.97)}
+.dt1{background:#fff5f5;border-color:#dc2626;color:#991b1b}
+.dt2{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a}
+.dt3{background:#ecfdf5;border-color:#059669;color:#047857}
+.dt4{background:#fefce8;border-color:#ca8a04;color:#713f12}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:5px}
+.prog-bar-wrap{background:#e5e7eb;border-radius:6px;height:7px;overflow:hidden;margin-bottom:1rem}
+.prog-bar-fill{height:100%;border-radius:6px;background:#1a1a1a;transition:width 0.4s}
+.q-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.q-meta{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.q-tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px}
+.tag1{background:#fee2e2;color:#991b1b}.tag2{background:#dbeafe;color:#1e3a8a}
+.tag3{background:#d1fae5;color:#064e3b}.tag4{background:#fef9c3;color:#713f12}
+.proc-tag{font-size:11px;color:#888;background:#f1f5f9;padding:3px 8px;border-radius:6px}
+.dok-tag{font-size:11px;color:#888;background:#f8f0ff;padding:3px 8px;border-radius:6px}
+.q-text{font-size:15px;font-weight:500;line-height:1.65;margin-bottom:1rem;color:#1a1a1a}
+.stimulus{background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:1rem 1.1rem;margin-bottom:1rem}
+.stim-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#a16207;margin-bottom:6px}
+.stim-body{font-size:13px;line-height:1.75;color:#44403c;white-space:pre-line}
+.stim-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.stim-table th{background:#fef3c7;padding:6px 10px;text-align:left;font-weight:700;color:#713f12;border:1px solid #fde68a}
+.stim-table td{padding:6px 10px;border:1px solid #fde68a;color:#44403c}
+.stim-table tr:nth-child(even) td{background:#fffbeb}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border:1.5px solid #e5e7eb;border-radius:10px;cursor:pointer;font-size:14px;line-height:1.5;text-align:left;background:#fff;color:#1a1a1a;width:100%;font-family:inherit;min-height:48px;transition:border-color 0.12s,background 0.12s}
+.choice:hover:not(:disabled){border-color:#9ca3af;background:#fafafa}
+.choice.correct{border-color:#16a34a;background:#f0fdf4;color:#14532d}
+.choice.wrong{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
+.choice-letter{font-weight:700;min-width:22px;flex-shrink:0}
+.explanation{display:none;margin-top:10px;padding:12px 14px;background:#f0fdf4;border-radius:10px;font-size:13px;line-height:1.65;color:#14532d;border-left:3px solid #16a34a}
+.exp-title{font-weight:700;margin-bottom:6px}
+.strategy-note{margin-top:8px;padding:8px 10px;background:#fffbeb;border-radius:8px;font-size:12px;color:#92400e;border-left:3px solid #f59e0b;line-height:1.55}
+.tracker-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.tracker-row:last-child{border-bottom:none}
+.tracker-label{font-size:13px;font-weight:600;width:155px;flex-shrink:0}
+.tracker-bar-track{flex:1;height:10px;background:#e5e7eb;border-radius:5px;overflow:hidden}
+.tracker-bar-fill{height:100%;border-radius:5px;transition:width 0.5s}
+.tracker-val{font-size:12px;color:#888;width:44px;text-align:right;flex-shrink:0}
+.ts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:1rem}
+.ts-card{padding:1rem;border-radius:12px;text-align:center}
+.ts-card .tn{font-size:26px;font-weight:800}
+.ts-card .tl{font-size:11px;margin-top:3px;font-weight:500}
+.btn-outline{padding:13px 22px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;color:#1a1a1a;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-outline:active{transform:scale(0.97)}
+.badge-pass{display:inline-block;background:#dcfce7;color:#14532d;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+.badge-warn{display:inline-block;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+.badge-fail{display:inline-block;background:#fee2e2;color:#991b1b;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+@media(max-width:500px){.topic-grid{grid-template-columns:repeat(2,1fr)}.tracker-label{width:110px;font-size:12px}}
+
+.watermark-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#1a1a1a;color:#fff;
+  text-align:center;font-size:12px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  padding:8px 16px;z-index:9999;
+  letter-spacing:0.03em;opacity:0.92;
+}
+.watermark-bar span{opacity:0.45;margin:0 8px;}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+  <h1>HiSET Social Studies</h1>
+  <p>Study Tool &middot; 60 questions &middot; 70 minutes &middot; Primary sources, maps, graphs &amp; data</p>
+  <div class="weight-pills">
+    <span class="wpill wp1">I. History &mdash; 35%</span>
+    <span class="wpill wp2">II. Civics/Government &mdash; 35%</span>
+    <span class="wpill wp3">III. Economics &mdash; 20%</span>
+    <span class="wpill wp4">IV. Geography &mdash; 10%</span>
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('home')">Home</button>
+  <button class="nav-btn" onclick="showSection('strategies')">Strategies</button>
+  <button class="nav-btn" onclick="showSection('flashcards')">Flashcards</button>
+  <button class="nav-btn" onclick="showSection('practice')">Practice</button>
+  <button class="nav-btn" onclick="showSection('tracker')">Progress</button>
+</div>
+
+<div id="section-home" class="section active">
+  <div class="card">
+    <div style="font-size:16px;font-weight:700;margin-bottom:1rem">What&rsquo;s on the HiSET Social Studies test?</div>
+    <div class="topic-grid">
+      <div class="topic-card tc1" onclick="showSection('practice');showDrill('I')">
+        <div class="tc-lbl">Content Area I &middot; Tied for most</div>
+        <div class="tc-title">History</div>
+        <div class="tc-sub">U.S. &amp; world history, primary sources, political cartoons, timelines</div>
+        <div class="tc-pct">35%</div>
+        <div class="tc-pct-lbl">&asymp; 21 of 60 questions</div>
+      </div>
+      <div class="topic-card tc2" onclick="showSection('practice');showDrill('II')">
+        <div class="tc-lbl">Content Area II &middot; Tied for most</div>
+        <div class="tc-title">Civics &amp; Government</div>
+        <div class="tc-sub">Constitution, branches of government, rights &amp; responsibilities, government systems</div>
+        <div class="tc-pct">35%</div>
+        <div class="tc-pct-lbl">&asymp; 21 of 60 questions</div>
+      </div>
+      <div class="topic-card tc3" onclick="showSection('practice');showDrill('III')">
+        <div class="tc-lbl">Content Area III</div>
+        <div class="tc-title">Economics</div>
+        <div class="tc-sub">Supply &amp; demand, fiscal &amp; monetary policy, consumer economics, trade</div>
+        <div class="tc-pct">20%</div>
+        <div class="tc-pct-lbl">&asymp; 12 of 60 questions</div>
+      </div>
+      <div class="topic-card tc4" onclick="showSection('practice');showDrill('IV')">
+        <div class="tc-lbl">Content Area IV</div>
+        <div class="tc-title">Geography</div>
+        <div class="tc-sub">Maps, migration, push &amp; pull factors, cultural diffusion, regions</div>
+        <div class="tc-pct">10%</div>
+        <div class="tc-pct-lbl">&asymp; 6 of 60 questions</div>
+      </div>
+    </div>
+    <div class="proc-grid">
+      <div class="proc-card proc-a"><div class="pt">A. Interpret &amp; Apply</div><div class="pd">Read primary sources, maps, graphs. Make inferences and predictions from data.</div></div>
+      <div class="proc-card proc-b"><div class="pt">B. Analyze</div><div class="pd">Distinguish facts from opinions. Recognize author purpose, bias, and assumptions.</div></div>
+      <div class="proc-card proc-c"><div class="pt">C. Evaluate &amp; Generalize</div><div class="pd">Judge source reliability. Evaluate conclusions. Compare and contrast evidence.</div></div>
+    </div>
+    <div style="font-size:13px;color:#666;line-height:1.8;padding:0.75rem 1rem;background:#f8f8f6;border-radius:10px;margin-top:0.5rem">
+      <strong>Key fact:</strong> Most questions include a stimulus &mdash; a document, political cartoon, map, graph, table, or reading passage. You do NOT need to memorize every historical date. You need to <strong>read carefully and reason from the information given.</strong><br>
+      &middot; 70 minutes for 60 questions &asymp; 1 min 10 sec per question<br>
+      &middot; Tap any content area above to jump directly to practice questions
+    </div>
+  </div>
+</div>
+
+<div id="section-strategies" class="section">
+  <div class="sec-header"><h2>Social Studies Strategies</h2><p>Most questions have a stimulus. Read it carefully before looking at the choices.</p></div>
+  <div class="strat-section">
+    <div class="strat-header shp">&#128161; Universal Strategies (all questions)</div>
+    <div class="strat-card scp"><strong>Read the stimulus first &mdash; the answer is usually there</strong><p style="margin-top:4px">Before reading the question, look at the source title, any labels, dates, and the overall format. Then read the stimulus. Then read the question. Finally, find the answer choice that matches what the stimulus actually says &mdash; not what you remember from history class.</p></div>
+    <div class="strat-card scp"><strong>Fact vs. Opinion vs. Conclusion</strong><ul class="strat-steps"><li><strong>Fact:</strong> can be verified as objectively true ("The Civil War ended in 1865")</li><li><strong>Opinion:</strong> a personal belief or value judgment ("The Civil War was unnecessary")</li><li><strong>Conclusion:</strong> a logical inference drawn from evidence ("Because the North had more industry, it had a military advantage")</li></ul></div>
+    <div class="strat-card scp"><strong>Identify author purpose and bias</strong><ul class="strat-steps"><li>Who created this source? When? Why?</li><li>Who is the intended audience?</li><li>What does the author want the reader to think or feel?</li><li>What information might be left out?</li></ul></div>
+    <div class="strat-card scp"><strong>Evaluate conclusions carefully</strong><ul class="strat-steps"><li>Conclusions must be supported by the evidence &mdash; not go beyond it</li><li>Watch for words like "always," "never," "proves," "solely" &mdash; these are often too absolute</li><li>The best answer is the most directly and completely supported by the stimulus</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh1">&#128196; I. History &mdash; 35% of the test</div>
+    <div class="strat-card sc1"><strong>Primary source documents</strong><ul class="strat-steps"><li>Identify: Who wrote it? When? What is their position or perspective?</li><li>Find the main argument or point in the last 1&ndash;2 sentences of each paragraph</li><li>Watch for emotionally loaded language &mdash; it signals the author&rsquo;s bias</li><li>Every quote question: the answer is IN the quote. Don&rsquo;t use outside knowledge.</li></ul></div>
+    <div class="strat-card sc1"><strong>Political cartoons</strong><ul class="strat-steps"><li>Identify every labeled symbol &mdash; each label is a clue to meaning</li><li>Ask: what is exaggerated? Exaggeration = the cartoonist&rsquo;s criticism</li><li>Ask: what is the overall message these symbols send together?</li><li>Cartoon answers are usually critical of someone or something &mdash; find who/what</li></ul></div>
+    <div class="strat-card sc1"><strong>Key eras to know</strong><ul class="strat-steps"><li>American Revolution: taxation without representation, Enlightenment ideas, Constitution</li><li>Civil War &amp; Reconstruction: slavery, 13th/14th/15th Amendments</li><li>WWI: MAIN causes (Militarism, Alliances, Imperialism, Nationalism); Treaty of Versailles</li><li>Great Depression: 1929 crash, New Deal programs (Social Security, CCC, FDIC)</li><li>WWII: Allies vs. Axis, Holocaust, atomic bomb, UN formed after</li><li>Cold War: U.S. vs. USSR, proxy wars, nuclear arms race, 1991 end</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh2">&#9878; II. Civics &amp; Government &mdash; 35% of the test</div>
+    <div class="strat-card sc2"><strong>Three branches &mdash; know every function</strong><ul class="strat-steps"><li>Legislative (Congress): MAKES laws; has Senate (100) and House (435)</li><li>Executive (President): ENFORCES laws; can veto bills; commands military</li><li>Judicial (Supreme Court): INTERPRETS laws; can strike down unconstitutional laws</li></ul></div>
+    <div class="strat-card sc2"><strong>Checks and balances &mdash; key examples</strong><ul class="strat-steps"><li>President vetoes a law &rarr; Congress can override with 2/3 vote in both chambers</li><li>Supreme Court can strike down laws as unconstitutional (judicial review)</li><li>Senate must confirm presidential appointments (judges, Cabinet members)</li><li>Congress declares war; President commands the military</li></ul></div>
+    <div class="strat-card sc2"><strong>Bill of Rights &mdash; most tested amendments</strong><ul class="strat-steps"><li>1st: speech, religion, press, peaceful assembly, petition</li><li>4th: protection from unreasonable search and seizure</li><li>5th: due process; cannot be forced to testify against yourself</li><li>6th: right to a speedy and public trial, legal counsel</li><li>14th: equal protection under the law; citizenship for all born in the U.S.</li></ul></div>
+    <div class="strat-card sc2"><strong>Federalism: federal vs. state powers</strong><ul class="strat-steps"><li>Federal only: declare war, print money, regulate interstate commerce, foreign policy</li><li>State only: education policy, driver&rsquo;s licenses, local law enforcement, marriage laws</li><li>Shared: taxation, building roads, borrowing money</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh3">&#128200; III. Economics &mdash; 20% of the test</div>
+    <div class="strat-card sc3"><strong>Supply and demand</strong><ul class="strat-steps"><li>Demand up + supply same = price up</li><li>Supply up + demand same = price down</li><li>Demand up + supply down = price rises sharply</li><li>Competition increases supply &rarr; prices fall</li></ul></div>
+    <div class="strat-card sc3"><strong>Fiscal vs. monetary policy</strong><ul class="strat-steps"><li>Fiscal policy = Congress + President: government spending and taxation</li><li>Expansionary fiscal: increase spending OR cut taxes &rarr; stimulate economy</li><li>Monetary policy = Federal Reserve: controls interest rates and money supply</li><li>Raise rates &rarr; borrow less &rarr; spend less &rarr; slows inflation</li><li>Lower rates &rarr; borrow more &rarr; spend more &rarr; stimulates economy</li></ul></div>
+    <div class="strat-card sc3"><strong>Consumer economics</strong><ul class="strat-steps"><li>Credit = get it now, pay more in total (interest adds to the cost)</li><li>Saving = wait longer, pay less in total</li><li>Tariff = tax on imports, protects domestic industry but raises consumer prices</li><li>Opportunity cost = what you give up to make a choice</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh4">&#127758; IV. Geography &mdash; 10% of the test</div>
+    <div class="strat-card sc4"><strong>Reading maps</strong><ul class="strat-steps"><li>Always check: title, legend/key, scale, compass rose (N/S/E/W)</li><li>The answer to a map question is almost always in the legend</li><li>Don&rsquo;t assume &mdash; read what the map actually shows</li></ul></div>
+    <div class="strat-card sc4"><strong>Push vs. pull factors in migration</strong><ul class="strat-steps"><li>PUSH = negative conditions that drive people AWAY from a place (war, famine, poverty, persecution)</li><li>PULL = positive conditions that attract people TO a place (jobs, safety, family, better wages)</li><li>Most migrations involve both push and pull factors working together</li></ul></div>
+  </div>
+</div>
+
+<div id="section-flashcards" class="section">
+  <div class="sec-header"><h2>Social Studies Flashcards</h2><p>Tap the card to flip. Filter by content area.</p></div>
+  <div class="fc-filter">
+    <button class="active" onclick="filterCards('all',this)">All</button>
+    <button onclick="filterCards('I',this)">&#128196; History</button>
+    <button onclick="filterCards('II',this)">&#9878; Civics</button>
+    <button onclick="filterCards('III',this)">&#128200; Economics</button>
+    <button onclick="filterCards('IV',this)">&#127758; Geography</button>
+  </div>
+  <div class="flashcard fc-front" id="flashcard" onclick="flipCard()">
+    <div class="fc-cat" id="fc-cat"></div>
+    <div id="fc-front-content"><div class="fc-term" id="fc-term"></div><div class="fc-hint">Tap to see definition</div></div>
+    <div id="fc-back-content" style="display:none"><div class="fc-def" id="fc-def"></div><div class="fc-ex" id="fc-ex"></div></div>
+  </div>
+  <div class="fc-nav">
+    <button onclick="prevCard()">&larr; Back</button>
+    <span class="fc-counter" id="fc-counter">1 / 30</span>
+    <button onclick="nextCard()">Next &rarr;</button>
+  </div>
+</div>
+
+<div id="section-practice" class="section">
+  <div class="sec-header"><h2>Practice Questions</h2><p>Includes primary sources, data tables, political cartoons, and scenarios &mdash; just like the real test.</p></div>
+  <div class="drill-tabs">
+    <button class="drill-tab" id="tab-I" onclick="showDrill('I')">&#128196; I &middot; History</button>
+    <button class="drill-tab" id="tab-II" onclick="showDrill('II')">&#9878; II &middot; Civics</button>
+    <button class="drill-tab" id="tab-III" onclick="showDrill('III')">&#128200; III &middot; Economics</button>
+    <button class="drill-tab" id="tab-IV" onclick="showDrill('IV')">&#127758; IV &middot; Geography</button>
+  </div>
+  <div class="prog-row"><span id="prog-text">0 of 0 answered</span><span id="prog-score">0 correct</span></div>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-bar" style="width:0%"></div></div>
+  <div id="practice-container"></div>
+</div>
+
+<div id="section-tracker" class="section">
+  <div class="sec-header"><h2>My Progress</h2><p>Track your accuracy across all four content areas.</p></div>
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem">Accuracy by content area</div>
+    <div id="tracker-bars"></div>
+  </div>
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem">Session totals</div>
+    <div class="ts-grid" id="tracker-summary"></div>
+    <div style="margin-top:1rem"><button class="btn-outline" onclick="resetAll()">Reset all progress</button></div>
+  </div>
+  <div class="card" style="background:#eff6ff;border:1.5px solid #bfdbfe">
+    <div style="font-size:14px;font-weight:700;margin-bottom:0.5rem;color:#1e3a8a">&#128204; Scoring reminder</div>
+    <div style="font-size:13px;color:#555;line-height:1.8">
+      &middot; HiSET Social Studies is scored 1&ndash;20 &middot; Passing = <strong>8 or higher</strong><br>
+      &middot; History and Civics are tied at 35% each &mdash; they make up <strong>70% of the test</strong><br>
+      &middot; Most answers are IN the stimulus &mdash; read carefully before choosing<br>
+      &middot; Aim for <strong>65%+ accuracy</strong> in practice to be on track for a strong score
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const CARDS = [{"area": "I", "cat": "I · History", "term": "Primary Source", "def": "An original document or artifact created during the time being studied — diaries, letters, speeches, photographs, maps, and official records.", "ex": "The Declaration of Independence is a primary source about 1776"}, {"area": "I", "cat": "I · History", "term": "Secondary Source", "def": "A source that interprets or analyzes primary sources. Created after the event by someone who was not present.", "ex": "A textbook chapter about the Civil War is a secondary source"}, {"area": "I", "cat": "I · History", "term": "Point of View / Bias", "def": "A perspective or leaning that influences how information is presented. Every source has a point of view — identify the author's background and purpose.", "ex": "A Confederate soldier's letter has a different POV than a Union general's"}, {"area": "I", "cat": "I · History", "term": "The American Revolution (1775–1783)", "def": "Colonists fought for independence from British rule. Key causes: taxation without representation, Enlightenment ideas. Result: the United States was established.", "ex": "Declaration of Independence (1776), Constitution (1787)"}, {"area": "I", "cat": "I · History", "term": "Civil War & Reconstruction (1861–1877)", "def": "The Civil War was fought over slavery and states' rights. The Union defeated the Confederacy. Reconstruction attempted to rebuild the South and integrate formerly enslaved people.", "ex": "13th Amendment abolished slavery; 14th gave citizenship; 15th gave Black men voting rights"}, {"area": "I", "cat": "I · History", "term": "World War I (1914–1918)", "def": "A global conflict sparked by nationalism, militarism, alliances, and imperialism (MAIN). The U.S. entered in 1917. Result: Treaty of Versailles, which contributed to WWII conditions.", "ex": "The assassination of Archduke Franz Ferdinand triggered the alliance system"}, {"area": "I", "cat": "I · History", "term": "Great Depression & New Deal (1929–1939)", "def": "The stock market crash of 1929 caused massive unemployment and poverty. FDR's New Deal used government programs to provide relief, recovery, and reform.", "ex": "Social Security, the CCC, and FDIC were New Deal programs"}, {"area": "I", "cat": "I · History", "term": "World War II (1939–1945)", "def": "A global conflict between the Allies (U.S., UK, USSR, France) and the Axis powers (Germany, Italy, Japan). Ended with the Holocaust's revelation and atomic bombs on Japan.", "ex": "D-Day invasion (1944), Holocaust, atomic bombs on Hiroshima and Nagasaki"}, {"area": "I", "cat": "I · History", "term": "Cold War (1947–1991)", "def": "A geopolitical tension between the United States (democracy/capitalism) and the Soviet Union (communism) — no direct military conflict but proxy wars, arms race, and space race.", "ex": "Korean War, Vietnam War, Berlin Wall, Cuban Missile Crisis"}, {"area": "I", "cat": "I · History", "term": "Civil Rights Movement (1950s–1960s)", "def": "A movement to end racial segregation and discrimination in the United States. Led by figures like Dr. Martin Luther King Jr. Key achievements: Civil Rights Act (1964), Voting Rights Act (1965).", "ex": "Montgomery Bus Boycott, March on Washington, Brown v. Board of Education"}, {"area": "II", "cat": "II · Civics/Government", "term": "Three Branches of Government", "def": "Legislative (Congress — makes laws), Executive (President — enforces laws), Judicial (Supreme Court — interprets laws). Each branch checks and balances the others.", "ex": "Congress passes a law; President signs or vetoes it; Court can strike it down"}, {"area": "II", "cat": "II · Civics/Government", "term": "Checks and Balances", "def": "A system where each branch of government has the power to limit the other two, preventing any one branch from becoming too powerful.", "ex": "President can veto laws; Congress can override a veto with 2/3 vote"}, {"area": "II", "cat": "II · Civics/Government", "term": "The Bill of Rights", "def": "The first 10 amendments to the U.S. Constitution. Protects individual freedoms from government overreach.", "ex": "1st: speech, religion, press, assembly; 4th: unreasonable search; 5th: self-incrimination"}, {"area": "II", "cat": "II · Civics/Government", "term": "Federalism", "def": "A system of government where power is divided between the national (federal) government and state governments.", "ex": "Federal government: declares war. States: run elections, education policy"}, {"area": "II", "cat": "II · Civics/Government", "term": "1st Amendment", "def": "Protects five freedoms: speech, religion, press, peaceful assembly, and the right to petition the government.", "ex": "A person can peacefully protest the government without being arrested"}, {"area": "II", "cat": "II · Civics/Government", "term": "Democracy vs. Republic", "def": "Democracy: citizens vote directly on issues. Republic: citizens elect representatives to vote on their behalf. The U.S. is a representative republic (democratic republic).", "ex": "The U.S. elects senators and representatives rather than voting on every law"}, {"area": "II", "cat": "II · Civics/Government", "term": "The Constitution", "def": "The supreme law of the United States, ratified in 1788. It establishes the structure of government, separates powers, and protects individual rights through amendments.", "ex": "Article I = Legislative; Article II = Executive; Article III = Judicial"}, {"area": "II", "cat": "II · Civics/Government", "term": "Due Process", "def": "The constitutional guarantee that the government must follow fair legal procedures before depriving anyone of life, liberty, or property. Protected by the 5th and 14th Amendments.", "ex": "A person must be formally charged and given a trial before being imprisoned"}, {"area": "II", "cat": "II · Civics/Government", "term": "Equal Protection", "def": "The 14th Amendment guarantees that no state shall deny any person equal protection under the law. Foundation for civil rights rulings.", "ex": "Used in Brown v. Board of Education to end school segregation"}, {"area": "III", "cat": "III · Economics", "term": "Supply and Demand", "def": "Supply: how much of a product is available. Demand: how much consumers want it. When demand rises and supply stays the same, price goes up. When supply rises, price usually falls.", "ex": "Gasoline prices rise in summer when driving demand increases"}, {"area": "III", "cat": "III · Economics", "term": "Scarcity", "def": "Resources are limited but human wants are unlimited. Scarcity forces individuals, businesses, and governments to make choices about how to use resources.", "ex": "Clean water, oil, and land are all scarce resources"}, {"area": "III", "cat": "III · Economics", "term": "Opportunity Cost", "def": "The value of the next best choice that is given up when a decision is made. Every decision has an opportunity cost.", "ex": "If you spend $1,000 on a vacation, the opportunity cost might be a new laptop"}, {"area": "III", "cat": "III · Economics", "term": "Fiscal Policy", "def": "Government decisions about spending and taxation used to influence the economy. Increasing spending or cutting taxes can stimulate the economy; the reverse can slow it.", "ex": "A stimulus check during a recession is an example of expansionary fiscal policy"}, {"area": "III", "cat": "III · Economics", "term": "Monetary Policy", "def": "Actions taken by the Federal Reserve (the central bank) to control the money supply and interest rates. Raising rates slows borrowing; lowering rates encourages it.", "ex": "The Fed raised interest rates to reduce inflation in 2022–2023"}, {"area": "III", "cat": "III · Economics", "term": "GDP (Gross Domestic Product)", "def": "The total value of all goods and services produced in a country in a given period. Used to measure economic growth or recession.", "ex": "If GDP shrinks for two consecutive quarters, the economy is in a recession"}, {"area": "III", "cat": "III · Economics", "term": "Tariff", "def": "A tax placed on imported goods. Tariffs protect domestic industries but can raise prices for consumers and spark trade disputes.", "ex": "A 25% tariff on imported steel makes foreign steel more expensive than domestic steel"}, {"area": "IV", "cat": "IV · Geography", "term": "Reading a Map", "def": "Key map elements: title (what the map shows), legend/key (what symbols mean), scale (distance), compass rose (direction: N, S, E, W).", "ex": "Always check the legend before answering any map question"}, {"area": "IV", "cat": "IV · Geography", "term": "Migration", "def": "The movement of people from one place to another. Push factors drive people away (war, famine, poverty). Pull factors attract people to a new place (jobs, safety, family).", "ex": "Irish immigrants fled famine (push) and sought opportunity in America (pull)"}, {"area": "IV", "cat": "IV · Geography", "term": "Cultural Diffusion", "def": "The spread of cultural elements — ideas, languages, foods, technologies — from one group to another through contact, trade, or migration.", "ex": "The spread of Islam along trade routes; pizza becoming popular in the U.S."}, {"area": "IV", "cat": "IV · Geography", "term": "Physical vs. Human Geography", "def": "Physical geography: natural features of Earth (mountains, rivers, climate). Human geography: how people interact with and shape the environment (cities, borders, agriculture).", "ex": "The Mississippi River (physical) shaped New Orleans' location (human)"}];
+const QUESTIONS = {"I": [{"id": "i1", "tag": "I · History", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Excerpt: Thomas Jefferson, Declaration of Independence (1776)", "stim_text": "We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness. That to secure these rights, Governments are instituted among Men, deriving their just powers from the consent of the governed.", "stim_table": null, "text": "According to this excerpt, what is the primary purpose of government?", "choices": ["To maintain order through military force", "To secure the unalienable rights of the people", "To ensure that all citizens pay taxes", "To create laws that benefit the ruling class"], "correct": 1, "explain": "The passage states governments are 'instituted among Men' to 'secure these rights' — referring to Life, Liberty and the pursuit of Happiness. The key phrase is 'deriving their just powers from the consent of the governed,' meaning government exists to serve the people's rights.", "strategy": "Primary source questions: the answer is always IN the text. Find the exact phrase that answers the question and match it to a choice."}, {"id": "i2", "tag": "I · History", "proc": "B. Analyze", "dok": "DOK 3", "stim_title": "Political Cartoon Description: Post-WWI Europe", "stim_text": "A 1919 political cartoon shows a baby labeled 'Class of 1940' crying in a cradle. Standing nearby, a group of men labeled 'The Big Four' (Allied leaders at the Paris Peace Conference) walk away from a document labeled 'Treaty of Versailles.' One leader says, 'Curious — I seem to hear a child weeping.'", "stim_table": null, "text": "What is the cartoonist's main argument?", "choices": ["The Treaty of Versailles successfully created lasting peace in Europe.", "The Allied leaders were too focused on protecting children's welfare.", "The harsh terms of the Treaty of Versailles would lead to another war affecting the next generation.", "The Paris Peace Conference was poorly organized."], "correct": 2, "explain": "The baby labeled 'Class of 1940' represents children who would be adults — and soldiers — in 1940, when WWII began. The crying child symbolizes future suffering caused by the treaty. The leaders ignoring the weeping suggests they are unaware of (or indifferent to) the consequences of their decisions. The cartoonist is predicting WWII.", "strategy": "Political cartoon questions: identify each labeled symbol. Ask what each represents. Then ask: what message do these symbols together send?"}, {"id": "i3", "tag": "I · History", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Timeline: Key Events of the Civil Rights Movement", "stim_text": "1954 — Brown v. Board of Education (Supreme Court rules school segregation unconstitutional)\n1955 — Montgomery Bus Boycott begins\n1963 — March on Washington; Dr. King's 'I Have a Dream' speech\n1964 — Civil Rights Act signed into law\n1965 — Voting Rights Act signed into law", "stim_table": null, "text": "Based on the timeline, which event came IMMEDIATELY before the Civil Rights Act was signed?", "choices": ["The Voting Rights Act", "Brown v. Board of Education", "The March on Washington", "The Montgomery Bus Boycott"], "correct": 2, "explain": "According to the timeline, the March on Washington occurred in 1963 and the Civil Rights Act was signed in 1964. The March on Washington is the event immediately before the Civil Rights Act in this timeline.", "strategy": "Timeline questions: don't rely on memory — read the dates given. 'Immediately before' means the entry with the date just prior to the target event."}, {"id": "i4", "tag": "I · History", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "Historian's Statement", "stim_text": "'The Great Depression was caused solely by the stock market crash of October 1929. Once the market collapsed, the economic disaster was inevitable.'", "stim_table": null, "text": "Which best evaluates this historical claim?", "choices": ["The claim is fully accurate — the stock market crash was the only cause.", "The claim is too narrow — the Depression had multiple causes including bank failures, agricultural problems, and weak consumer spending.", "The claim is accurate because stock markets control all aspects of the economy.", "The claim is too broad — the Great Depression only affected wealthy investors."], "correct": 1, "explain": "The statement says the crash was the SOLE cause, which oversimplifies history. The Great Depression had multiple contributing factors: overproduction, weak agricultural sector, bank failures, high tariffs (Smoot-Hawley), and credit overextension. Saying it was 'inevitable' from one cause is also historically inaccurate.", "strategy": "Evaluate & Generalize: watch for words like 'solely,' 'only,' 'always,' or 'inevitable' — these signal an overly absolute claim that is usually wrong in history."}, {"id": "i5", "tag": "I · History", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Excerpt: Letter from a Japanese American Internment Camp (1942)", "stim_text": "'We have done nothing wrong. We were born here. We pay taxes and follow the laws. Yet we are locked behind barbed wire because of how we look. I do not understand how a country that fights for freedom abroad can take it away at home.'", "stim_table": null, "text": "What is the author's main argument in this letter?", "choices": ["Japanese Americans supported Japan's actions in World War II.", "The internment of Japanese Americans contradicted American democratic values.", "The U.S. government was right to intern Japanese Americans for security reasons.", "The author wanted to leave the United States permanently."], "correct": 1, "explain": "The author argues that a country 'that fights for freedom abroad' should not 'take it away at home.' This is a direct critique of the contradiction between American democratic ideals and the reality of Japanese American internment. The author emphasizes their loyalty and citizenship.", "strategy": "Author's argument questions: find the sentence that states the author's central point. Here, the last sentence is the clearest statement of the argument — the contrast between external freedom-fighting and internal rights violations."}, {"id": "i6", "tag": "I · History", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "Historical Fact", "stim_text": "The Marshall Plan, enacted in 1948, provided approximately $13 billion in economic assistance from the United States to rebuild Western European economies devastated by World War II.", "stim_table": null, "text": "What was the PRIMARY goal of the Marshall Plan?", "choices": ["To punish Germany for starting World War II", "To expand U.S. military bases in Europe", "To rebuild Western European economies after World War II", "To establish the United Nations"], "correct": 2, "explain": "The passage directly states the Marshall Plan provided economic assistance 'to rebuild Western European economies devastated by World War II.' This is explicitly stated in the stimulus — no outside knowledge needed.", "strategy": "DOK 1 recall/interpret questions: the answer is directly stated in the stimulus. Don't overthink it — find the exact match."}, {"id": "i7", "tag": "I · History", "proc": "C. Evaluate & Generalize", "dok": "DOK 4", "stim_title": "Two Perspectives on the Atomic Bomb (1945)", "stim_text": "Source A (U.S. Secretary of War, 1945): 'The bomb brought a quick end to the war and prevented an invasion of Japan that could have cost over a million American lives.'\n\nSource B (Japanese survivor, 1945): 'The bomb destroyed our city in seconds. Tens of thousands died instantly, and thousands more suffered for years. There was no warning, no chance to surrender first.'", "stim_table": null, "text": "Which statement BEST reflects what these two sources together demonstrate?", "choices": ["Both sources agree the atomic bomb was necessary and justified.", "The atomic bomb was clearly wrong and should never have been used.", "Historical events can be interpreted very differently depending on one's perspective and experience.", "Source A is more reliable than Source B because it comes from a government official."], "correct": 2, "explain": "The two sources represent completely different perspectives on the same event — one focusing on military necessity and lives saved, the other on civilian suffering and destruction. Together they demonstrate that the same event can be interpreted very differently based on who experienced it and from what position. Neither source is more 'reliable' — they reflect different realities.", "strategy": "Two-source synthesis: don't choose a side. The question asks what BOTH sources together demonstrate. The answer that captures the contrast between perspectives is almost always correct."}, {"id": "i8", "tag": "I · History", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Graph: U.S. Unemployment Rate, 1928–1938", "stim_text": "1928: 4.2% | 1929: 3.2% | 1930: 8.7% | 1931: 15.9% | 1932: 23.6% | 1933: 24.9% | 1934: 21.7% | 1935: 20.1% | 1936: 16.9% | 1937: 14.3% | 1938: 19.0%", "stim_table": {"headers": ["Year", "Unemployment Rate"], "rows": [["1928", "4.2%"], ["1929", "3.2%"], ["1930", "8.7%"], ["1931", "15.9%"], ["1932", "23.6%"], ["1933", "24.9%"], ["1934", "21.7%"], ["1935", "20.1%"], ["1936", "16.9%"], ["1937", "14.3%"], ["1938", "19.0%"]]}, "text": "What trend does this data show between 1929 and 1933?", "choices": ["Unemployment steadily decreased", "Unemployment fluctuated with no clear trend", "Unemployment dramatically increased", "Unemployment remained stable around 15%"], "correct": 2, "explain": "From 1929 (3.2%) to 1933 (24.9%), unemployment rose sharply each year — a dramatic increase. This reflects the economic collapse of the Great Depression. The data shows a clear, steep upward trend with no decreases during this period.", "strategy": "Read data tables carefully. 'What trend' means look at the overall direction over the time period asked. 1929 to 1933: 3.2% → 24.9%. That is clearly a dramatic increase."}, {"id": "i9", "tag": "I · History", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Cold War Context", "stim_text": "After World War II, the United States and Soviet Union became rivals in what is called the Cold War. Both nations built massive nuclear arsenals and competed for global influence. However, they never directly fought each other in a military conflict.", "stim_table": null, "text": "Why is the conflict between the U.S. and USSR called the 'Cold' War?", "choices": ["Because the conflict took place in cold, Arctic regions", "Because the two nations never engaged in direct military combat with each other", "Because the war was fought using ice and cold weather as weapons", "Because both nations had cold relations with all other countries"], "correct": 1, "explain": "The passage states both nations competed intensely but 'never directly fought each other in a military conflict.' The term 'Cold' distinguishes it from a 'hot' war involving actual combat. Despite massive tensions — including nuclear threats and proxy wars — the U.S. and USSR never fought each other directly.", "strategy": "Definition questions tied to a passage: find the specific phrase in the text that answers the question. Here, 'never directly fought each other in a military conflict' is the answer to why it's called 'Cold.'"}, {"id": "i10", "tag": "I · History", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "Reconstruction Amendment", "stim_text": "Amendment XIV (1868): 'All persons born or naturalized in the United States, and subject to the jurisdiction thereof, are citizens of the United States and of the State wherein they reside. No State shall make or enforce any law which shall abridge the privileges or immunities of citizens of the United States.'", "stim_table": null, "text": "Based on this amendment, which situation would MOST clearly violate its principles?", "choices": ["A state requiring all citizens to pay income tax", "A state law that denies voting rights to citizens based on their race", "A federal law setting the national speed limit", "A state building new public schools in all districts"], "correct": 1, "explain": "The 14th Amendment guarantees citizenship and equal protection under the law. A state law denying voting rights based on race directly violates the principle that no state shall 'abridge the privileges or immunities of citizens.' This was the core issue addressed by the Voting Rights Act of 1965.", "strategy": "Amendment application questions: identify what the amendment protects. Then find the answer choice that directly violates that protection. Race-based denial of rights violates equal protection."}], "II": [{"id": "ii1", "tag": "II · Civics/Government", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "U.S. Government Structure", "stim_text": "The U.S. Constitution divides the federal government into three branches: the Legislative Branch (Congress — Senate and House of Representatives), the Executive Branch (President and Cabinet), and the Judicial Branch (Supreme Court and federal courts). Each branch has specific powers and can limit the other two.", "stim_table": null, "text": "Which branch of government is responsible for making federal laws?", "choices": ["The Executive Branch", "The Judicial Branch", "The Legislative Branch", "The Cabinet"], "correct": 2, "explain": "The passage states the Legislative Branch (Congress) makes laws. The Executive Branch enforces them (President). The Judicial Branch interprets them (Supreme Court). This is explicitly stated in the stimulus.", "strategy": "Government structure questions: Legislative = makes laws; Executive = enforces/signs laws; Judicial = interprets laws. These three functions are the foundation of all civics questions."}, {"id": "ii2", "tag": "II · Civics/Government", "proc": "B. Analyze", "dok": "DOK 3", "stim_title": "Scenario: Presidential Veto", "stim_text": "Congress passes a bill to reduce the federal minimum wage. The President disagrees with the bill and vetoes it. Congress then holds another vote. The Senate votes 72–28 in favor of the bill, and the House votes 310–125 in favor.", "stim_table": null, "text": "What happens next according to the constitutional system of checks and balances?", "choices": ["The bill dies because the President vetoed it.", "The Supreme Court must review the bill before it can become law.", "Congress overrides the veto and the bill becomes law.", "The President must sign the bill since Congress voted again."], "correct": 2, "explain": "A presidential veto can be overridden if both the Senate and House each vote with a 2/3 majority. The Senate voted 72/100 (72%) and the House voted 310/435 (71.3%) — both exceed the 2/3 threshold. Congress can override the veto, and the bill becomes law without the President's signature.", "strategy": "Checks and balances: veto override requires 2/3 majority in BOTH chambers. Calculate: 72/100 = 72% ✓. 310/435 ≈ 71% ✓. Both exceed 2/3 (66.7%), so the override succeeds."}, {"id": "ii3", "tag": "II · Civics/Government", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "The First Amendment", "stim_text": "'Congress shall make no law respecting an establishment of religion, or prohibiting the free exercise thereof; or abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble, and to petition the Government for a redress of grievances.'", "stim_table": null, "text": "According to the First Amendment, which of the following activities is protected?", "choices": ["Breaking into a government building to steal documents", "Peaceful protest in front of a government office", "Threatening violence against public officials", "Hacking into government computer systems"], "correct": 1, "explain": "The First Amendment protects 'peaceable assembly' and the right to 'petition the Government.' A peaceful protest is a protected form of assembly and petition. The other options involve illegal actions (theft, threats, hacking) that are not protected by the First Amendment.", "strategy": "First Amendment protects: speech, religion, press, peaceful assembly, petition. The key word in the correct answer is 'peaceful' — matching 'peaceably to assemble' in the text."}, {"id": "ii4", "tag": "II · Civics/Government", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Federalism: Division of Powers", "stim_text": "The U.S. Constitution divides power between the federal government and state governments. Some powers belong exclusively to the federal government (declaring war, printing money, regulating interstate commerce). Some belong to states (setting education policy, issuing driver's licenses, managing local law enforcement). Some powers are shared (taxation, building roads).", "stim_table": {"headers": ["Federal Only", "State Only", "Shared"], "rows": [["Declare war", "Set education policy", "Taxation"], ["Print money", "Issue driver's licenses", "Building roads"], ["Regulate interstate commerce", "Manage local police", "Borrow money"]]}, "text": "According to the table, which is an example of a SHARED power?", "choices": ["Declaring war", "Issuing driver's licenses", "Taxation", "Regulating interstate commerce"], "correct": 2, "explain": "The table clearly shows taxation in the 'Shared' column — meaning both federal and state governments can collect taxes. Declaring war and regulating interstate commerce are federal-only. Issuing driver's licenses is state-only.", "strategy": "Table questions: find exactly where the answer appears in the table. Don't guess — locate the column ('Shared') and find the matching row item."}, {"id": "ii5", "tag": "II · Civics/Government", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "Student Statement on Free Speech", "stim_text": "'The First Amendment guarantees that I can say anything I want without any legal consequences. This means I can threaten people, lie under oath in court, and shout fire in a crowded theater — and the government cannot do anything about it.'", "stim_table": null, "text": "Which best evaluates this student's claim?", "choices": ["The claim is correct — the First Amendment protects all speech without exception.", "The claim is partially correct — the First Amendment protects most speech but courts have ruled that some speech (threats, perjury, speech causing immediate danger) is not protected.", "The claim is incorrect — the government can restrict all speech it disagrees with.", "The claim is correct because the Constitution has no limitations on individual rights."], "correct": 1, "explain": "The First Amendment protects most speech but is not absolute. The Supreme Court has ruled that certain types of speech are NOT protected: true threats, perjury (lying under oath), incitement to imminent lawless action (the 'fire in a crowded theater' principle from Schenck v. U.S.), and fraud. The student's claim overstates First Amendment protections.", "strategy": "Evaluate claims about rights: rights in the Constitution are rarely absolute. Look for answer choices that acknowledge protection BUT note limitations. Absolutes ('all speech,' 'no exceptions') are usually wrong."}, {"id": "ii6", "tag": "II · Civics/Government", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Comparing Government Systems", "stim_text": "Democracy: citizens vote directly on laws and leaders. Republic: citizens elect representatives who vote on their behalf. Monarchy: a king or queen holds power, sometimes absolute, sometimes limited by a constitution. Authoritarian/Totalitarian: a leader or party holds all power with no meaningful elections or civil liberties.", "stim_table": null, "text": "Which system BEST describes the United States government?", "choices": ["A direct democracy", "A constitutional monarchy", "A totalitarian state", "A representative republic"], "correct": 3, "explain": "The U.S. is a representative republic — citizens elect representatives (senators, representatives, the president through the Electoral College) who govern on their behalf. It is not a direct democracy (citizens don't vote on every law), not a monarchy (no king/queen), and not authoritarian (free elections and civil liberties exist).", "strategy": "The U.S. is a REPRESENTATIVE REPUBLIC (also called a democratic republic). Citizens vote for representatives, not directly on laws. This is a very common HiSET question."}, {"id": "ii7", "tag": "II · Civics/Government", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Civic Responsibilities", "stim_text": "Citizens of a democracy have both rights (things the government cannot take away) and responsibilities (duties expected of citizens). Examples of rights: voting, free speech, fair trial. Examples of responsibilities: jury duty, paying taxes, obeying laws, serving in the military when called, participating in the democratic process.", "stim_table": null, "text": "Based on the passage, which of the following is a RESPONSIBILITY of citizens, not a right?", "choices": ["Freedom of speech", "The right to a fair trial", "Serving on a jury", "Voting in elections"], "correct": 2, "explain": "The passage lists jury duty under 'responsibilities' — duties expected of citizens. Voting is listed as a right. Free speech and a fair trial are also listed as rights. Serving on a jury is an obligation the government can require of citizens.", "strategy": "Rights vs. responsibilities: rights = things government cannot take away; responsibilities = things citizens are expected or required to do. Jury duty is a legal obligation, not a personal freedom."}, {"id": "ii8", "tag": "II · Civics/Government", "proc": "C. Evaluate & Generalize", "dok": "DOK 4", "stim_title": "Two Views on the Electoral College", "stim_text": "Source A: 'The Electoral College should be abolished. It is undemocratic — in 2000 and 2016, the candidate who won the popular vote did not become president. Every citizen's vote should count equally.'\n\nSource B: 'The Electoral College protects smaller states from being ignored. Without it, candidates would only campaign in large population centers and the concerns of rural America would be overlooked.'", "stim_table": null, "text": "Which statement BEST represents what both sources agree on?", "choices": ["The Electoral College should be abolished immediately.", "The Electoral College always produces the best outcome for democracy.", "The Electoral College has significant effects on how elections work and who holds power.", "Small states benefit the most from the current election system."], "correct": 2, "explain": "Both sources disagree on whether the Electoral College is good or bad — but both acknowledge that it has significant effects on elections. Source A says it can override the popular vote. Source B says it protects smaller states. Neither source denies the system's impact. That shared acknowledgment is the only thing they agree on.", "strategy": "Two-source synthesis: don't pick a side. Find what BOTH sources acknowledge, even if they disagree about whether it's good or bad. Both agree the Electoral College matters — they just disagree on whether that's a good thing."}, {"id": "ii9", "tag": "II · Civics/Government", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "Constitutional Amendment Process", "stim_text": "Amending the U.S. Constitution requires: (1) Proposal — either 2/3 of both houses of Congress, OR a constitutional convention called by 2/3 of state legislatures; AND (2) Ratification — approval by 3/4 of all state legislatures (or state conventions).", "stim_table": null, "text": "Why is it intentionally difficult to amend the U.S. Constitution?", "choices": ["To make sure the President can control what changes are made", "To prevent temporary political majorities from making hasty changes to the fundamental law of the land", "To ensure that only wealthy citizens have influence over the government", "To give courts the final say on all government decisions"], "correct": 1, "explain": "The high thresholds (2/3 to propose, 3/4 to ratify) make amendments difficult by design. The founders wanted to protect the Constitution from frequent or impulsive changes driven by temporary political passions. This ensures amendments reflect broad, lasting consensus rather than a simple majority at any given moment.", "strategy": "Process questions: ask WHY the rule exists. High thresholds in both proposal and ratification exist to build consensus and prevent hasty changes to the country's fundamental law."}, {"id": "ii10", "tag": "II · Civics/Government", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Supreme Court Case Summary", "stim_text": "In Brown v. Board of Education (1954), the Supreme Court unanimously ruled that racial segregation in public schools was unconstitutional. The Court overturned its earlier ruling in Plessy v. Ferguson (1896), which had allowed 'separate but equal' facilities. Chief Justice Warren wrote that separate educational facilities 'are inherently unequal.'", "stim_table": null, "text": "What was the significance of the Brown v. Board of Education decision?", "choices": ["It established the 'separate but equal' doctrine in public schools.", "It gave state governments the power to set their own segregation policies.", "It reversed a previous ruling and declared school segregation unconstitutional.", "It created the Department of Education to oversee school integration."], "correct": 2, "explain": "The passage states Brown v. Board 'overturned' Plessy v. Ferguson and ruled segregation 'unconstitutional.' The earlier ruling (Plessy) had allowed segregation; Brown reversed it. This is explicitly stated in the stimulus.", "strategy": "Court case questions: identify what the court decided and what it changed. 'Overturned' = reversed a previous ruling. That's the key word here."}], "III": [{"id": "iii1", "tag": "III · Economics", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Supply and Demand Graph Description", "stim_text": "A local coffee shop sells coffee at $3 per cup and sells 200 cups per day. The city opens a new coffee shop nearby. Three months later, the original shop now sells 140 cups per day at $3, and has reduced its price to $2.50 to attract more customers.", "stim_table": null, "text": "Which economic principle BEST explains why the original coffee shop lowered its price?", "choices": ["Scarcity of coffee beans drove the price down", "Increased competition reduced demand for the original shop, leading it to lower prices to attract customers", "The government required coffee shops to lower their prices", "Consumer income increased, allowing people to buy more coffee at lower prices"], "correct": 1, "explain": "A new competitor entering the market reduced the original shop's customer base (demand fell from 200 to 140 cups/day). To compete and attract customers back, the shop lowered its price. This is the principle of competition within supply and demand — more sellers competing for the same customers drives prices down.", "strategy": "Economics scenario questions: identify the cause (new competitor) and the effect (lower price). Then match to the economic principle: competition → lower prices."}, {"id": "iii2", "tag": "III · Economics", "proc": "B. Analyze", "dok": "DOK 3", "stim_title": "Economic Data Table", "stim_text": "During a recession, the government introduces a large infrastructure spending program — building roads, bridges, and schools — employing 500,000 workers.", "stim_table": {"headers": ["Indicator", "Before Program", "After Program (1 year)"], "rows": [["Unemployment rate", "9.2%", "7.1%"], ["GDP growth", "−1.3%", "+2.1%"], ["Consumer spending", "$800 billion", "$920 billion"]]}, "text": "Based on the data, what effect did the government spending program most likely have on the economy?", "choices": ["It worsened the recession by increasing government debt", "It had no measurable effect on economic indicators", "It stimulated economic growth, reduced unemployment, and increased consumer spending", "It only helped construction workers and had no broader economic impact"], "correct": 2, "explain": "All three indicators improved: unemployment fell from 9.2% to 7.1%, GDP went from negative to positive growth, and consumer spending increased by $120 billion. The data supports the conclusion that the spending program had a broad positive effect on the economy. This is an example of expansionary fiscal policy.", "strategy": "Data table questions: look at the direction of change for ALL indicators. When all move in a positive direction together, the intervention likely worked. Match the data pattern to the answer."}, {"id": "iii3", "tag": "III · Economics", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "Consumer Credit Scenario", "stim_text": "Maria wants to buy a $1,200 laptop. She has $400 in savings. She considers two options: Option A — use a credit card with 24% annual interest rate and pay $100/month. Option B — save an additional $800 over 8 months and buy with cash.", "stim_table": {"headers": ["Option", "Upfront Cost", "Monthly Cost", "Total Paid", "Time to Get Laptop"], "rows": [["A (Credit)", "$0", "~$100/month", "~$1,400+", "Immediately"], ["B (Save)", "$400 saved", "Save $100/month", "$1,200", "8 months"]]}, "text": "Based on the table, which statement about Option A is most accurate?", "choices": ["Option A costs less overall than Option B", "Option A allows Maria to get the laptop immediately but costs more in total due to interest", "Option A has a lower interest rate than Option B", "Option A requires Maria to wait 8 months"], "correct": 1, "explain": "Option A gives Maria the laptop immediately but costs approximately $1,400+ due to 24% interest charges — more than the $1,200 cash price. Option B costs exactly $1,200 but requires waiting 8 months. Credit is convenient but more expensive; saving is slower but cheaper.", "strategy": "Consumer economics: credit = get it now, pay more total. Saving = wait longer, pay less total. Always look at TOTAL PAID, not just monthly payments."}, {"id": "iii4", "tag": "III · Economics", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "Government Policy Statement", "stim_text": "'To slow down inflation, the Federal Reserve has decided to raise the federal funds interest rate from 0.25% to 4.5% over the course of one year.'", "stim_table": null, "text": "What effect would raising interest rates most likely have on consumer borrowing and spending?", "choices": ["It would increase borrowing because money becomes more valuable", "It would decrease borrowing and spending because loans become more expensive", "It would have no effect on consumer behavior", "It would cause the government to spend more money on social programs"], "correct": 1, "explain": "Higher interest rates make borrowing more expensive — car loans, mortgages, and credit card rates all rise. This discourages borrowing and spending. Less consumer spending slows the economy, which reduces demand and helps bring inflation down. This is the mechanism of contractionary monetary policy.", "strategy": "Monetary policy: raise rates = borrow less = spend less = economy slows = inflation goes down. Lower rates = borrow more = spend more = economy grows = inflation may rise. Know this chain."}, {"id": "iii5", "tag": "III · Economics", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Trade Policy", "stim_text": "Country A produces steel domestically at $800 per ton. Country B can produce and export steel to Country A for $500 per ton. Country A places a 40% tariff on imported steel from Country B.", "stim_table": {"headers": ["Steel Source", "Base Price", "After 40% Tariff", "Final Price"], "rows": [["Country A (domestic)", "$800/ton", "No tariff", "$800/ton"], ["Country B (imported)", "$500/ton", "$200 tariff", "$700/ton"]]}, "text": "Based on the table, what is the PRIMARY effect of Country A's tariff on its domestic steel industry?", "choices": ["It makes imported steel cheaper than domestic steel", "It eliminates all competition from Country B", "It makes imported steel more expensive, giving Country A's domestic producers a price advantage", "It reduces the quality of domestic steel production"], "correct": 2, "explain": "Without the tariff, Country B's steel ($500) would be much cheaper than Country A's ($800). With the 40% tariff, Country B's steel rises to $700 — still cheaper, but the gap narrows significantly. The tariff protects Country A's domestic industry by reducing the price advantage of imports.", "strategy": "Tariff questions: a tariff raises the price of imports, making domestic goods more competitive. Calculate the new price: $500 + 40% = $500 + $200 = $700. Now compare to domestic price ($800). The gap narrowed."}, {"id": "iii6", "tag": "III · Economics", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Supply and Demand: Gasoline Prices", "stim_text": "In June, gasoline demand increases significantly as more people take summer road trips. At the same time, a conflict in a major oil-producing region disrupts global oil supply. Analysts predict gasoline prices will rise sharply.", "stim_table": null, "text": "Which combination of factors explains why analysts predict rising gasoline prices?", "choices": ["Decreased demand and increased supply", "Increased demand and decreased supply", "Decreased demand and decreased supply", "Increased demand and increased supply"], "correct": 1, "explain": "Both factors push prices upward: demand increases (summer travel) AND supply decreases (conflict disrupting oil production). When demand rises and supply falls simultaneously, prices rise sharply. This is a classic supply-and-demand scenario.", "strategy": "Supply and demand price rule: demand up + supply down = prices rise sharply. Demand down + supply up = prices fall. Both moving the same direction = moderate price change."}], "IV": [{"id": "iv1", "tag": "IV · Geography", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Map Reading Scenario", "stim_text": "A map of Louisiana shows the following: a legend indicating blue shading = areas below sea level; brown shading = upland areas; triangles = oil refineries; dots = population centers. New Orleans is shown in blue shading, near the Gulf Coast. Baton Rouge is shown in lighter shading, further inland and upriver.", "stim_table": null, "text": "Based on the map description, which conclusion is best supported?", "choices": ["Baton Rouge is more vulnerable to flooding than New Orleans", "New Orleans is located in an area below sea level and near the Gulf, making it more vulnerable to flooding", "All Louisiana cities are located below sea level", "Oil refineries are found only in upland areas"], "correct": 1, "explain": "The map shows New Orleans in blue shading (below sea level) and near the Gulf Coast — both factors that increase flood risk. Baton Rouge is shown in lighter shading further inland, suggesting it sits higher above sea level. The map directly supports the conclusion about New Orleans' flood vulnerability.", "strategy": "Map questions: always use the legend. Blue = below sea level. Near the coast = flood risk. Match the map symbols to the answer choices."}, {"id": "iv2", "tag": "IV · Geography", "proc": "B. Analyze", "dok": "DOK 3", "stim_title": "Migration Data", "stim_text": "Between 1910 and 1970, approximately 6 million Black Americans migrated from the rural South to cities in the North and West — a movement known as the Great Migration. Push factors included racial violence, Jim Crow laws, and limited economic opportunity in the South. Pull factors included factory jobs, higher wages, and (relatively) less overt racial discrimination in Northern cities.", "stim_table": null, "text": "Which factor is correctly classified as a PUSH factor in the Great Migration?", "choices": ["Higher wages in Northern factories", "Greater economic opportunity in Northern cities", "Jim Crow laws enforcing racial segregation in the South", "Shorter distance to travel from the rural South"], "correct": 2, "explain": "Push factors drive people AWAY from their current location. Jim Crow laws were a reason to leave the South — they represent a negative condition pushing people away. Higher wages and economic opportunity in the North are PULL factors — positive conditions attracting people to a new location. Distance is not a push or pull factor.", "strategy": "Push vs. pull: PUSH = negative conditions where you ARE (reasons to leave). PULL = positive conditions where you're GOING (reasons to arrive). Jim Crow laws = reason to leave the South = push factor."}, {"id": "iv3", "tag": "IV · Geography", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "Geographic Influence on History", "stim_text": "The Mississippi River runs through the center of North America, connecting the Great Lakes region to the Gulf of Mexico. Historically, it served as a major transportation route for goods and people, making cities along its banks — including New Orleans, St. Louis, and Memphis — major economic and cultural centers.", "stim_table": null, "text": "Which generalization is BEST supported by this passage?", "choices": ["Rivers have no influence on where cities develop.", "Geographic features like rivers can shape the economic and cultural development of surrounding regions.", "All major American cities were built on rivers.", "The Mississippi River was important only during the 19th century."], "correct": 1, "explain": "The passage describes how the Mississippi River served as a transportation route and directly contributed to the growth of multiple major cities along its banks. This supports the generalization that geographic features (like rivers) influence economic and cultural development. Option A contradicts the passage. Options C and D make overly broad or narrow claims not supported by the text.", "strategy": "Generalization questions: the correct answer captures the broader principle illustrated by the passage without going too far beyond it. 'Rivers can shape development' is supported; 'all cities were on rivers' goes too far."}, {"id": "iv4", "tag": "IV · Geography", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Population Distribution Table", "stim_text": "A demographer studying migration patterns examines population data for two regions.", "stim_table": {"headers": ["Region", "1990 Population", "2020 Population", "Change"], "rows": [["Rural Midwest", "4.2 million", "3.1 million", "−26%"], ["Southwest Sun Belt", "8.5 million", "14.3 million", "+68%"]]}, "text": "Based on the data, what trend is most clearly illustrated?", "choices": ["Population is growing equally in all U.S. regions", "The Midwest has always had a larger population than the Southwest", "Population has shifted from rural Midwest areas to the Southwest Sun Belt region", "The Southwest Sun Belt lost population between 1990 and 2020"], "correct": 2, "explain": "The data shows the rural Midwest lost 26% of its population while the Southwest Sun Belt gained 68%. This clearly illustrates a population shift — people moving from one region to another. The Sun Belt's growth and the Midwest's decline together point to a migration trend.", "strategy": "Population data questions: look at the direction of change in each region. One goes down (−26%), one goes up (+68%). That pattern = population shift from one to the other."}]};
+
+let filteredCards = [...CARDS];
+let fcIdx = 0, fcFlipped = false;
+
+function filterCards(area, btn) {
+  document.querySelectorAll('.fc-filter button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filteredCards = area === 'all' ? [...CARDS] : CARDS.filter(c => c.area === area);
+  fcIdx = 0; fcFlipped = false; renderCard();
+}
+
+function renderCard() {
+  const c = filteredCards[fcIdx];
+  const backMap = { I: 'fc-back1', II: 'fc-back2', III: 'fc-back3', IV: 'fc-back4' };
+  document.getElementById('flashcard').className = 'flashcard ' + (fcFlipped ? backMap[c.area] : 'fc-front');
+  document.getElementById('fc-cat').textContent = c.cat;
+  document.getElementById('fc-term').textContent = c.term;
+  document.getElementById('fc-def').textContent = c.def;
+  const ex = document.getElementById('fc-ex');
+  if (c.ex) { ex.textContent = c.ex; ex.style.display = 'inline-block'; } else { ex.style.display = 'none'; }
+  document.getElementById('fc-front-content').style.display = fcFlipped ? 'none' : 'block';
+  document.getElementById('fc-back-content').style.display = fcFlipped ? 'block' : 'none';
+  document.getElementById('fc-counter').textContent = (fcIdx + 1) + ' / ' + filteredCards.length;
+}
+
+function flipCard() { fcFlipped = !fcFlipped; renderCard(); }
+function nextCard() { fcIdx = (fcIdx + 1) % filteredCards.length; fcFlipped = false; renderCard(); }
+function prevCard() { fcIdx = (fcIdx - 1 + filteredCards.length) % filteredCards.length; fcFlipped = false; renderCard(); }
+renderCard();
+
+let answered = {};
+let progress = { I: { c: 0, t: 0 }, II: { c: 0, t: 0 }, III: { c: 0, t: 0 }, IV: { c: 0, t: 0 } };
+let currentDrill = 'I';
+
+const TAG_CLASS = { I: 'tag1', II: 'tag2', III: 'tag3', IV: 'tag4' };
+const DT_CLASS = { I: 'dt1', II: 'dt2', III: 'dt3', IV: 'dt4' };
+const BAR_COLOR = { I: '#dc2626', II: '#3b82f6', III: '#059669', IV: '#ca8a04' };
+const LABELS = { I: 'I · History', II: 'II · Civics/Gov', III: 'III · Economics', IV: 'IV · Geography' };
+
+function showDrill(key) {
+  currentDrill = key;
+  ['I','II','III','IV'].forEach(k => {
+    const t = document.getElementById('tab-' + k);
+    if (t) t.className = 'drill-tab' + (k === key ? ' ' + DT_CLASS[k] : '');
+  });
+  renderDrill(key);
+}
+
+function buildStimHTML(q) {
+  if (!q.stim_title) return '';
+  let h = '<div class="stimulus"><div class="stim-label">' + q.stim_title + '</div>';
+  if (q.stim_text) h += '<div class="stim-body">' + q.stim_text + '</div>';
+  if (q.stim_table) {
+    h += '<table class="stim-table"><tr>' + q.stim_table.headers.map(hd => '<th>' + hd + '</th>').join('') + '</tr>';
+    q.stim_table.rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>'; });
+    h += '</table>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+
+function renderDrill(key){
+  const qs=QUESTIONS[key];
+  const done=qs.filter(q=>answered[q.id]!==undefined).length;
+  const corr=qs.filter(q=>answered[q.id]===q.correct).length;
+  document.getElementById('prog-text').textContent=done+' of '+qs.length+' answered';
+  document.getElementById('prog-score').textContent=corr+' correct';
+  document.getElementById('prog-bar').style.width=Math.round(done/qs.length*100)+'%';
+  const container=document.getElementById('practice-container');
+  container.innerHTML='';
+  const TAG_MAP=TAG_CLASS||{};
+  qs.forEach(function(q,qi){
+    const isAns=answered[q.id]!==undefined;
+    const card=document.createElement('div');
+    card.className='q-card';
+    card.id='qc-'+q.id;
+    // Meta
+    const meta=document.createElement('div');
+    meta.className='q-meta';
+    const tagSpan=document.createElement('span');
+    tagSpan.className='q-tag '+(TAG_MAP[key]||'');
+    tagSpan.textContent=q.tag;
+    meta.appendChild(tagSpan);
+    const dokSpan=document.createElement('span');
+    dokSpan.className='proc-tag';
+    dokSpan.textContent=q.dok||q.proc||'';
+    meta.appendChild(dokSpan);
+    card.appendChild(meta);
+    // Stimulus
+    if(q.stim_title||q.stim_text||q.stim_table){
+      const stim=document.createElement('div');
+      stim.className='stimulus';
+      if(q.stim_title){const sl=document.createElement('div');sl.className='stim-label';sl.textContent=q.stim_title;stim.appendChild(sl);}
+      if(q.stim_text){const sb=document.createElement('div');sb.className='stim-body';sb.textContent=q.stim_text;stim.appendChild(sb);}
+      if(q.stim_table){
+        const tbl=document.createElement('table');tbl.className='stim-table';
+        const hdr=document.createElement('tr');
+        q.stim_table.headers.forEach(function(h){const th=document.createElement('th');th.textContent=h;hdr.appendChild(th);});
+        tbl.appendChild(hdr);
+        q.stim_table.rows.forEach(function(r){const tr=document.createElement('tr');r.forEach(function(c){const td=document.createElement('td');td.textContent=c;tr.appendChild(td);});tbl.appendChild(tr);});
+        stim.appendChild(tbl);
+      }
+      card.appendChild(stim);
+    }
+    // Question text
+    const qt=document.createElement('div');
+    qt.className='q-text';
+    qt.textContent='Q'+(qi+1)+'. '+q.text;
+    card.appendChild(qt);
+    // Choices
+    const choicesDiv=document.createElement('div');
+    choicesDiv.className='choices';
+    q.choices.forEach(function(c,ci){
+      const btn=document.createElement('button');
+      let cls='choice';
+      if(isAns){if(ci===q.correct)cls+=' correct';else if(ci===answered[q.id])cls+=' wrong';}
+      btn.className=cls;
+      btn.id='ch-'+q.id+'-'+ci;
+      if(isAns)btn.disabled=true;
+      btn.addEventListener('click',function(){answerQ(q.id,ci,q.correct,key);});
+      const letter=document.createElement('span');
+      letter.className='choice-letter';
+      letter.textContent=String.fromCharCode(65+ci)+'.';
+      btn.appendChild(letter);
+      btn.appendChild(document.createTextNode(' '+c));
+      choicesDiv.appendChild(btn);
+    });
+    card.appendChild(choicesDiv);
+    // Explanation
+    const exp=document.createElement('div');
+    exp.className='explanation';
+    exp.id='exp-'+q.id;
+    exp.style.display=isAns?'block':'none';
+    const expTitle=document.createElement('div');
+    expTitle.className='exp-title';
+    expTitle.textContent='Explanation:';
+    exp.appendChild(expTitle);
+    const expText=document.createElement('p');
+    expText.textContent=q.explain;
+    exp.appendChild(expText);
+    const stratDiv=document.createElement('div');
+    stratDiv.className='strategy-note';
+    stratDiv.textContent='Strategy: '+q.strategy;
+    exp.appendChild(stratDiv);
+    card.appendChild(exp);
+    container.appendChild(card);
+  });
+}
+
+function answerQ(qid, chosen, correct, key) {
+  if (answered[qid] !== undefined) return;
+  answered[qid] = chosen;
+  for (let i = 0; i < 4; i++) {
+    const b = document.getElementById('ch-' + qid + '-' + i);
+    if (!b) continue;
+    b.disabled = true;
+    if (i === correct) b.classList.add('correct');
+    else if (i === chosen) b.classList.add('wrong');
+  }
+  document.getElementById('exp-' + qid).style.display = 'block';
+  const qs = QUESTIONS[key];
+  const done = qs.filter(q => answered[q.id] !== undefined).length;
+  const corr = qs.filter(q => answered[q.id] === q.correct).length;
+  progress[key] = { c: corr, t: done };
+  document.getElementById('prog-text').textContent = done + ' of ' + qs.length + ' answered';
+  document.getElementById('prog-score').textContent = corr + ' correct';
+  document.getElementById('prog-bar').style.width = Math.round(done / qs.length * 100) + '%';
+}
+
+function renderTracker() {
+  let barsHtml = '', totalC = 0, totalT = 0;
+  ['I','II','III','IV'].forEach(k => {
+    const v = progress[k];
+    const pct = v.t > 0 ? Math.round(v.c / v.t * 100) : 0;
+    totalC += v.c; totalT += v.t;
+    barsHtml += '<div class="tracker-row">';
+    barsHtml += '<span class="tracker-label">' + LABELS[k] + '</span>';
+    barsHtml += '<div class="tracker-bar-track"><div class="tracker-bar-fill" style="width:' + pct + '%;background:' + BAR_COLOR[k] + '"></div></div>';
+    barsHtml += '<span class="tracker-val">' + (v.t > 0 ? v.c + '/' + v.t : '—') + '</span></div>';
+  });
+  document.getElementById('tracker-bars').innerHTML = barsHtml;
+  const overall = totalT > 0 ? Math.round(totalC / totalT * 100) : 0;
+  let badgeCls = 'badge-fail', badgeTxt = 'Keep going';
+  if (overall >= 65) { badgeCls = 'badge-pass'; badgeTxt = 'On track!'; }
+  else if (overall >= 50) { badgeCls = 'badge-warn'; badgeTxt = 'Getting there'; }
+  const badgeHTML = totalT > 0 ? '<span class="' + badgeCls + '">' + badgeTxt + '</span>' : '—';
+  document.getElementById('tracker-summary').innerHTML =
+    '<div class="ts-card" style="background:#fff5f5"><div class="tn" style="color:#991b1b">' + totalC + '</div><div class="tl" style="color:#991b1b">Questions correct</div></div>' +
+    '<div class="ts-card" style="background:#eff6ff"><div class="tn" style="color:#1e3a8a">' + totalT + '</div><div class="tl" style="color:#1e3a8a">Questions answered</div></div>' +
+    '<div class="ts-card" style="background:#ecfdf5"><div class="tn" style="color:#047857">' + (totalT > 0 ? overall + '%' : '—') + '</div><div class="tl" style="color:#047857">Overall accuracy</div></div>' +
+    '<div class="ts-card" style="background:#fefce8"><div class="tn" style="color:#a16207;font-size:18px">' + badgeHTML + '</div><div class="tl" style="color:#a16207">Goal: 65%+</div></div>';
+}
+
+function resetAll() {
+  if (!confirm('Reset all progress and answers?')) return;
+  answered = {};
+  progress = { I: { c: 0, t: 0 }, II: { c: 0, t: 0 }, III: { c: 0, t: 0 }, IV: { c: 0, t: 0 } };
+  renderDrill(currentDrill);
+  renderTracker();
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active');
+  });
+  if (id === 'tracker') renderTracker();
+  if (id === 'practice') { if (typeof showDrill === 'function') showDrill(currentDrill); }
+}
+
+showDrill('I');
+</script>
+<div class="watermark-bar">Ashley Tate<span>|</span>Adult Ed Study Prep<span>|</span>&copy; 2026 &mdash; All Rights Reserved</div>
+</body>
+</html>
