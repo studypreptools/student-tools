@@ -504,50 +504,94 @@ function toggleRubric() {
   rc.style.display = rc.style.display === 'none' ? 'block' : 'none';
 }
 
-async function scoreEssay() {
+function scoreEssay() {
   const txt = document.getElementById('essay-text').value.trim();
   if (txt.length < 100) { alert('Please write at least a few paragraphs before scoring.'); return; }
+  const wordCount = txt.split(/\s+/).length;
   const fb = document.getElementById('essay-feedback');
   fb.style.display = 'block';
-  fb.innerHTML = '<span class="spinner"></span> Scoring your essay — this may take a moment...';
-  const p = ESSAY_PROMPTS[currentPromptIdx];
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6', max_tokens: 1000,
-        messages: [{ role: 'user', content: 'You are a HiSET essay scorer. Score this essay on the official 1-6 HiSET rubric based on: Development of Central Position, Organization of Ideas, Language Facility, and Writing Conventions.\n\nPrompt topic: ' + p.label + '\n\nPassage 1: ' + p.p1 + '\n\nPassage 2: ' + p.p2 + '\n\nStudent essay:\n' + txt + '\n\nRespond in EXACTLY this format:\nSCORE: [1-6]\nSUMMARY: [1-2 sentence overall assessment]\nSTRENGTHS: [2-3 specific strengths]\nIMPROVEMENTS: [2-3 specific actionable suggestions]\nPASSAGE USE: [Did they use both passages? How well?]\nPASSING: [Yes or No and brief reason]' }]
-      })
-    });
-    const data = await res.json();
-    const reply = data.content && data.content[0] ? data.content[0].text : 'No response received.';
-    const lines = reply.split('\n').filter(l => l.trim());
-    let html = '<h4>Essay Feedback</h4>';
-    lines.forEach(l => {
-      if (l.startsWith('SCORE:')) {
-        const sc = l.replace('SCORE:', '').trim();
-        const n = parseInt(sc);
-        const cls = n >= 2 ? 'badge-pass' : 'badge-fail';
-        html += '<p><strong>Score:</strong> <span class="' + cls + '">' + sc + ' / 6</span></p>';
-      } else if (l.startsWith('SUMMARY:')) {
-        html += '<p style="margin-top:8px">' + l.replace('SUMMARY:', '').trim() + '</p>';
-      } else if (l.startsWith('STRENGTHS:')) {
-        html += '<p style="margin-top:10px"><strong>&#10003; Strengths:</strong><br>' + l.replace('STRENGTHS:', '').trim() + '</p>';
-      } else if (l.startsWith('IMPROVEMENTS:')) {
-        html += '<p style="margin-top:10px"><strong>&#128204; Areas to improve:</strong><br>' + l.replace('IMPROVEMENTS:', '').trim() + '</p>';
-      } else if (l.startsWith('PASSAGE USE:')) {
-        html += '<p style="margin-top:10px"><strong>&#128196; Passage use:</strong><br>' + l.replace('PASSAGE USE:', '').trim() + '</p>';
-      } else if (l.startsWith('PASSING:')) {
-        const pass = l.replace('PASSING:', '').trim();
-        const cls = pass.toLowerCase().startsWith('yes') ? 'badge-pass' : 'badge-fail';
-        html += '<p style="margin-top:10px"><strong>Passing (score &ge; 2):</strong> <span class="' + cls + '">' + pass + '</span></p>';
-      }
-    });
-    fb.innerHTML = html;
-  } catch(e) {
-    fb.innerHTML = '<strong>Could not reach essay scorer.</strong> Make sure you have an internet connection and try again.';
-  }
+
+  fb.innerHTML = `
+  <h4 style="margin-bottom:1rem">&#9997; Self-Score Your Essay</h4>
+  <p style="font-size:13px;color:#555;margin-bottom:1rem">Rate yourself honestly on each category below. Use the descriptions to guide your score. Your total will calculate your estimated HiSET essay score (1&ndash;6).</p>
+
+  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px">A. Development of Central Position</div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px">Did you state a clear argument and support it with specific evidence from BOTH passages?</div>
+    <select id="sc-a" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
+      <option value="">-- Select --</option>
+      <option value="4">Strong (4pts) — Clear claim, well-developed, evidence from both passages</option>
+      <option value="3">Adequate (3pts) — Clear claim, some development, references passages</option>
+      <option value="2">Developing (2pts) — Claim present but weak development or limited passage use</option>
+      <option value="1">Beginning (1pt) — Unclear claim, little development, passages not used</option>
+    </select>
+  </div>
+
+  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px">B. Organization of Ideas</div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px">Does your essay have a clear introduction, body paragraphs, and conclusion? Do ideas flow logically with transitions?</div>
+    <select id="sc-b" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
+      <option value="">-- Select --</option>
+      <option value="4">Strong (4pts) — Clear intro/conclusion, logical order, effective transitions</option>
+      <option value="3">Adequate (3pts) — Generally organized, transitions present but inconsistent</option>
+      <option value="2">Developing (2pts) — Some organization but hard to follow in places</option>
+      <option value="1">Beginning (1pt) — Little organization, ideas seem random</option>
+    </select>
+  </div>
+
+  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px">C. Language Facility</div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px">Is your word choice precise and appropriate? Do you use varied sentence structures?</div>
+    <select id="sc-c" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
+      <option value="">-- Select --</option>
+      <option value="4">Strong (4pts) — Precise word choice, varied sentences, consistent tone</option>
+      <option value="3">Adequate (3pts) — Generally clear, some variety, mostly appropriate tone</option>
+      <option value="2">Developing (2pts) — Basic vocabulary, repetitive sentences, tone inconsistent</option>
+      <option value="1">Beginning (1pt) — Vague words, simple/repetitive sentences</option>
+    </select>
+  </div>
+
+  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px">D. Writing Conventions</div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px">How is your grammar, punctuation, spelling, and capitalization?</div>
+    <select id="sc-d" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
+      <option value="">-- Select --</option>
+      <option value="4">Strong (4pts) — Few or no errors, errors don't interfere with meaning</option>
+      <option value="3">Adequate (3pts) — Some errors but meaning is always clear</option>
+      <option value="2">Developing (2pts) — Frequent errors that sometimes interfere with meaning</option>
+      <option value="1">Beginning (1pt) — Many errors that make the essay hard to understand</option>
+    </select>
+  </div>
+
+  <div id="essay-score-result" style="display:none;padding:1rem;background:#f0fdf4;border-radius:10px;border-left:3px solid #16a34a;margin-top:0.5rem"></div>
+  `;
+}
+
+function calcEssayScore() {
+  const a = parseInt(document.getElementById('sc-a').value) || 0;
+  const b = parseInt(document.getElementById('sc-b').value) || 0;
+  const c = parseInt(document.getElementById('sc-c').value) || 0;
+  const d = parseInt(document.getElementById('sc-d').value) || 0;
+  if (!a || !b || !c || !d) return;
+
+  const total = a + b + c + d;
+  let score, label, tips;
+
+  if (total >= 14) { score = 6; label = 'Exceptional'; tips = 'Outstanding work! Your essay shows strong development, clear organization, precise language, and solid conventions. You are well prepared for the HiSET essay.'; }
+  else if (total >= 12) { score = 5; label = 'Strong'; tips = 'Great essay! Focus on making your passage evidence even more specific and vary your sentence structures a bit more to push toward a 6.'; }
+  else if (total >= 10) { score = 4; label = 'Adequate'; tips = 'Solid effort. Strengthen your argument by adding more specific quotes or details from both passages. Work on smoother transitions between paragraphs.'; }
+  else if (total >= 8) { score = 3; label = 'Developing'; tips = 'Your essay has potential. Make sure your thesis is stated clearly in the first paragraph. Add at least one specific detail from each passage to support your claim.'; }
+  else if (total >= 6) { score = 2; label = 'Beginning'; tips = 'Focus on three things: (1) Write a clear one-sentence thesis stating your position. (2) Use at least one specific detail from each passage. (3) Write an intro and a conclusion.'; }
+  else { score = 1; label = 'Needs Work'; tips = 'Start over with a plan: decide your position, write one clear thesis sentence, then write 2-3 body paragraphs each with one reason and one piece of evidence from the passages.'; }
+
+  const passing = score >= 2;
+  const cls = passing ? 'badge-pass' : 'badge-fail';
+  const result = document.getElementById('essay-score-result');
+  result.style.display = 'block';
+  result.innerHTML =
+    '<p style="font-size:16px;font-weight:700;margin-bottom:8px">Estimated score: <span class="' + cls + '">' + score + ' / 6 &mdash; ' + label + '</span></p>' +
+    '<p style="font-size:13px;color:#444;margin-bottom:8px">' + tips + '</p>' +
+    '<p style="font-size:12px;color:#888">Passing = 2 or higher &middot; Raw points: ' + total + '/16</p>';
 }
 
 function renderTracker() {
