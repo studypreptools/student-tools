@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accuplacer QAS Math — Study Tool</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f0;color:#1a1a1a;font-size:15px;line-height:1.6}
+.app{max-width:780px;margin:0 auto;padding:1rem 1rem 3rem}
+.top-bar{background:#1e3a5f;color:#fff;padding:1.25rem 1.5rem;border-radius:12px;margin-bottom:1.25rem}
+.top-bar h1{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px}
+.top-bar p{font-size:13px;color:#bfdbfe;line-height:1.7}
+.info-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:1rem}
+.info-box{background:rgba(255,255,255,0.15);border-radius:8px;padding:9px;text-align:center}
+.info-lbl{font-size:10px;color:#bfdbfe;margin-bottom:2px}
+.info-val{font-size:16px;font-weight:700;color:#fff}
+.alert{background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1.25rem;font-size:13px;color:#78350f;line-height:1.75}
+.alert strong{display:block;font-size:14px;margin-bottom:4px}
+.main-nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.25rem;border-bottom:1px solid #e0e0d8;padding-bottom:1rem}
+.mnav{padding:7px 13px;font-size:12px;font-weight:600;border:1px solid #ccc;border-radius:8px;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all .15s}
+.mnav:hover{background:#f0f0e8}
+.mnav.on{background:#1e3a5f;border-color:#1e3a5f;color:#fff}
+.page{display:none}.page.on{display:block}
+.sec-lbl{font-size:11px;font-weight:700;color:#777;letter-spacing:.08em;text-transform:uppercase;margin:1.25rem 0 .65rem}
+.tip{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.85rem}
+.tip h3{font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:5px}
+.tip p,.tip li{font-size:13px;color:#1e40af;line-height:1.8}
+.tip ol,.tip ul{padding-left:1.1rem}
+.warn{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.85rem}
+.warn h3{font-size:13px;font-weight:700;color:#c2410c;margin-bottom:5px}
+.warn p,.warn li{font-size:13px;color:#9a3412;line-height:1.8}
+.warn ul{padding-left:1.1rem}
+/* filter row */
+.filter-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1rem}
+.f-btn{padding:6px 12px;font-size:12px;font-weight:600;border:1px solid #ccc;border-radius:20px;cursor:pointer;background:#fff;color:#555;font-family:inherit}
+.f-btn:hover{background:#f0f0e8}
+.f-btn.on{background:#1e3a5f;border-color:#1e3a5f;color:#fff}
+/* progress */
+.prog-info{display:flex;justify-content:space-between;font-size:11px;color:#777;margin-bottom:.3rem}
+.prog-wrap{background:#e5e5e0;border-radius:8px;height:7px;margin-bottom:.85rem;overflow:hidden}
+.prog-bar{height:7px;border-radius:8px;background:#1e3a5f;transition:width .4s}
+/* question cards */
+.pq-card{background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:.85rem}
+.pq-meta{display:flex;gap:7px;align-items:center;margin-bottom:.75rem;flex-wrap:wrap}
+.pq-num{font-size:11px;font-weight:600;color:#777}
+.pq-cat{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px}
+.cat-rn{background:#dbeafe;color:#1e40af}
+.cat-rp{background:#ede9fe;color:#5b21b6}
+.cat-le{background:#d1fae5;color:#065f46}
+.cat-gl{background:#fef3c7;color:#92400e}
+.cat-ps{background:#fce7f3;color:#9d174d}
+.cat-gd{background:#e0f2fe;color:#0c4a6e}
+/* context box — mimics the real QAS reference text box */
+.ctx-box{background:#f8f8f4;border:1px solid #d4d4c8;border-radius:8px;padding:.85rem 1rem;margin-bottom:.85rem;font-size:13px;line-height:1.9;color:#222}
+.ctx-box .ctx-lbl{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem;display:block}
+.ctx-box table{border-collapse:collapse;width:100%;margin-top:.4rem;font-size:13px}
+.ctx-box th{background:#e5e5e0;padding:5px 8px;text-align:left;border:1px solid #ccc;font-weight:600}
+.ctx-box td{padding:5px 8px;border:1px solid #ccc}
+.pq-text{font-size:14px;line-height:1.85;margin-bottom:.85rem;color:#1a1a1a}
+.opts{list-style:none;display:flex;flex-direction:column;gap:6px}
+.opts li button{width:100%;text-align:left;padding:10px 14px;font-size:13px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;cursor:pointer;line-height:1.55;font-family:inherit;transition:background .1s,border-color .1s}
+.opts li button:hover:not(:disabled){background:#f5f5f0;border-color:#bbb}
+.opts li button.cr{background:#dcfce7;border-color:#16a34a;color:#14532d;font-weight:600}
+.opts li button.cw{background:#fee2e2;border-color:#dc2626;color:#7f1d1d}
+.opts li button:disabled{cursor:default}
+.fb{margin-top:.75rem;font-size:13px;line-height:1.75;padding:10px 14px;border-radius:8px;display:none}
+.fb.show{display:block}
+.fb-ok{background:#dcfce7;color:#14532d;border:1px solid #86efac}
+.fb-no{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5}
+/* score summary */
+.score-box{background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1.5rem;text-align:center;margin-top:1rem;display:none}
+.score-big{font-size:36px;font-weight:700;margin:.5rem 0}
+.green{color:#15803d}.red{color:#b91c1c}
+.restart-btn{padding:9px 22px;font-size:13px;font-weight:600;border:1px solid #1e3a5f;border-radius:8px;cursor:pointer;background:#fff;color:#1e3a5f;margin-top:.75rem;font-family:inherit}
+.restart-btn:hover{background:#eff6ff}
+/* concept cards */
+.card{background:#fff;border:1px solid #e0e0d8;border-radius:12px;margin-bottom:.75rem;overflow:hidden}
+.card-head{display:flex;align-items:center;gap:8px;padding:.85rem 1.1rem;cursor:pointer;user-select:none}
+.card-head:hover{background:#fafaf7}
+.card-title{font-size:14px;font-weight:600;flex:1}
+.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.b-hot{background:#fef3c7;color:#92400e}.b-mid{background:#d1fae5;color:#065f46}
+.chev{font-size:16px;color:#888;transition:transform .2s}
+.card-body{display:none;padding:0 1.1rem .9rem;border-top:1px solid #f0f0e8}
+.card-body.open{display:block}
+.chev.open{transform:rotate(180deg)}
+.rule-body{font-size:13px;color:#444;line-height:1.9;margin-top:.7rem}
+.rule-body strong{font-weight:600;color:#1a1a1a}
+.formula{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:13px;font-family:Georgia,serif;margin:8px 0;color:#78350f;line-height:2.1}
+.ex{margin-top:8px;background:#fafaf5;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.95;border:1px solid #eee}
+.ex-lbl{font-size:10px;font-weight:700;margin-bottom:2px;color:#999}
+.ok2{color:#15803d}
+/* calc */
+.calc-wrap{background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem;margin-bottom:1rem;max-width:270px}
+.calc-display{background:#1a1a1a;color:#4ade80;font-family:monospace;font-size:20px;padding:10px 12px;border-radius:8px;text-align:right;margin-bottom:8px;min-height:44px;word-break:break-all}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.calc-btn{padding:11px;font-size:14px;border:1px solid #e0e0d8;border-radius:7px;cursor:pointer;background:#f5f5f0;color:#1a1a1a;font-family:monospace;font-weight:600}
+.calc-btn:hover{background:#e5e5e0}
+.calc-btn.op{background:#dbeafe;color:#1d4ed8}
+.calc-btn.eq{background:#1e3a5f;color:#fff}
+.calc-btn.cl{background:#fee2e2;color:#b91c1c}
+/* cheat sheet */
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.65rem;margin-top:.65rem}
+.cs-box{background:#fff;border:1px solid #e0e0d8;border-radius:8px;padding:9px 12px}
+.cs-box h4{font-size:12px;font-weight:700;margin-bottom:5px}
+.cs-box ul{font-size:12px;color:#555;line-height:2;padding-left:.9rem}
+
+.watermark-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#1a1a1a;color:#fff;
+  text-align:center;font-size:12px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  padding:8px 16px;z-index:9999;
+  letter-spacing:0.03em;opacity:0.92;
+}
+.watermark-bar span{opacity:0.45;margin:0 8px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="top-bar">
+  <h1>Accuplacer QAS Math — Study Tool</h1>
+  <p>Quantitative Reasoning, Algebra &amp; Statistics &bull; Built to match the real test: word problems, real-world scenarios, graph/table interpretation</p>
+  <div class="info-row">
+    <div class="info-box"><div class="info-lbl">Questions</div><div class="info-val">21</div></div>
+    <div class="info-box"><div class="info-lbl">Format</div><div class="info-val">MC</div></div>
+    <div class="info-box"><div class="info-lbl">Score range</div><div class="info-val">200–300</div></div>
+    <div class="info-box"><div class="info-lbl">Adaptive</div><div class="info-val">Yes</div></div>
+  </div>
+</div>
+
+<div class="alert">
+  <strong>&#9888; How the real QAS test actually works</strong>
+  Questions are almost always presented as <strong>real-world word problems or scenario-based situations</strong> — not bare equations. You might be asked about a plumber's hourly rate, a graph of a car's fuel usage, a recipe ratio, or a probability situation. You need to read carefully, identify what is being asked, and set up the math yourself. This tool is built to match that format exactly.
+</div>
+
+<div class="main-nav">
+  <button class="mnav on" onclick="goPage('home',this)">&#8962; Home</button>
+  <button class="mnav" onclick="goPage('practice',this)">&#9998; Practice</button>
+  <button class="mnav" onclick="goPage('concepts',this)">&#128214; Key concepts</button>
+  <button class="mnav" onclick="goPage('calculator',this)">&#128290; Calculator</button>
+  <button class="mnav" onclick="goPage('strategy',this)">&#9733; Strategy</button>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page on">
+  <div class="tip">
+    <h3>&#128270; What the QAS test covers</h3>
+    <p>The test has 21 multiple-choice questions spread across six skill areas:</p>
+    <ul style="margin-top:6px">
+      <li><strong>Rational numbers</strong> — fractions, decimals, percents, absolute value, number operations</li>
+      <li><strong>Ratios &amp; proportional reasoning</strong> — unit rates, proportions, percent change, unit conversions</li>
+      <li><strong>Linear equations &amp; expressions</strong> — writing and solving equations from word problems, inequalities</li>
+      <li><strong>Graphing &amp; linear functions</strong> — slope, y-intercept, reading graphs, interpreting linear models</li>
+      <li><strong>Probability &amp; statistics</strong> — basic probability, mean/median/mode, interpreting data displays</li>
+      <li><strong>Geometry &amp; measurement</strong> — area, perimeter, volume, the Pythagorean theorem, coordinate geometry</li>
+    </ul>
+  </div>
+
+  <div class="warn">
+    <h3>&#9888; The most important thing to understand about this test</h3>
+    <p>The QAS test rarely asks you to "solve 4x − 5 = 19." Instead it says something like: <em>"A contractor charges $45 per hour plus a $65 travel fee. A customer's bill was $245. How many hours did the contractor work?"</em> You have to read the scenario, identify what is unknown, set up the equation, and solve it. <strong>Reading carefully and translating words into math is the core skill.</strong></p>
+  </div>
+
+  <div class="tip">
+    <h3>&#128161; How to use this tool</h3>
+    <ol>
+      <li><strong>Practice tab</strong> — 20 word-problem-style questions that mirror the real test. Filter by topic. Tap any answer for instant feedback and a full worked explanation.</li>
+      <li><strong>Key Concepts tab</strong> — formulas, examples, and word-problem translation tips for every topic.</li>
+      <li><strong>Calculator tab</strong> — on-screen calculator (some QAS questions allow a calculator — a calculator icon appears on those).</li>
+      <li><strong>Strategy tab</strong> — how to approach word problems step by step, plus a night-before cheat sheet.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- PRACTICE -->
+<div id="practice" class="page">
+  <div class="filter-row" id="filter-row">
+    <button class="f-btn on" onclick="filterQ('all',this)">All 21</button>
+    <button class="f-btn" onclick="filterQ('rn',this)">Rational numbers</button>
+    <button class="f-btn" onclick="filterQ('rp',this)">Ratios &amp; proportions</button>
+    <button class="f-btn" onclick="filterQ('le',this)">Linear equations</button>
+    <button class="f-btn" onclick="filterQ('gl',this)">Graphs &amp; functions</button>
+    <button class="f-btn" onclick="filterQ('ps',this)">Probability &amp; stats</button>
+    <button class="f-btn" onclick="filterQ('gd',this)">Geometry</button>
+  </div>
+  <div class="prog-info"><span id="prog-label">0 of 20 answered</span><span id="prog-score">Score: 0 correct</span></div>
+  <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+  <div id="qlist"></div>
+  <div class="score-box" id="score-box">
+    <div style="font-size:14px;color:#555">Practice complete!</div>
+    <div class="score-big" id="score-big"></div>
+    <div style="font-size:13px;color:#555;max-width:440px;margin:.5rem auto;line-height:1.7" id="score-msg"></div>
+    <button class="restart-btn" onclick="restartAll()">&#8635; Try again</button>
+  </div>
+</div>
+
+<!-- CONCEPTS -->
+<div id="concepts" class="page">
+  <div class="tip"><h3>&#128214; Key concept: translating words into math</h3>
+  <p>Every topic on the QAS shows up in word-problem form. Before you can solve, you have to translate. Study the phrase-to-symbol conversions in the Strategy tab alongside these concept cards.</p></div>
+
+  <div class="sec-lbl">Rational numbers &amp; operations</div>
+  <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Tested</span><span class="card-title">Fractions, decimals, percents &amp; absolute value</span><span class="chev">&#8964;</span></div>
+  <div class="card-body"><div class="rule-body">
+  <strong>Converting:</strong> Fraction → decimal: divide top by bottom (3/4 = 0.75). Decimal → percent: multiply by 100 (0.75 = 75%). Percent → decimal: divide by 100 (35% = 0.35).<br><br>
+  <strong>Absolute value</strong> |x| = the distance from zero — always positive or zero. |−7| = 7. |7| = 7.<br><br>
+  <strong>Operations with negatives:</strong> negative × negative = positive. negative × positive = negative.
+  </div>
+  <div class="ex"><div class="ex-lbl ok2">Real test style: The temperature dropped from −3°F to −18°F. What is the absolute difference?</div><div class="ok2">|−18 − (−3)| = |−18 + 3| = |−15| = 15°F ✓</div></div>
+  </div></div>
+
+  <div class="sec-lbl">Ratios, rates &amp; proportions</div>
+  <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Setting up and solving proportions</span><span class="chev">&#8964;</span></div>
+  <div class="card-body"><div class="rule-body">A proportion says two ratios are equal. Cross-multiply to solve. <strong>Always label what each number represents</strong> so you set it up correctly.</div>
+  <div class="formula">a/b = c/d &rarr; a &times; d = b &times; c</div>
+  <div class="ex"><div class="ex-lbl ok2">Real test style: A recipe uses 3 cups of oats for every 2 cups of honey. How many cups of honey are needed for 10 cups of oats?</div><div class="ok2">3/2 = 10/x → 3x = 20 → x = 20/3 ≈ 6.67 cups ✓</div></div>
+  </div></div>
+
+  <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Percent change &amp; unit conversions</span><span class="chev">&#8964;</span></div>
+  <div class="card-body">
+  <div class="formula">% change = (New − Old) ÷ Old × 100<br>Unit rate = total amount ÷ number of units</div>
+  <div class="ex"><div class="ex-lbl ok2">Real test style: A store raised a price from $40 to $52. What was the percent increase?</div><div class="ok2">(52 − 40) ÷ 40 × 100 = 12 ÷ 40 × 100 = 30% increase ✓</div></div>
+  </div></div>
+
+  <div class="sec-lbl">Linear equations &amp; expressions</div>
+  <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Most tested</span><span class="card-title">Writing equations from word problems</span><span class="chev">&#8964;</span></div>
+  <div class="card-body"><div class="rule-body">
+  <strong>Step 1:</strong> Identify the unknown — write "let x = ___"<br>
+  <strong>Step 2:</strong> Translate key phrases into math operations<br>
+  <strong>Step 3:</strong> Write the equation<br>
+  <strong>Step 4:</strong> Solve, then verify your answer makes sense in context
+  </div>
+  <div class="ex"><div class="ex-lbl ok2">Real test style: A cell phone plan charges $25/month plus $0.10 per text. Last month the bill was $43. How many texts were sent?</div><div class="ok2">Let t = number of texts<br>25 + 0.10t = 43 → 0.10t = 18 → t = 180 texts ✓</div></div>
+  </div></div>
+
+  <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Common</span><span class="card-title">Inequalities in context</span><span class="chev">&#8964;</span></div>
+  <div class="card-body"><div class="rule-body">Solve like equations — except <strong>flip the inequality sign when multiplying or dividing by a negative.</strong><br><br>"At least" → ≥ &nbsp; "At most" / "no more than" → ≤ &nbsp; "More than" → &gt; &nbsp; "Less than" → &lt;</div>
+  <div class="ex"><div class="ex-lbl ok2">Real test style: A student needs to earn at least 360 points over 4 tests to get a B. She scored 82, 91, and 88. What is the minimum score she needs on the 4th test?</div><div class="ok2">82 + 91 + 88 + x ≥ 360 → 261 + x ≥ 360 → x ≥ 99 ✓</div></div>
+  </div></div>
+
+  <div class="sec-lbl">Graphs &amp; linear functions</div>
+  <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Slope &amp; y-intercept in real-world context</span><span class="chev">&#8964;</span></div>
+  <div class="card-body">
+  <div class="formula">y = mx + b &nbsp; (m = slope/rate, b = starting value/y-intercept)<br>Slope = (y&#x2082; − y&#x2081;) ÷ (x&#x2082; − x&#x2081;) = rise ÷ run</div>
+  <div class="rule-body" style="margin-top:8px">On the QAS, slope and y-intercept are almost always described as real-world rates. <strong>Slope = the rate of change</strong> (cost per hour, miles per gallon). <strong>Y-intercept = the starting value</strong> (flat fee, initial amount).</div>
+  <div class="ex"><div class="ex-lbl ok2">Real test style: A graph shows a taxi fare. The line crosses the y-axis at $2.50 and passes through (4, $10.50). What is the cost per mile?</div><div class="ok2">Slope = (10.50 − 2.50) ÷ (4 − 0) = 8 ÷ 4 = $2.00 per mile ✓</div></div>
+  </div></div>
+
+  <div class="sec-lbl">Probability &amp; statistics</div>
+  <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Tested</span><span class="card-title">Probability &amp; mean/median in context</span><span class="chev">&#8964;</span></div>
+  <div class="card-body">
+  <div class="formula">Probability = favorable outcomes ÷ total possible outcomes<br>Mean = sum of values ÷ count of values<br>Median = middle value when sorted (avg of two middle if even)</div>
+  <div class="ex"><div class="ex-lbl ok2">Real test style: A bag has 4 red, 6 blue, and 2 yellow chips. One chip is drawn at random. What is the probability it is NOT red?</div><div class="ok2">Total = 12. P(red) = 4/12. P(NOT red) = 1 − 4/12 = 8/12 = 2/3 ✓</div></div>
+  </div></div>
+
+  <div class="sec-lbl">Geometry &amp; measurement</div>
+  <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Tested</span><span class="card-title">Area, perimeter, volume &amp; Pythagorean theorem</span><span class="chev">&#8964;</span></div>
+  <div class="card-body">
+  <div class="formula">Rectangle: Area = l×w &nbsp; Perimeter = 2l+2w<br>Triangle: Area = ½×b×h<br>Circle: Area = πr² &nbsp; Circumference = 2πr<br>Pythagorean theorem (right triangles): a²+b²=c²</div>
+  <div class="ex"><div class="ex-lbl ok2">Real test style: A rectangular floor is 14 ft long and 9 ft wide. Tile costs $3.50 per sq ft. What is the total cost to tile the floor?</div><div class="ok2">Area = 14 × 9 = 126 sq ft. Cost = 126 × $3.50 = $441 ✓</div></div>
+  </div></div>
+</div>
+
+<!-- CALCULATOR -->
+<div id="calculator" class="page">
+  <div class="tip"><h3>&#128290; About the calculator on the QAS</h3><p>On the real Accuplacer QAS, some questions allow an on-screen calculator — a calculator icon appears in the top right corner of those specific questions. Questions without the icon must be done without a calculator. Practice both ways: use the calculator below for multi-step problems, but also practice estimating and computing mentally.</p></div>
+  <div class="calc-wrap">
+    <div class="calc-display" id="calc-display">0</div>
+    <div class="calc-grid">
+      <button class="calc-btn cl" onclick="calcClear()">C</button>
+      <button class="calc-btn cl" onclick="calcDel()">&#8592;</button>
+      <button class="calc-btn op" onclick="calcOp('%')">%</button>
+      <button class="calc-btn op" onclick="calcOp('/')">&#247;</button>
+      <button class="calc-btn" onclick="calcNum('7')">7</button>
+      <button class="calc-btn" onclick="calcNum('8')">8</button>
+      <button class="calc-btn" onclick="calcNum('9')">9</button>
+      <button class="calc-btn op" onclick="calcOp('*')">&#215;</button>
+      <button class="calc-btn" onclick="calcNum('4')">4</button>
+      <button class="calc-btn" onclick="calcNum('5')">5</button>
+      <button class="calc-btn" onclick="calcNum('6')">6</button>
+      <button class="calc-btn op" onclick="calcOp('-')">&#8722;</button>
+      <button class="calc-btn" onclick="calcNum('1')">1</button>
+      <button class="calc-btn" onclick="calcNum('2')">2</button>
+      <button class="calc-btn" onclick="calcNum('3')">3</button>
+      <button class="calc-btn op" onclick="calcOp('+')">+</button>
+      <button class="calc-btn" style="grid-column:span 2" onclick="calcNum('0')">0</button>
+      <button class="calc-btn" onclick="calcNum('.')">.</button>
+      <button class="calc-btn eq" onclick="calcEquals()">=</button>
+    </div>
+  </div>
+</div>
+
+<!-- STRATEGY -->
+<div id="strategy" class="page">
+  <div class="tip"><h3>&#128221; Step-by-step approach for every QAS word problem</h3>
+  <ol>
+    <li><strong>Read the whole problem once</strong> before doing any math — understand the situation.</li>
+    <li><strong>Identify what the question is actually asking</strong> — underline the question sentence.</li>
+    <li><strong>Name the unknown</strong> — write "let x = ___" before writing any equation.</li>
+    <li><strong>Translate words into math</strong> — use the key phrase list below.</li>
+    <li><strong>Solve, then check</strong> — does your answer make sense in the real-world context?</li>
+    <li><strong>Eliminate wrong answer choices first</strong> — if two look close, re-read the question.</li>
+  </ol>
+  </div>
+
+  <div class="sec-lbl">Key phrase translations</div>
+  <div style="background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.85rem;font-size:13px;color:#444;line-height:2.5">
+    <strong>is / was / equals / will be / costs</strong> &rarr; =<br>
+    <strong>sum / total / increased by / more than / added to</strong> &rarr; +<br>
+    <strong>difference / less than / decreased by / reduced by</strong> &rarr; −<br>
+    <strong>product / times / of / multiplied by / per</strong> &rarr; &times;<br>
+    <strong>quotient / divided by / ratio of / out of / split evenly</strong> &rarr; &divide;<br>
+    <strong>at least / minimum / no less than</strong> &rarr; &ge;<br>
+    <strong>at most / maximum / no more than / cannot exceed</strong> &rarr; &le;<br>
+    <strong>more than / exceeds / greater than</strong> &rarr; &gt;<br>
+    <strong>fewer than / less than / under</strong> &rarr; &lt;
+  </div>
+
+  <div class="sec-lbl">Reading graphs and tables — quick checklist</div>
+  <div style="background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.85rem;font-size:13px;color:#444;line-height:2.3">
+    &#10003; Read the title first — what is being measured?<br>
+    &#10003; Read the axis labels — what do x and y represent? What are the units?<br>
+    &#10003; Find the slope (rate of change) between two labeled points<br>
+    &#10003; Find the y-intercept — what is the starting value when x = 0?<br>
+    &#10003; Only use what the graph/table shows — don\'t add outside information
+  </div>
+
+  <div class="sec-lbl">Night-before cheat sheet</div>
+  <div class="cs-grid">
+    <div class="cs-box"><h4>Proportions</h4><ul><li>Set up: a/b = c/d</li><li>Cross-multiply: ad = bc</li><li>Label every number</li></ul></div>
+    <div class="cs-box"><h4>% change</h4><ul><li>(New−Old)÷Old×100</li><li>Increase: New &gt; Old</li><li>Decrease: New &lt; Old</li></ul></div>
+    <div class="cs-box"><h4>Slope</h4><ul><li>m = (y₂−y₁)÷(x₂−x₁)</li><li>Slope = rate of change</li><li>y-intercept = start value</li></ul></div>
+    <div class="cs-box"><h4>Linear equations</h4><ul><li>y = mx + b</li><li>m = rate (per hour, per mile)</li><li>b = flat fee or start</li></ul></div>
+    <div class="cs-box"><h4>Probability</h4><ul><li>P = favorable ÷ total</li><li>P(not A) = 1 − P(A)</li><li>Always 0 to 1</li></ul></div>
+    <div class="cs-box"><h4>Geometry</h4><ul><li>Rect area = l×w</li><li>Circle area = πr²</li><li>Pyth: a²+b²=c²</li></ul></div>
+    <div class="cs-box"><h4>Mean/Median</h4><ul><li>Mean = sum÷count</li><li>Sort first for median</li><li>Outlier pulls mean</li></ul></div>
+    <div class="cs-box"><h4>Adaptive test tip</h4><ul><li>Early Qs matter most</li><li>Take time on first 5–8</li><li>Slow = more accurate</li></ul></div>
+  </div>
+
+  <div class="tip" style="margin-top:1rem"><h3>&#128279; Free official Accuplacer practice</h3><p>The College Board provides free official QAS sample questions at <strong>accuplacer.collegeboard.org</strong>. Create a free account and take the official sample test — it is made by the same people who write the real exam and is the most accurate practice available.</p></div>
+</div>
+
+</div><!-- end app -->
+
+<script>
+// ── Navigation ──
+function goPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.mnav').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='practice')buildQuestions('all');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function tog(head){
+  const b=head.nextElementSibling,c=head.querySelector('.chev');
+  const open=b.classList.toggle('open');c.classList.toggle('open',open);
+}
+
+// ── Question bank — all word-problem / context based ──
+const QS=[
+  // RATIONAL NUMBERS
+  {cat:'rn',catLabel:'Rational numbers',
+   context:'',
+   q:'A diver is at an elevation of −42 feet relative to sea level. She ascends 17 feet, then descends 8 feet. What is her final elevation?',
+   opts:['−33 feet','−25 feet','−67 feet','−51 feet'],ans:0,
+   exp:'Start at −42. Ascend 17: −42 + 17 = −25. Descend 8: −25 − 8 = −33 feet. ✓ Work through each step in order — don\'t try to combine them all at once.'},
+
+  {cat:'rn',catLabel:'Rational numbers',
+   context:'',
+   q:'A student answered 34 out of 40 questions correctly on a test. What percent of the questions did the student answer correctly?',
+   opts:['75%','80%','85%','90%'],ans:2,
+   exp:'Percent correct = (34 ÷ 40) × 100 = 0.85 × 100 = 85%. ✓ To convert a fraction to a percent, divide the part by the whole, then multiply by 100.'},
+
+  {cat:'rn',catLabel:'Rational numbers',
+   context:'The table below shows overnight low temperatures (°F) recorded over five days.\n<table><tr><th>Day</th><th>Low Temp (°F)</th></tr><tr><td>Monday</td><td>−12</td></tr><tr><td>Tuesday</td><td>−7</td></tr><tr><td>Wednesday</td><td>3</td></tr><tr><td>Thursday</td><td>−15</td></tr><tr><td>Friday</td><td>8</td></tr></table>',
+   q:'What is the absolute value of the difference between the highest and lowest temperatures recorded that week?',
+   opts:['20°F','23°F','11°F','15°F'],ans:1,
+   exp:'Highest = 8°F (Friday). Lowest = −15°F (Thursday). Difference = 8 − (−15) = 8 + 15 = 23°F. The absolute value of 23 is 23°F. ✓ When subtracting a negative number, add its positive value.'},
+
+  // RATIOS & PROPORTIONS
+  {cat:'rp',catLabel:'Ratios & proportions',
+   context:'',
+   q:'Jacoby followed a recipe that requires 2 cups of water for every 3 cups of flour. If he used 12 cups of flour, how many cups of water does he need?',
+   opts:['6 cups','8 cups','9 cups','18 cups'],ans:1,
+   exp:'Set up a proportion: 2/3 = x/12. Cross-multiply: 3x = 24. x = 8 cups. ✓ Label each ratio clearly (water/flour = water/flour) so you don\'t accidentally flip it.'},
+
+  {cat:'rp',catLabel:'Ratios & proportions',
+   context:'',
+   q:'A car travels 195 miles on 6.5 gallons of gas. At the same rate, how many gallons would be needed to travel 420 miles?',
+   opts:['12 gallons','13 gallons','14 gallons','15 gallons'],ans:2,
+   exp:'Find the unit rate first: 195 ÷ 6.5 = 30 miles per gallon. Then: 420 ÷ 30 = 14 gallons. ✓ Or set up a proportion: 195/6.5 = 420/x → 195x = 2730 → x = 14. Both methods work.'},
+
+  {cat:'rp',catLabel:'Ratios & proportions',
+   context:'',
+   q:'A store raised the price of a jacket from $60 to $78. What was the percent increase in price?',
+   opts:['18%','25%','30%','23%'],ans:2,
+   exp:'% change = (New − Old) ÷ Old × 100 = (78 − 60) ÷ 60 × 100 = 18 ÷ 60 × 100 = 30%. ✓ Always divide by the ORIGINAL (old) price — not the new price.'},
+
+  {cat:'rp',catLabel:'Ratios & proportions',
+   context:'A factory produces 840 units in an 8-hour shift with 6 workers.',
+   q:'At the same rate, how many units would 9 workers produce in a 10-hour shift?',
+   opts:['1,260 units','1,575 units','1,680 units','1,890 units'],ans:1,
+   exp:'First find the rate per worker per hour: 840 ÷ 6 ÷ 8 = 17.5 units per worker per hour. Then: 17.5 × 9 workers × 10 hours = 1,575 units. ✓'},
+
+  // LINEAR EQUATIONS
+  {cat:'le',catLabel:'Linear equations',
+   context:'',
+   q:'A contractor charges a flat fee of $65 plus $45 per hour for labor. A customer received a bill for $245. How many hours did the contractor work?',
+   opts:['3 hours','4 hours','5 hours','6 hours'],ans:1,
+   exp:'Let h = hours. Set up: 65 + 45h = 245. Subtract 65: 45h = 180. Divide: h = 4 hours. ✓ Check: 65 + 45(4) = 65 + 180 = $245 ✓'},
+
+  {cat:'le',catLabel:'Linear equations',
+   context:'',
+   q:'Three consecutive even integers have a sum of 78. What is the largest of the three integers?',
+   opts:['24','26','28','30'],ans:2,
+   exp:'Consecutive even integers: n, n+2, n+4. Sum: n + (n+2) + (n+4) = 78 → 3n + 6 = 78 → 3n = 72 → n = 24. The three integers are 24, 26, 28. Largest = 28. ✓'},
+
+  {cat:'le',catLabel:'Linear equations',
+   context:'A student needs a total of at least 360 points across 4 tests to earn a grade of B. Her scores on the first three tests were 84, 91, and 88.',
+   q:'What is the minimum score she needs on the fourth test to earn a B?',
+   opts:['93','95','97','99'],ans:2,
+   exp:'Sum of first 3 tests: 84 + 91 + 88 = 263. Needed: 360 − 263 = 97. She needs at least 97. ✓ Set up the inequality: 263 + x ≥ 360 → x ≥ 97.'},
+
+  {cat:'le',catLabel:'Linear equations',
+   context:'',
+   q:'Two friends are 18 miles apart and begin walking toward each other. One walks at 3 miles per hour and the other at 2.5 miles per hour. How long until they meet?',
+   opts:['3.2 hours','3.4 hours','3.6 hours','4 hours'],ans:0,
+   exp:'Their combined speed is 3 + 2.5 = 5.5 mph. Time = distance ÷ speed = 18 ÷ 5.5 ≈ 3.27 hours ≈ 3.2 hours. ✓ When two people move toward each other, add their speeds.'},
+
+  // GRAPHS & LINEAR FUNCTIONS
+  {cat:'gl',catLabel:'Graphs & functions',
+   context:'A graph shows the total cost (y) of renting a bicycle for x hours. The line passes through the points (0, 5) and (3, 17).',
+   q:'Which equation best represents the total cost of renting the bicycle?',
+   opts:['y = 4x + 5','y = 5x + 4','y = 4x + 3','y = 3x + 5'],ans:0,
+   exp:'Y-intercept (starting fee) = 5 (the point where x = 0 is given as (0, 5)). Slope = (17 − 5) ÷ (3 − 0) = 12 ÷ 3 = 4. So the equation is y = 4x + 5. ✓ The slope ($4/hour) is the rental rate and the y-intercept ($5) is a flat fee.'},
+
+  {cat:'gl',catLabel:'Graphs & functions',
+   context:'The table below shows the distance (miles) a delivery driver has traveled from the warehouse after x hours.\n<table><tr><th>Hours (x)</th><th>Distance (miles)</th></tr><tr><td>0</td><td>0</td></tr><tr><td>1</td><td>42</td></tr><tr><td>2</td><td>84</td></tr><tr><td>3</td><td>126</td></tr></table>',
+   q:'Based on the pattern, how far from the warehouse will the driver be after 5 hours?',
+   opts:['168 miles','192 miles','210 miles','252 miles'],ans:2,
+   exp:'The driver travels 42 miles per hour (slope = 42). After 5 hours: 42 × 5 = 210 miles. ✓ The pattern is linear — distance increases by 42 miles every hour.'},
+
+  {cat:'gl',catLabel:'Graphs & functions',
+   context:'A line on a coordinate plane passes through the points (2, 7) and (6, 19).',
+   q:'What is the slope of this line, and what does it represent if x = hours worked and y = dollars earned?',
+   opts:['Slope = 2; earnings increase $2 per hour','Slope = 3; earnings increase $3 per hour','Slope = 4; earnings increase $4 per hour','Slope = 6; earnings increase $6 per hour'],ans:1,
+   exp:'Slope = (19 − 7) ÷ (6 − 2) = 12 ÷ 4 = 3. The slope is 3, meaning the person earns $3 for each additional hour worked. ✓ On the QAS, you often need to interpret slope in context — it\'s a rate of change.'},
+
+  // PROBABILITY & STATS
+  {cat:'ps',catLabel:'Probability & statistics',
+   context:'A bag contains 5 red chips, 4 blue chips, and 3 green chips. One chip is drawn at random.',
+   q:'What is the probability of drawing a chip that is NOT blue?',
+   opts:['1/3','2/3','5/12','3/4'],ans:1,
+   exp:'Total chips = 5 + 4 + 3 = 12. Blue chips = 4. P(blue) = 4/12 = 1/3. P(NOT blue) = 1 − 1/3 = 2/3. ✓ For "not" probability, subtract from 1.'},
+
+  {cat:'ps',catLabel:'Probability & statistics',
+   context:'The scores on a 10-question quiz for 7 students were: 6, 8, 7, 9, 10, 7, and 5.',
+   q:'What is the difference between the mean score and the median score?',
+   opts:['0','0.14','0.43','1'],ans:1,
+   exp:'Mean = (6+8+7+9+10+7+5) ÷ 7 = 52 ÷ 7 ≈ 7.43. Sorted: 5,6,7,7,8,9,10. Median = 7 (middle value). Difference = 7.43 − 7 = 0.43. ✓ Always sort the data before finding the median.'},
+
+  {cat:'ps',catLabel:'Probability & statistics',
+   context:'A survey asked 200 students which subject was their favorite. The results: Math 60, English 50, Science 55, History 35.',
+   q:'A student is chosen at random. What is the probability the student\'s favorite subject is Math or Science?',
+   opts:['23/40','57.5%','115/200','All of the above'],ans:3,
+   exp:'Math + Science = 60 + 55 = 115 students. P = 115/200 = 23/40 = 0.575 = 57.5%. All three answer choices represent the same value! ✓ On the QAS, answers may be expressed as fractions, decimals, or percents — know how to convert between them.'},
+
+  // GEOMETRY
+  {cat:'gd',catLabel:'Geometry & measurement',
+   context:'',
+   q:'A rectangular room is 14 feet long and 11 feet wide. Carpet costs $2.75 per square foot. What is the total cost to carpet the entire room?',
+   opts:['$385.00','$412.50','$423.50','$434.00'],ans:2,
+   exp:'Area = 14 × 11 = 154 sq ft. Cost = 154 × $2.75 = $423.50. ✓ Wait — let\'s recalculate: 154 × 2.75 = 154 × 2 + 154 × 0.75 = 308 + 115.50 = $423.50. ✓'},
+
+  {cat:'gd',catLabel:'Geometry & measurement',
+   context:'',
+   q:'A ladder is leaning against a wall. The base of the ladder is 5 feet from the wall, and the ladder reaches a point 12 feet high on the wall. What is the length of the ladder?',
+   opts:['11 feet','13 feet','15 feet','17 feet'],ans:1,
+   exp:'Use the Pythagorean theorem: a² + b² = c². So 5² + 12² = c² → 25 + 144 = 169 → c = √169 = 13 feet. ✓ This is the famous 5-12-13 Pythagorean triple — worth memorizing!'},
+
+  {cat:'gd',catLabel:'Geometry & measurement',
+   context:'A circular fountain has a diameter of 16 feet. A walking path surrounds the fountain, and the outer edge of the path forms a circle with a diameter of 24 feet.',
+   q:'What is the area of the walking path alone? (Use π ≈ 3.14)',
+   opts:['251.2 sq ft','200.96 sq ft','452.16 sq ft','301.44 sq ft'],ans:0,
+   exp:'Outer circle radius = 12 ft. Inner circle (fountain) radius = 8 ft. Area of path = π(12²) − π(8²) = 3.14(144) − 3.14(64) = 452.16 − 200.96 = 251.2 sq ft. ✓ Subtract the inner area from the outer area to find only the path.'},
+
+  {cat:'gd',catLabel:'Geometry & measurement',
+   context:'On a coordinate plane, a delivery driver starts at point A (1, 2) and drives to point B (7, 10).',
+   q:'What is the straight-line distance between the two points?',
+   opts:['8 units','10 units','12 units','14 units'],ans:1,
+   exp:'Distance = √((7−1)² + (10−2)²) = √(6² + 8²) = √(36 + 64) = √100 = 10 units. ✓ This is another Pythagorean triple (6-8-10, a multiple of 3-4-5).'}
+];
+
+let answered={};
+let currentFilter='all';
+
+function filterQ(cat,btn){
+  currentFilter=cat;
+  document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('score-box').style.display='none';
+  buildQuestions(cat);
+}
+
+function buildQuestions(filter){
+  const list=document.getElementById('qlist');
+  list.innerHTML='';
+  const filtered=filter==='all'?QS:QS.filter(q=>q.cat===filter);
+  filtered.forEach((q,i)=>{
+    const realIdx=QS.indexOf(q);
+    const div=document.createElement('div');
+    div.className='pq-card';
+    div.id='pq-'+realIdx;
+    const clsMap={rn:'cat-rn',rp:'cat-rp',le:'cat-le',gl:'cat-gl',ps:'cat-ps',gd:'cat-gd'};
+    const alreadyAns=answered[realIdx]!==undefined;
+    const ctxHtml=q.context?`<div class="ctx-box"><span class="ctx-lbl">Reference information</span>${q.context}</div>`:'';
+    const optsHtml=q.opts.map((o,j)=>{
+      let cls='';
+      if(alreadyAns){
+        if(j===q.ans)cls=' cr';
+        else if(j===answered[realIdx])cls=' cw';
+      }
+      return `<li><button class="${cls}" onclick="checkAns(${realIdx},${j})"${alreadyAns?' disabled':''}>${'ABCD'[j]}. ${o}</button></li>`;
+    }).join('');
+    let fbHtml='';
+    if(alreadyAns){
+      const correct=answered[realIdx]===q.ans;
+      fbHtml=`<div class="fb show ${correct?'fb-ok':'fb-no'}"><strong>${correct?'✓ Correct!':'✗ Not quite.'}</strong> ${q.exp}</div>`;
+    }
+    div.innerHTML=`<div class="pq-meta"><span class="pq-num">Q${i+1} of ${filtered.length}</span><span class="pq-cat ${clsMap[q.cat]}">${q.catLabel}</span></div>${ctxHtml}<div class="pq-text">${q.q}</div><ul class="opts">${optsHtml}</ul>${fbHtml}`;
+    list.appendChild(div);
+  });
+  updateProgress();
+}
+
+function checkAns(qi,chosen){
+  if(answered[qi]!==undefined)return;
+  answered[qi]=chosen;
+  const q=QS[qi];
+  const card=document.getElementById('pq-'+qi);
+  const btns=card.querySelectorAll('.opts button');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.ans].classList.add('cr');
+  if(chosen!==q.ans)btns[chosen].classList.add('cw');
+  let fb=card.querySelector('.fb');
+  if(!fb){fb=document.createElement('div');card.appendChild(fb);}
+  const correct=chosen===q.ans;
+  fb.className='fb show '+(correct?'fb-ok':'fb-no');
+  fb.innerHTML=`<strong>${correct?'✓ Correct!':'✗ Not quite.'}</strong> ${q.exp}`;
+  updateProgress();
+  // Check if all visible questions done
+  const filtered=currentFilter==='all'?QS:QS.filter(q2=>q2.cat===currentFilter);
+  const doneCount=filtered.filter(q2=>answered[QS.indexOf(q2)]!==undefined).length;
+  if(doneCount===filtered.length)showScore();
+}
+
+function updateProgress(){
+  const total=QS.length;
+  const done=Object.keys(answered).length;
+  const correct=Object.entries(answered).filter(([k,v])=>QS[k].ans===v).length;
+  document.getElementById('prog-label').textContent=done+' of '+total+' answered';
+  document.getElementById('prog-score').textContent='Score: '+correct+' correct';
+  document.getElementById('prog-bar').style.width=Math.round((done/total)*100)+'%';
+}
+
+function showScore(){
+  const filtered=currentFilter==='all'?QS:QS.filter(q=>q.cat===currentFilter);
+  const total=filtered.length;
+  const correct=filtered.filter(q=>answered[QS.indexOf(q)]===q.ans).length;
+  const pct=Math.round((correct/total)*100);
+  const box=document.getElementById('score-box');
+  box.style.display='block';
+  const big=document.getElementById('score-big');
+  big.textContent=correct+'/'+total+' ('+pct+'%)';
+  big.className='score-big '+(pct>=75?'green':'red');
+  let msg='';
+  if(pct>=85)msg='Excellent! That accuracy on the real QAS would put you well above 250. Focus on your weak spots and you are ready.';
+  else if(pct>=65)msg='Good work! Review the questions you missed — look at the explanations carefully and identify which topic gave you the most trouble. Then go to the Key Concepts tab for that topic.';
+  else msg='Keep practicing! Pay close attention to the step-by-step explanations — they show exactly how to set up each type of word problem. Go to the Key Concepts tab and review the topics you struggled with.';
+  document.getElementById('score-msg').textContent=msg;
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function restartAll(){
+  answered={};
+  document.getElementById('score-box').style.display='none';
+  buildQuestions(currentFilter);
+  window.scrollTo({top:document.getElementById('practice').offsetTop-20,behavior:'smooth'});
+}
+
+// ── Calculator ──
+let cVal='0',cOp='',cPrev='',cReset=false;
+function calcNum(n){if(cReset){cVal=n;cReset=false;}else cVal=cVal==='0'?n:cVal+n;document.getElementById('calc-display').textContent=cVal;}
+function calcOp(op){cPrev=cVal;cOp=op;cReset=true;}
+function calcEquals(){
+  if(!cOp||!cPrev)return;
+  let a=parseFloat(cPrev),b=parseFloat(cVal),r=0;
+  if(cOp==='+')r=a+b;else if(cOp==='-')r=a-b;
+  else if(cOp==='*')r=a*b;else if(cOp==='/')r=b?a/b:'Error';
+  else if(cOp==='%')r=a*(b/100);
+  cVal=String(typeof r==='number'?parseFloat(r.toFixed(10)):r);
+  document.getElementById('calc-display').textContent=cVal;
+  cOp='';cPrev='';cReset=true;
+}
+function calcClear(){cVal='0';cOp='';cPrev='';cReset=false;document.getElementById('calc-display').textContent='0';}
+function calcDel(){cVal=cVal.length>1?cVal.slice(0,-1):'0';document.getElementById('calc-display').textContent=cVal;}
+
+// Init practice on load
+buildQuestions('all');
+</script>
+<div class="watermark-bar">Ashley Tate<span>|</span>Adult Ed Study Prep<span>|</span>&copy; 2026 &mdash; All Rights Reserved</div>
+</body>
+</html>

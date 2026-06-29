@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GED Math — Complete Study Tool</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f0;color:#1a1a1a;font-size:15px;line-height:1.6}
+.app{max-width:780px;margin:0 auto;padding:1rem 1rem 3rem}
+.top-bar{background:#15803d;color:#fff;padding:1.25rem 1.5rem;border-radius:12px;margin-bottom:1.25rem}
+.top-bar h1{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px}
+.top-bar p{font-size:13px;color:#bbf7d0;line-height:1.7}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:1rem}
+.stat{background:rgba(255,255,255,0.18);border-radius:8px;padding:10px;text-align:center}
+.stat-lbl{font-size:11px;color:#bbf7d0;margin-bottom:3px}
+.stat-val{font-size:18px;font-weight:700;color:#fff}
+.main-nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.25rem;border-bottom:1px solid #e0e0d8;padding-bottom:1rem}
+.mnav{padding:7px 13px;font-size:12px;font-weight:600;border:1px solid #ccc;border-radius:8px;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all .15s}
+.mnav:hover{background:#f0efe8}
+.mnav.on{background:#15803d;border-color:#15803d;color:#fff}
+.page{display:none}.page.on{display:block}
+.sec-lbl{font-size:11px;font-weight:700;color:#777;letter-spacing:.08em;text-transform:uppercase;margin:1.25rem 0 .65rem}
+.tip{background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.85rem}
+.tip h3{font-size:13px;font-weight:700;color:#15803d;margin-bottom:5px}
+.tip p,.tip li{font-size:13px;color:#166534;line-height:1.8}
+.tip ol,.tip ul{padding-left:1.1rem}
+.warn{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.85rem}
+.warn h3{font-size:13px;font-weight:700;color:#c2410c;margin-bottom:5px}
+.warn p{font-size:13px;color:#9a3412;line-height:1.8}
+.card{background:#fff;border:1px solid #e0e0d8;border-radius:12px;margin-bottom:.75rem;overflow:hidden}
+.card-head{display:flex;align-items:center;gap:8px;padding:.85rem 1.1rem;cursor:pointer;user-select:none}
+.card-head:hover{background:#fafaf7}
+.card-title{font-size:14px;font-weight:600;flex:1}
+.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.b-hot{background:#fef3c7;color:#92400e}.b-mid{background:#d1fae5;color:#065f46}
+.chev{font-size:16px;color:#888;transition:transform .2s}
+.card-body{display:none;padding:0 1.1rem .9rem;border-top:1px solid #f0f0e8}
+.card-body.open{display:block}
+.chev.open{transform:rotate(180deg)}
+.rule-body{font-size:13px;color:#444;line-height:1.9;margin-top:.7rem}
+.rule-body strong{font-weight:600;color:#1a1a1a}
+.formula{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:13px;font-family:Georgia,serif;margin:8px 0;color:#78350f;line-height:2.1}
+.ex{margin-top:8px;background:#fafaf5;border-radius:8px;padding:10px 12px;font-size:13px;line-height:2;border:1px solid #eee}
+.ex-lbl{font-size:10px;font-weight:700;margin-bottom:2px;color:#999}
+.ok{color:#15803d}.wr{color:#b91c1c}
+.sub-nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1rem}
+.snav{padding:6px 12px;font-size:12px;font-weight:600;border:1px solid #ccc;border-radius:20px;cursor:pointer;background:#fff;color:#555;font-family:inherit}
+.snav:hover{background:#f0efe8}
+.snav.on{background:#15803d;border-color:#15803d;color:#fff}
+.subpage{display:none}.subpage.on{display:block}
+.pq-card{background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem 1.1rem;margin-bottom:.75rem}
+.pq-meta{display:flex;gap:7px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.pq-num{font-size:11px;font-weight:500;color:#777}
+.pq-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.calc-tag{background:#d1fae5;color:#065f46}
+.nocalc-tag{background:#fee2e2;color:#991b1b}
+.pq-text{font-size:14px;line-height:1.85;margin-bottom:9px;color:#1a1a1a}
+.scenario{background:#f0fdf4;border-left:3px solid #4ade80;border-radius:0 8px 8px 0;padding:10px 13px;font-size:13px;line-height:1.9;margin-bottom:10px;color:#14532d}
+.opts{list-style:none;display:flex;flex-direction:column;gap:5px}
+.opts li button{width:100%;text-align:left;padding:9px 13px;font-size:13px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;cursor:pointer;line-height:1.55;font-family:inherit;transition:background .1s}
+.opts li button:hover:not(:disabled){background:#f5f5f0;border-color:#bbb}
+.opts li button.cr{background:#dcfce7;border-color:#16a34a;color:#14532d;font-weight:600}
+.opts li button.cw{background:#fee2e2;border-color:#dc2626;color:#7f1d1d}
+.opts li button:disabled{cursor:default}
+.fb{margin-top:9px;font-size:13px;line-height:1.75;padding:10px 13px;border-radius:8px;display:none}
+.fb.show{display:block}
+.fb-ok{background:#dcfce7;color:#14532d;border:1px solid #86efac}
+.fb-no{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5}
+.prog-wrap{background:#e5e5e0;border-radius:8px;height:7px;margin:.35rem 0 .15rem;overflow:hidden}
+.prog-bar{height:7px;border-radius:8px;background:#15803d;transition:width .4s}
+.prog-info{display:flex;justify-content:space-between;font-size:11px;color:#777;margin-bottom:.75rem}
+.score-box{background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1.25rem;text-align:center;margin-top:1rem;display:none}
+.score-big{font-size:36px;font-weight:700;margin:.4rem 0}
+.green{color:#15803d}.red{color:#b91c1c}
+.restart-btn{padding:8px 20px;font-size:13px;font-weight:600;border:1px solid #15803d;border-radius:8px;cursor:pointer;background:#fff;color:#15803d;margin-top:.75rem;font-family:inherit}
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.65rem;margin-top:.65rem}
+.cs-box{background:#fff;border:1px solid #e0e0d8;border-radius:8px;padding:9px 12px}
+.cs-box h4{font-size:12px;font-weight:700;margin-bottom:5px}
+.cs-box ul{font-size:12px;color:#555;line-height:2;padding-left:.9rem}
+.calc-wrap{background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem;margin-bottom:1rem;max-width:270px}
+.calc-display{background:#1a1a1a;color:#4ade80;font-family:monospace;font-size:20px;padding:10px 12px;border-radius:8px;text-align:right;margin-bottom:8px;min-height:44px;word-break:break-all}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.calc-btn{padding:11px;font-size:14px;border:1px solid #e0e0d8;border-radius:7px;cursor:pointer;background:#f5f5f0;color:#1a1a1a;font-family:monospace;font-weight:600;transition:background .1s}
+.calc-btn:hover{background:#e5e5e0}
+.calc-btn.op{background:#d1fae5;color:#15803d}
+.calc-btn.eq{background:#15803d;color:#fff}
+.calc-btn.cl{background:#fee2e2;color:#b91c1c}
+.org-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:.75rem;margin-bottom:1rem}
+.org-card{background:#fff;border-radius:10px;padding:14px;border:1px solid #e0e0d8}
+.org-card-title{font-size:13px;font-weight:700;margin-bottom:5px}
+.org-card-body{font-size:12px;color:#555;line-height:1.85}
+
+.watermark-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#1a1a1a;color:#fff;
+  text-align:center;font-size:12px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  padding:8px 16px;z-index:9999;
+  letter-spacing:0.03em;opacity:0.92;
+}
+.watermark-bar span{opacity:0.45;margin:0 8px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="top-bar">
+  <h1>GED Mathematical Reasoning — Complete Study Tool</h1>
+  <p>Built to match the real GED Math test format &bull; Word problems, real-world scenarios, built-in calculator &bull; Formula sheet included</p>
+  <div class="stat-row">
+    <div class="stat"><div class="stat-lbl">Total questions</div><div class="stat-val">46</div></div>
+    <div class="stat"><div class="stat-lbl">Time limit</div><div class="stat-val">115 min</div></div>
+    <div class="stat"><div class="stat-lbl">Passing score</div><div class="stat-val">145</div></div>
+    <div class="stat"><div class="stat-lbl">College Ready</div><div class="stat-val">165+</div></div>
+  </div>
+</div>
+
+<div class="main-nav">
+  <button class="mnav on" onclick="goPage('home',this)">&#8962; Home</button>
+  <button class="mnav" onclick="goPage('study',this)">&#128214; Concepts</button>
+  <button class="mnav" onclick="goPage('practice',this)">&#9998; Practice</button>
+  <button class="mnav" onclick="goPage('calculator',this)">&#128290; Calculator</button>
+  <button class="mnav" onclick="goPage('formulas',this)">&#128203; Formulas</button>
+  <button class="mnav" onclick="goPage('strategy',this)">&#9733; Strategy</button>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page on">
+  <div class="tip">
+    <h3>&#128218; About the GED Mathematical Reasoning test</h3>
+    <p>The GED Math test has <strong>46 questions</strong> and <strong>115 minutes</strong>. It is divided into two parts:</p>
+    <ul style="margin-top:6px">
+      <li><strong>Part 1 (~5 questions, ~10 min):</strong> NO calculator allowed. Tests number sense and basic arithmetic.</li>
+      <li><strong>Part 2 (~41 questions, ~105 min):</strong> Calculator allowed (TI-30XS on screen). A formula sheet is also provided.</li>
+    </ul>
+    <p style="margin-top:8px">Passing score: <strong>145 out of 200</strong>. You need approximately 60–65% correct to pass.</p>
+  </div>
+
+  <div class="sec-lbl">Four content areas</div>
+  <div class="org-row">
+    <div class="org-card" style="border-left:4px solid #15803d">
+      <div class="org-card-title" style="color:#15803d">Basic Math (45%)</div>
+      <div class="org-card-body">Number operations &bull; Fractions &bull; Decimals &bull; Percentages &bull; Ratios &bull; Proportions &bull; Basic geometry</div>
+    </div>
+    <div class="org-card" style="border-left:4px solid #1d4ed8">
+      <div class="org-card-title" style="color:#1d4ed8">Algebraic Thinking (55%)</div>
+      <div class="org-card-body">Linear equations &bull; Inequalities &bull; Quadratics &bull; Patterns &bull; Functions &bull; Graphs &bull; Tables</div>
+    </div>
+  </div>
+
+  <div class="warn">
+    <h3>&#9888; What makes GED Math questions different</h3>
+    <p>Most GED Math questions are presented as <strong>real-world word problems</strong> — budgets, distances, construction projects, shopping scenarios. You will not just be asked "solve 3x + 5 = 14." You will be asked a scenario like "A contractor charges $45 per hour plus a $75 fee. If a customer pays $255, how many hours did the job take?" You must set up the equation yourself from the scenario.</p>
+  </div>
+
+  <div class="tip">
+    <h3>&#128161; How to use this tool</h3>
+    <ol>
+      <li><strong>Concepts tab</strong> — study each topic with formulas and worked examples. Tap any card to expand it.</li>
+      <li><strong>Practice tab</strong> — 40 real-style questions organized by topic, with instant feedback and full step-by-step explanations.</li>
+      <li><strong>Calculator tab</strong> — built-in calculator to practice with (just like the TI-30XS on the real test).</li>
+      <li><strong>Formulas tab</strong> — the actual GED formula sheet. Study these so you know HOW to use them, not just that they exist.</li>
+      <li><strong>Strategy tab</strong> — test-day tips, how to approach word problems, and Part 1 (no-calculator) preparation.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- CONCEPTS -->
+<div id="study" class="page">
+  <div class="sub-nav">
+    <button class="snav on" onclick="goSub('study','s-basic',this)">Basic Math</button>
+    <button class="snav" onclick="goSub('study','s-algebra',this)">Algebra</button>
+    <button class="snav" onclick="goSub('study','s-geometry',this)">Geometry</button>
+    <button class="snav" onclick="goSub('study','s-data',this)">Data &amp; Graphs</button>
+  </div>
+
+  <div id="s-basic" class="subpage on">
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Percentages — three types</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body">Every percent problem is one of three types. Identify which type, then use the matching setup.</div>
+    <div class="formula">Type 1: What is X% of N? &rarr; multiply by decimal &nbsp; (35% of 80 = 0.35 &times; 80 = 28)<br>Type 2: Y is what % of N? &rarr; divide &nbsp; (21 is what % of 60? = 21 &divide; 60 = 0.35 = 35%)<br>Type 3: Y is X% of what? &rarr; divide by decimal &nbsp; (24 is 30% of what? = 24 &divide; 0.30 = 80)<br>% change = (New &minus; Old) &divide; Old &times; 100</div>
+    <div class="ex"><div class="ex-lbl ok">Word problem: A jacket costs $120 and is on sale for 25% off. What is the sale price?</div><div class="ok">Discount = 0.25 &times; 120 = $30 &nbsp;&rarr;&nbsp; Sale price = 120 &minus; 30 = <strong>$90</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Ratios and proportions</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body">A ratio compares two quantities. A proportion sets two ratios equal to each other. Solve proportions by cross-multiplying.</div>
+    <div class="formula">a/b = c/d &nbsp;&rarr;&nbsp; cross multiply &nbsp;&rarr;&nbsp; a &times; d = b &times; c</div>
+    <div class="ex"><div class="ex-lbl ok">Word problem: A car travels 150 miles on 5 gallons. How far can it go on 8 gallons?</div><div class="ok">150/5 = x/8 &nbsp;&rarr;&nbsp; 5x = 1200 &nbsp;&rarr;&nbsp; x = <strong>240 miles</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Fractions, decimals &amp; order of operations</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body"><strong>Order of operations (PEMDAS):</strong> Parentheses &rarr; Exponents &rarr; Multiply/Divide &rarr; Add/Subtract<br><br><strong>Fractions:</strong> Add/subtract: find common denominator first. Multiply: top &times; top, bottom &times; bottom. Divide: flip the second fraction, then multiply.<br><br><strong>Negative numbers:</strong> negative &times; negative = positive. negative &times; positive = negative.</div>
+    <div class="ex"><div class="ex-lbl ok">3 + 4 &times; 2 &minus; (5 &minus; 1)&sup2;</div><div class="ok">= 3 + 4 &times; 2 &minus; 4&sup2; = 3 + 8 &minus; 16 = <strong>&minus;5</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Common</span><span class="card-title">Exponents and square roots</span><span class="chev">&#8964;</span></div>
+    <div class="card-body">
+    <div class="formula">x&sup2; means x &times; x &nbsp;&nbsp; x&sup3; means x &times; x &times; x<br>x&sup0; = 1 (anything to the 0 power = 1)<br>x&minus;&sup2; = 1/x&sup2;<br>&radic;(x &times; y) = &radic;x &times; &radic;y<br>Perfect squares to know: 1,4,9,16,25,36,49,64,81,100,121,144</div>
+    <div class="ex"><div class="ex-lbl ok">Simplify: &radic;75</div><div class="ok">&radic;75 = &radic;(25 &times; 3) = 5&radic;3 &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Common</span><span class="card-title">Mean, median, mode &amp; range</span><span class="chev">&#8964;</span></div>
+    <div class="card-body">
+    <div class="formula">Mean = sum of all values &divide; number of values<br>Median = middle value when sorted (avg of two middle if even count)<br>Mode = value appearing most often<br>Range = largest &minus; smallest</div>
+    <div class="ex"><div class="ex-lbl ok">Data: 4, 7, 7, 9, 13</div><div class="ok">Mean = 40 &divide; 5 = 8 &nbsp; Median = 7 &nbsp; Mode = 7 &nbsp; Range = 9</div></div></div></div>
+  </div>
+
+  <div id="s-algebra" class="subpage">
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Most tested</span><span class="card-title">Solving linear equations (word problems)</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body">Most GED algebra questions start with a <strong>scenario</strong>. Your job is to:<br>1. Read carefully — identify what is unknown (let x = ?)<br>2. Translate the words into an equation<br>3. Solve for x<br>4. Check that your answer makes sense in context</div>
+    <div class="ex"><div class="ex-lbl ok">Word problem: A plumber charges $60 per hour plus a $40 trip fee. A customer pays $220. How many hours did the plumber work?</div><div class="ok">Let h = hours worked<br>60h + 40 = 220<br>60h = 180<br>h = <strong>3 hours</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Slope and linear equations</span><span class="chev">&#8964;</span></div>
+    <div class="card-body">
+    <div class="formula">Slope m = (y&sub2; &minus; y&sub1;) &divide; (x&sub2; &minus; x&sub1;) = rise &divide; run<br>Slope-intercept form: y = mx + b (m = slope, b = y-intercept)<br>Positive slope &nearr; &nbsp; Negative slope &searr; &nbsp; Zero slope &rarr; (flat) &nbsp; Undefined slope &uarr; (vertical)</div>
+    <div class="ex"><div class="ex-lbl ok">Find slope through (1, 3) and (4, 9):</div><div class="ok">(9 &minus; 3) &divide; (4 &minus; 1) = 6 &divide; 3 = <strong>2</strong> &#10003;</div>
+    <div class="ex-lbl ok" style="margin-top:6px">Word problem: A phone plan charges $30/month plus $0.10 per text. Write an equation for the monthly cost C if you send t texts.</div><div class="ok">C = 0.10t + 30 (this is y = mx + b form) &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Inequalities</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body">Solve like an equation — <strong>except: when you multiply or divide by a negative number, FLIP the inequality sign.</strong></div>
+    <div class="formula">&lt; means less than &nbsp; &gt; means greater than<br>&le; means less than OR equal to &nbsp; &ge; means greater than OR equal to</div>
+    <div class="ex"><div class="ex-lbl ok">Solve: &minus;3x + 6 &gt; 15</div><div class="ok">&minus;3x &gt; 9 &nbsp;&rarr;&nbsp; divide by &minus;3, FLIP: x &lt; &minus;3 &#10003;</div>
+    <div class="ex-lbl ok" style="margin-top:6px">Word problem: You can spend at most $200 on supplies. Each box costs $12. How many boxes can you buy?</div><div class="ok">12b &le; 200 &nbsp;&rarr;&nbsp; b &le; 16.67 &nbsp;&rarr;&nbsp; at most <strong>16 boxes</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Common</span><span class="card-title">Systems of equations</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body">Two equations, two unknowns. Use <strong>substitution</strong> (plug one equation into the other) or <strong>elimination</strong> (add/subtract equations to cancel one variable).</div>
+    <div class="ex"><div class="ex-lbl ok">Adult tickets cost $8, child tickets cost $5. 10 tickets were sold for $62. How many of each?</div><div class="ok">a + c = 10 &nbsp; and &nbsp; 8a + 5c = 62<br>From equation 1: a = 10 &minus; c<br>Substitute: 8(10&minus;c) + 5c = 62 &rarr; 80 &minus; 8c + 5c = 62 &rarr; &minus;3c = &minus;18 &rarr; c = 6<br>a = 10 &minus; 6 = <strong>4 adults, 6 children</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Common</span><span class="card-title">Quadratic equations</span><span class="chev">&#8964;</span></div>
+    <div class="card-body">
+    <div class="formula">Standard form: ax&sup2; + bx + c = 0<br>Quadratic formula: x = (&minus;b &plusmn; &radic;(b&sup2;&minus;4ac)) &divide; 2a<br>Factoring: find two numbers that multiply to c and add to b</div>
+    <div class="ex"><div class="ex-lbl ok">Solve by factoring: x&sup2; + 5x + 6 = 0</div><div class="ok">Find factors of 6 that add to 5: 2 and 3<br>(x + 2)(x + 3) = 0 &rarr; x = <strong>&minus;2 or x = &minus;3</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Common</span><span class="card-title">Functions and patterns</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body">A <strong>function</strong> assigns exactly one output (y) to each input (x). Written as f(x).<br><br>To evaluate a function, substitute the given value for x and calculate.</div>
+    <div class="ex"><div class="ex-lbl ok">If f(x) = 3x&sup2; &minus; 2x + 1, find f(4).</div><div class="ok">f(4) = 3(16) &minus; 2(4) + 1 = 48 &minus; 8 + 1 = <strong>41</strong> &#10003;</div>
+    <div class="ex-lbl ok" style="margin-top:6px">Pattern: 3, 7, 11, 15 ... what is the 10th term?</div><div class="ok">Each term adds 4. Formula: 3 + 4(n&minus;1). For n=10: 3 + 36 = <strong>39</strong> &#10003;</div></div></div></div>
+  </div>
+
+  <div id="s-geometry" class="subpage">
+    <div class="tip"><h3>&#128203; Formulas are provided on the real test</h3><p>You do NOT need to memorize geometry formulas — they appear on the formula sheet. But you DO need to know which formula to use and how to apply it. See the Formulas tab for the complete sheet.</p></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Area, perimeter &amp; volume</span><span class="chev">&#8964;</span></div>
+    <div class="card-body">
+    <div class="formula">Rectangle: Area = l &times; w &nbsp;&nbsp; Perimeter = 2l + 2w<br>Triangle: Area = &frac12; &times; b &times; h<br>Circle: Area = &pi;r&sup2; &nbsp;&nbsp; Circumference = 2&pi;r &nbsp;&nbsp; (&pi; &asymp; 3.14)<br>Rectangular box (prism): Volume = l &times; w &times; h<br>Cylinder: Volume = &pi;r&sup2;h</div>
+    <div class="ex"><div class="ex-lbl ok">Word problem: A circular swimming pool has a diameter of 18 feet. What is the area of the pool? (Use &pi; = 3.14)</div><div class="ok">Radius = 18 &divide; 2 = 9 ft<br>Area = 3.14 &times; 9&sup2; = 3.14 &times; 81 = <strong>254.34 sq ft</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Pythagorean theorem</span><span class="chev">&#8964;</span></div>
+    <div class="card-body">
+    <div class="formula">a&sup2; + b&sup2; = c&sup2; &nbsp; (right triangles only)<br>c = hypotenuse (the longest side, opposite the right angle)<br>Common triples: 3-4-5 &nbsp;&nbsp; 5-12-13 &nbsp;&nbsp; 8-15-17</div>
+    <div class="ex"><div class="ex-lbl ok">Word problem: A ladder 10 feet long leans against a wall. The base is 6 feet from the wall. How high up the wall does the ladder reach?</div><div class="ok">6&sup2; + h&sup2; = 10&sup2; &rarr; 36 + h&sup2; = 100 &rarr; h&sup2; = 64 &rarr; h = <strong>8 feet</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Common</span><span class="card-title">Coordinate geometry</span><span class="chev">&#8964;</span></div>
+    <div class="card-body">
+    <div class="formula">Distance between two points: d = &radic;((x&sub2;&minus;x&sub1;)&sup2; + (y&sub2;&minus;y&sub1;)&sup2;)<br>Midpoint: ((x&sub1;+x&sub2;)&divide;2, (y&sub1;+y&sub2;)&divide;2)</div>
+    <div class="ex"><div class="ex-lbl ok">Find the distance between (1, 2) and (4, 6).</div><div class="ok">d = &radic;((4&minus;1)&sup2; + (6&minus;2)&sup2;) = &radic;(9 + 16) = &radic;25 = <strong>5</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Common</span><span class="card-title">Angles and triangles</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body">
+    <strong>Triangle angle sum:</strong> All 3 angles of any triangle add up to <strong>180&deg;</strong><br>
+    <strong>Straight line:</strong> Angles on a straight line add up to <strong>180&deg;</strong><br>
+    <strong>Supplementary angles:</strong> Two angles that add to 180&deg;<br>
+    <strong>Complementary angles:</strong> Two angles that add to 90&deg;<br>
+    <strong>Vertical angles:</strong> Opposite angles formed by two crossing lines are equal
+    </div>
+    <div class="ex"><div class="ex-lbl ok">A triangle has angles of 45&deg; and 70&deg;. Find the third angle.</div><div class="ok">180 &minus; 45 &minus; 70 = <strong>65&deg;</strong> &#10003;</div></div></div></div>
+  </div>
+
+  <div id="s-data" class="subpage">
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Reading and interpreting graphs &amp; tables</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body">Many GED math questions give you a graph or table and ask you to extract information, identify trends, or calculate values.<br><br>
+    <strong>Always check first:</strong> What do the axes or columns represent? What are the units? What time period is shown?<br><br>
+    <strong>Bar graphs:</strong> Compare values between categories. Read height of bar from y-axis.<br>
+    <strong>Line graphs:</strong> Show change over time. Steeper line = faster rate of change.<br>
+    <strong>Scatter plots:</strong> Look for trend (positive, negative, or no correlation).<br>
+    <strong>Tables:</strong> Find the row and column intersection carefully.</div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-hot">Very common</span><span class="card-title">Probability</span><span class="chev">&#8964;</span></div>
+    <div class="card-body">
+    <div class="formula">Probability = favorable outcomes &divide; total possible outcomes<br>Always between 0 (impossible) and 1 (certain)<br>P(not A) = 1 &minus; P(A)</div>
+    <div class="ex"><div class="ex-lbl ok">A bag has 3 red, 5 blue, and 2 green marbles. What is the probability of picking a red marble?</div><div class="ok">P(red) = 3 &divide; (3+5+2) = 3/10 = <strong>30%</strong> &#10003;</div></div></div></div>
+
+    <div class="card"><div class="card-head" onclick="tog(this)"><span class="badge b-mid">Common</span><span class="card-title">Interpreting linear models</span><span class="chev">&#8964;</span></div>
+    <div class="card-body"><div class="rule-body">Many GED questions give you a table of values or a graph and ask you to write or interpret a linear equation.<br><br>
+    <strong>Step 1:</strong> Find the slope (rate of change) from two points in the table.<br>
+    <strong>Step 2:</strong> Find the y-intercept (the starting value when x = 0).<br>
+    <strong>Step 3:</strong> Write the equation in y = mx + b form.<br>
+    <strong>Step 4:</strong> Use the equation to predict values not in the table.</div>
+    <div class="ex"><div class="ex-lbl ok">A table shows hours worked (x) and pay (y): (1, 18), (2, 26), (3, 34). Write a linear equation.</div><div class="ok">Slope = (26&minus;18)&divide;(2&minus;1) = 8. When x=0: y = 18&minus;8 = 10.<br>Equation: <strong>y = 8x + 10</strong> (hourly rate $8, base fee $10) &#10003;</div></div></div></div>
+  </div>
+</div>
+
+<!-- PRACTICE -->
+<div id="practice" class="page">
+  <div class="sub-nav">
+    <button class="snav on" onclick="goSub('practice','p-basic',this)">Basic Math</button>
+    <button class="snav" onclick="goSub('practice','p-algebra',this)">Algebra</button>
+    <button class="snav" onclick="goSub('practice','p-geo',this)">Geometry</button>
+    <button class="snav" onclick="goSub('practice','p-data',this)">Data &amp; Graphs</button>
+  </div>
+  <div class="prog-info"><span id="prog-label">0 of 40 answered</span><span id="prog-score">Score: 0 correct</span></div>
+  <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+
+  <div id="p-basic" class="subpage on"><div id="q-basic"></div><div class="score-box" id="sb-basic"><div class="score-big" id="sbig-basic"></div><div id="smsg-basic" style="font-size:13px;color:#555;margin:.5rem 0"></div><button class="restart-btn" onclick="restartSub('basic')">&#8635; Try again</button></div></div>
+  <div id="p-algebra" class="subpage"><div id="q-algebra"></div><div class="score-box" id="sb-algebra"><div class="score-big" id="sbig-algebra"></div><div id="smsg-algebra" style="font-size:13px;color:#555;margin:.5rem 0"></div><button class="restart-btn" onclick="restartSub('algebra')">&#8635; Try again</button></div></div>
+  <div id="p-geo" class="subpage"><div id="q-geo"></div><div class="score-box" id="sb-geo"><div class="score-big" id="sbig-geo"></div><div id="smsg-geo" style="font-size:13px;color:#555;margin:.5rem 0"></div><button class="restart-btn" onclick="restartSub('geo')">&#8635; Try again</button></div></div>
+  <div id="p-data" class="subpage"><div id="q-data"></div><div class="score-box" id="sb-data"><div class="score-big" id="sbig-data"></div><div id="smsg-data" style="font-size:13px;color:#555;margin:.5rem 0"></div><button class="restart-btn" onclick="restartSub('data')">&#8635; Try again</button></div></div>
+</div>
+
+<!-- CALCULATOR -->
+<div id="calculator" class="page">
+  <div class="tip"><h3>&#128290; TI-30XS style calculator</h3><p>The real GED test provides a TI-30XS MultiView calculator on screen for Part 2. Practice using a calculator for multi-step problems. <strong>Important:</strong> Do NOT rely on a calculator for Part 1 (the first 5 questions). Practice basic arithmetic mentally too.</p></div>
+  <div class="calc-wrap">
+    <div class="calc-display" id="calc-display">0</div>
+    <div class="calc-grid">
+      <button class="calc-btn cl" onclick="calcClear()">C</button>
+      <button class="calc-btn cl" onclick="calcDel()">&#8592;</button>
+      <button class="calc-btn op" onclick="calcOp('%')">%</button>
+      <button class="calc-btn op" onclick="calcOp('/')">&#247;</button>
+      <button class="calc-btn" onclick="calcNum('7')">7</button>
+      <button class="calc-btn" onclick="calcNum('8')">8</button>
+      <button class="calc-btn" onclick="calcNum('9')">9</button>
+      <button class="calc-btn op" onclick="calcOp('*')">&#215;</button>
+      <button class="calc-btn" onclick="calcNum('4')">4</button>
+      <button class="calc-btn" onclick="calcNum('5')">5</button>
+      <button class="calc-btn" onclick="calcNum('6')">6</button>
+      <button class="calc-btn op" onclick="calcOp('-')">&#8722;</button>
+      <button class="calc-btn" onclick="calcNum('1')">1</button>
+      <button class="calc-btn" onclick="calcNum('2')">2</button>
+      <button class="calc-btn" onclick="calcNum('3')">3</button>
+      <button class="calc-btn op" onclick="calcOp('+')">+</button>
+      <button class="calc-btn" onclick="calcNum('0')" style="grid-column:span 2">0</button>
+      <button class="calc-btn" onclick="calcNum('.')">.</button>
+      <button class="calc-btn eq" onclick="calcEquals()">=</button>
+    </div>
+  </div>
+  <div style="font-size:12px;color:#777;margin-top:4px">Tip: Use C to clear everything &bull; &#8592; to delete last digit &bull; % for percent calculations</div>
+  <div class="warn" style="margin-top:1rem"><h3>&#9888; Part 1 — No calculator! Practice these mentally:</h3><p>Multiplication tables up to 12 &bull; Adding and subtracting fractions &bull; Simple decimal operations &bull; Estimating (rounding to nearest 10 or 100) &bull; Basic percent of a number (50%, 25%, 10%)</p></div>
+</div>
+
+<!-- FORMULAS -->
+<div id="formulas" class="page">
+  <div class="tip"><h3>&#128203; The GED formula sheet is provided during Part 2</h3><p>You will have access to these formulas during the calculator section of the real test. You do NOT need to memorize them — but you MUST know how to use them. Study these so you can quickly find the right formula and apply it under time pressure.</p></div>
+  <div class="sec-lbl">Area formulas</div>
+  <div class="cs-grid">
+    <div class="cs-box"><h4>Square</h4><ul><li>A = s&sup2;</li></ul></div>
+    <div class="cs-box"><h4>Rectangle</h4><ul><li>A = lw</li></ul></div>
+    <div class="cs-box"><h4>Parallelogram</h4><ul><li>A = bh</li></ul></div>
+    <div class="cs-box"><h4>Triangle</h4><ul><li>A = &frac12;bh</li></ul></div>
+    <div class="cs-box"><h4>Trapezoid</h4><ul><li>A = &frac12;(b&sub1;+b&sub2;)h</li></ul></div>
+    <div class="cs-box"><h4>Circle</h4><ul><li>A = &pi;r&sup2;</li><li>C = 2&pi;r</li><li>&pi; &asymp; 3.14</li></ul></div>
+  </div>
+  <div class="sec-lbl">Surface area &amp; volume</div>
+  <div class="cs-grid">
+    <div class="cs-box"><h4>Rectangular prism</h4><ul><li>SA = 2lw + 2lh + 2wh</li><li>V = lwh</li></ul></div>
+    <div class="cs-box"><h4>Right prism</h4><ul><li>SA = Ph + 2B</li><li>V = Bh</li></ul></div>
+    <div class="cs-box"><h4>Cylinder</h4><ul><li>SA = 2&pi;rh + 2&pi;r&sup2;</li><li>V = &pi;r&sup2;h</li></ul></div>
+    <div class="cs-box"><h4>Pyramid</h4><ul><li>SA = &frac12;Ps + B</li><li>V = &frac13;Bh</li></ul></div>
+    <div class="cs-box"><h4>Cone</h4><ul><li>SA = &pi;rs + &pi;r&sup2;</li><li>V = &frac13;&pi;r&sup2;h</li></ul></div>
+    <div class="cs-box"><h4>Sphere</h4><ul><li>SA = 4&pi;r&sup2;</li><li>V = &frac43;&pi;r&sup3;</li></ul></div>
+  </div>
+  <div class="sec-lbl">Algebra &amp; other</div>
+  <div class="cs-grid">
+    <div class="cs-box"><h4>Slope of a line</h4><ul><li>m = (y&sub2;&minus;y&sub1;) &divide; (x&sub2;&minus;x&sub1;)</li></ul></div>
+    <div class="cs-box"><h4>Slope-intercept</h4><ul><li>y = mx + b</li></ul></div>
+    <div class="cs-box"><h4>Pythagorean theorem</h4><ul><li>a&sup2; + b&sup2; = c&sup2;</li></ul></div>
+    <div class="cs-box"><h4>Quadratic formula</h4><ul><li>x = (&minus;b &plusmn; &radic;(b&sup2;&minus;4ac)) &divide; 2a</li></ul></div>
+    <div class="cs-box"><h4>Simple interest</h4><ul><li>I = Prt</li><li>P=principal, r=rate, t=time</li></ul></div>
+    <div class="cs-box"><h4>Distance</h4><ul><li>d = &radic;((x&sub2;&minus;x&sub1;)&sup2;+(y&sub2;&minus;y&sub1;)&sup2;)</li></ul></div>
+  </div>
+</div>
+
+<!-- STRATEGY -->
+<div id="strategy" class="page">
+  <div class="tip"><h3>&#127919; The most important skill: translating word problems</h3><p>Most GED math questions are word problems. The math itself is usually not hard — the challenge is <strong>reading the problem carefully and setting it up correctly</strong>. Practice pulling key numbers out and deciding what equation to write before you start calculating.</p></div>
+
+  <div class="sec-lbl">4-step approach for every word problem</div>
+  <div style="background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.85rem">
+    <ol style="padding-left:1.2rem;line-height:2.5;font-size:14px">
+      <li><strong>Read the whole problem once</strong> — understand the scenario before touching any numbers.</li>
+      <li><strong>Identify what you need to find</strong> — write "let x = ___" to name the unknown.</li>
+      <li><strong>Set up the equation or calculation</strong> — translate the words into math.</li>
+      <li><strong>Solve, then check</strong> — does the answer make sense in the context of the problem?</li>
+    </ol>
+  </div>
+
+  <div class="sec-lbl">Key word translations</div>
+  <div style="background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.85rem;font-size:13px;color:#444;line-height:2.4">
+    <strong>is / equals / was / will be</strong> &nbsp;&rarr;&nbsp; = <br>
+    <strong>sum / total / plus / added to / more than</strong> &nbsp;&rarr;&nbsp; + <br>
+    <strong>difference / less than / fewer / decreased by</strong> &nbsp;&rarr;&nbsp; &minus; <br>
+    <strong>product / times / of / multiplied by</strong> &nbsp;&rarr;&nbsp; &times; <br>
+    <strong>quotient / divided by / per / ratio of</strong> &nbsp;&rarr;&nbsp; &divide; <br>
+    <strong>at least</strong> &nbsp;&rarr;&nbsp; &ge; &nbsp;&nbsp; <strong>no more than / at most</strong> &nbsp;&rarr;&nbsp; &le; <br>
+    <strong>exceeds / more than</strong> &nbsp;&rarr;&nbsp; &gt; &nbsp;&nbsp; <strong>fewer than / less than</strong> &nbsp;&rarr;&nbsp; &lt;
+  </div>
+
+  <div class="sec-lbl">Part 1 — No calculator preparation</div>
+  <div class="warn"><h3>&#9888; The first 5 questions have NO calculator</h3><p>Many students are caught off guard by Part 1. Practice these skills without any calculator: multiplication tables (up to 12&times;12) &bull; Dividing fractions &bull; Finding 10%, 25%, and 50% mentally &bull; Adding and subtracting negative numbers &bull; Estimating answers by rounding</p></div>
+
+  <div class="sec-lbl">Time management — 115 minutes for 46 questions</div>
+  <div style="background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.85rem;font-size:13px;color:#444;line-height:2">
+    You have about <strong>2.5 minutes per question</strong> on average.<br>
+    If a question is taking more than 3 minutes — <strong>make your best guess and move on</strong>. Come back if time allows.<br>
+    Don't spend 10 minutes on one question while skipping five easy ones.<br>
+    Word problems often take longer — budget extra time for multi-step scenarios.<br>
+    <strong>Always eliminate obviously wrong answers first</strong>, even when guessing.
+  </div>
+
+  <div class="tip"><h3>&#128279; Free official GED practice</h3><p>The official GED website at <strong>ged.com</strong> offers a free practice test called the GED Ready test for a small fee — it is the most accurate predictor of your real score. For free practice, visit <strong>gedtestingservice.com</strong> for sample questions, or search "GED free practice test" for resources from Khan Academy, which has free GED math preparation aligned to the real test.</p></div>
+</div>
+
+</div><!-- end app -->
+
+<script>
+function goPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.mnav').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='practice')initAllSubs();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goSub(page,id,btn){
+  document.querySelectorAll('#'+page+' .subpage').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('#'+page+' .snav').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+}
+function tog(head){
+  const b=head.nextElementSibling,c=head.querySelector('.chev');
+  const open=b.classList.toggle('open');c.classList.toggle('open',open);
+}
+
+// ── Practice questions ──
+const QS={
+basic:[
+  {calc:false,scenario:'',q:'What is 35% of 160?',opts:['48','52','56','60'],ans:2,exp:'Convert 35% to a decimal: 0.35. Multiply: 0.35 × 160 = 56. You can also think of it as: 10% of 160 = 16, so 30% = 48, and 5% = 8. Add them: 48 + 8 = 56. ✓'},
+  {calc:true,scenario:'A store is having a 20% off sale. A television originally costs $385.',q:'What is the sale price of the television?',opts:['$77','$308','$310','$365'],ans:1,exp:'Discount = 20% of $385 = 0.20 × 385 = $77. Sale price = $385 − $77 = $308. ✓ Always subtract the discount from the original price to find the sale price.'},
+  {calc:true,scenario:'',q:'A recipe calls for 2¾ cups of flour. If you want to make 1.5 times the recipe, how much flour do you need?',opts:['3¾ cups','4 cups','4⅛ cups','4¼ cups'],ans:2,exp:'Convert 2¾ to an improper fraction or decimal: 2.75 cups. Multiply: 2.75 × 1.5 = 4.125 = 4⅛ cups. ✓'},
+  {calc:false,scenario:'',q:'What is the value of 3² + 4² ?',opts:['14','25','49','7'],ans:1,exp:'3² = 9 and 4² = 16. Add them: 9 + 16 = 25. ✓ Note: This is also the Pythagorean theorem — a triangle with legs 3 and 4 has a hypotenuse of √25 = 5.'},
+  {calc:true,scenario:'Marcus earns $18.50 per hour and works 32 hours per week.',q:'How much does Marcus earn in a 4-week month before taxes?',opts:['$2,220','$2,368','$2,400','$2,480'],ans:1,exp:'Weekly earnings: $18.50 × 32 = $592. Monthly (4 weeks): $592 × 4 = $2,368. ✓'},
+  {calc:true,scenario:'',q:'A car traveled 312 miles on 8 gallons of gas. At the same rate, how far can it travel on 11 gallons?',opts:['390 miles','403 miles','429 miles','441 miles'],ans:2,exp:'First find miles per gallon: 312 ÷ 8 = 39 mpg. Then multiply: 39 × 11 = 429 miles. OR set up a proportion: 312/8 = x/11 → 8x = 3,432 → x = 429. ✓'},
+  {calc:false,scenario:'',q:'Simplify: −3 × (−4) + (−6) ÷ 2',opts:['15','9','6','−15'],ans:1,exp:'Follow order of operations. First multiply and divide: −3 × (−4) = 12 and (−6) ÷ 2 = −3. Then add: 12 + (−3) = 9. ✓ Remember: negative × negative = positive.'},
+  {calc:true,scenario:'A family wants to paint two walls. One wall is 12 feet wide and 9 feet tall. The other is 15 feet wide and 9 feet tall.',q:'If one gallon of paint covers 350 square feet, how many gallons do they need? (Round up to the nearest whole gallon.)',opts:['1 gallon','2 gallons','3 gallons','4 gallons'],ans:1,exp:'Area of wall 1: 12 × 9 = 108 sq ft. Area of wall 2: 15 × 9 = 135 sq ft. Total: 108 + 135 = 243 sq ft. Gallons needed: 243 ÷ 350 = 0.69 → round UP to 1 gallon. ✓'},
+  {calc:true,scenario:'',q:'What is 18 increased by 40%, then decreased by 25%?',opts:['18.9','18.0','15.12','16.5'],ans:0,exp:'Step 1 — increase by 40%: 18 × 1.40 = 25.2. Step 2 — decrease by 25%: 25.2 × 0.75 = 18.9. ✓ Important: you cannot combine the percentages. You must do each step separately.'},
+  {calc:true,scenario:'A restaurant bill before tax is $64.50. The tax rate is 8.5%.',q:'What is the total bill including tax? Round to the nearest cent.',opts:['$69.48','$69.93','$70.01','$70.08'],ans:1,exp:'Tax amount: $64.50 × 0.085 = $5.4825 ≈ $5.48. Total: $64.50 + $5.48 = $69.98. Wait — let\'s be precise: 64.50 × 1.085 = $69.9225 ≈ $69.93. ✓ Always multiply the original by (1 + tax rate) for the most accurate result.'}
+],
+algebra:[
+  {calc:true,scenario:'A plumber charges a $65 flat fee plus $45 per hour for labor.',q:'A customer pays $245. How many hours did the job take?',opts:['3 hours','4 hours','5 hours','6 hours'],ans:1,exp:'Set up equation: 65 + 45h = 245. Subtract 65: 45h = 180. Divide: h = 4 hours. ✓ Check: 65 + 45(4) = 65 + 180 = 245 ✓'},
+  {calc:true,scenario:'',q:'Solve for x: 3(2x − 4) = 2x + 8',opts:['x = 2','x = 4','x = 5','x = 6'],ans:2,exp:'Distribute: 6x − 12 = 2x + 8. Move x terms: 4x = 20. Divide: x = 5. Check: 3(10−4) = 18 and 2(5)+8 = 18 ✓'},
+  {calc:true,scenario:'Kim earns $12 per hour. She also earns $0.25 per mile she drives for deliveries. This week she worked 30 hours and drove 80 miles.',q:'What were her total earnings?',opts:['$360','$376','$380','$400'],ans:2,exp:'Hourly pay: 12 × 30 = $360. Mileage pay: 0.25 × 80 = $20. Total: 360 + 20 = $380. ✓'},
+  {calc:true,scenario:'',q:'Which inequality represents "five less than twice a number is at least 13"?',opts:['2n − 5 ≥ 13','2n + 5 ≥ 13','5 − 2n ≥ 13','2n − 5 ≤ 13'],ans:0,exp:'"Twice a number" = 2n. "Five less than" means subtract 5: 2n − 5. "At least 13" means ≥ 13. So: 2n − 5 ≥ 13. ✓ "At least" always translates to ≥.'},
+  {calc:true,scenario:'A phone plan costs $25 per month plus $0.05 per text message.',q:'If a customer\'s bill was $37.50, how many text messages did they send?',opts:['150','200','250','300'],ans:2,exp:'25 + 0.05t = 37.50. Subtract 25: 0.05t = 12.50. Divide: t = 250 texts. ✓'},
+  {calc:true,scenario:'Two friends start walking toward each other from opposite ends of a 4-mile trail. Friend A walks at 3 mph and Friend B walks at 2 mph.',q:'How many minutes will it take them to meet?',opts:['40 minutes','48 minutes','52 minutes','60 minutes'],ans:1,exp:'Combined speed: 3 + 2 = 5 mph. Time to cover 4 miles: 4 ÷ 5 = 0.8 hours. Convert to minutes: 0.8 × 60 = 48 minutes. ✓'},
+  {calc:true,scenario:'',q:'What is the slope of the line that passes through (−2, 1) and (4, 13)?',opts:['1','1.5','2','3'],ans:2,exp:'Slope = (y₂ − y₁) ÷ (x₂ − x₁) = (13 − 1) ÷ (4 − (−2)) = 12 ÷ 6 = 2. ✓ Be careful with negative x values — subtracting a negative adds.'},
+  {calc:true,scenario:'A savings account starts with $500 and earns $15 per month.',q:'Write an equation for the balance B after m months, then find the balance after 18 months.',opts:['$740','$770','$790','$800'],ans:1,exp:'Equation: B = 15m + 500. After 18 months: B = 15(18) + 500 = 270 + 500 = $770. ✓ This is a linear model — the slope (rate) is $15/month and the y-intercept (starting value) is $500.'},
+  {calc:true,scenario:'',q:'Solve: x² − 7x + 12 = 0',opts:['x = 3 and x = 4','x = −3 and x = −4','x = 3 and x = −4','x = −3 and x = 4'],ans:0,exp:'Factor: find two numbers that multiply to 12 and add to −7. Those numbers are −3 and −4. So: (x − 3)(x − 4) = 0. Solutions: x = 3 or x = 4. ✓'},
+  {calc:true,scenario:'A table shows the temperature (°F) at different hours after midnight: (0, 52), (2, 48), (4, 44), (6, 40).',q:'If this pattern continues, what will the temperature be at 10 hours after midnight?',opts:['32°F','34°F','36°F','38°F'],ans:0,exp:'The temperature decreases by 4°F every 2 hours — that is a rate of −2°F per hour. Equation: T = 52 − 2h. At h = 10: T = 52 − 20 = 32°F. ✓'}
+],
+geo:[
+  {calc:true,scenario:'A rectangular garden is 24 feet long and 15 feet wide.',q:'What is the area of the garden in square feet?',opts:['39 sq ft','78 sq ft','360 sq ft','720 sq ft'],ans:2,exp:'Area = length × width = 24 × 15 = 360 sq ft. ✓ Don\'t confuse area (square units) with perimeter (linear units). Area = space inside. Perimeter = total distance around.'},
+  {calc:true,scenario:'A homeowner wants to put a fence around a rectangular yard that is 40 feet long and 28 feet wide.',q:'How many feet of fencing are needed?',opts:['68 feet','112 feet','136 feet','1,120 feet'],ans:2,exp:'Perimeter = 2l + 2w = 2(40) + 2(28) = 80 + 56 = 136 feet. ✓ Perimeter goes AROUND the outside — it\'s the total length of all sides.'},
+  {calc:true,scenario:'A circular pizza has a diameter of 14 inches.',q:'What is the area of the pizza to the nearest square inch? (Use π = 3.14)',opts:['44 sq in','88 sq in','154 sq in','196 sq in'],ans:2,exp:'Radius = diameter ÷ 2 = 14 ÷ 2 = 7 inches. Area = πr² = 3.14 × 7² = 3.14 × 49 = 153.86 ≈ 154 sq in. ✓ Always use the RADIUS (not diameter) in the area formula.'},
+  {calc:true,scenario:'A right triangle has one leg of 9 cm and a hypotenuse of 15 cm.',q:'What is the length of the other leg?',opts:['6 cm','8 cm','10 cm','12 cm'],ans:3,exp:'Use Pythagorean theorem: a² + b² = c². So 9² + b² = 15². 81 + b² = 225. b² = 144. b = √144 = 12 cm. ✓ This is the 9-12-15 triple (a multiple of 3-4-5).'},
+  {calc:true,scenario:'A cylindrical water tank has a radius of 4 feet and a height of 10 feet.',q:'What is the volume of the tank to the nearest cubic foot? (Use π = 3.14)',opts:['251 cu ft','502 cu ft','251.2 cu ft','502.4 cu ft'],ans:3,exp:'Volume = πr²h = 3.14 × 4² × 10 = 3.14 × 16 × 10 = 3.14 × 160 = 502.4 cu ft. ✓'},
+  {calc:true,scenario:'A triangle has angles measuring 55° and 78°.',q:'What is the measure of the third angle?',opts:['37°','47°','57°','67°'],ans:1,exp:'The sum of all angles in any triangle is always 180°. Third angle = 180 − 55 − 78 = 47°. ✓'},
+  {calc:true,scenario:'A ramp rises 4 feet over a horizontal distance of 20 feet.',q:'What is the slope of the ramp as a fraction in simplest form?',opts:['1/4','1/5','4/20','2/10'],ans:1,exp:'Slope = rise ÷ run = 4 ÷ 20 = 1/5. ✓ Simplify 4/20 by dividing both by 4. A slope of 1/5 means the ramp rises 1 foot for every 5 feet of horizontal distance.'},
+  {calc:true,scenario:'A shipping box is 18 inches long, 12 inches wide, and 10 inches tall.',q:'What is the volume of the box in cubic inches?',opts:['480 cu in','1,200 cu in','2,160 cu in','2,560 cu in'],ans:2,exp:'Volume = l × w × h = 18 × 12 × 10 = 2,160 cubic inches. ✓'},
+  {calc:true,scenario:'On a coordinate plane, point A is at (2, 3) and point B is at (8, 11).',q:'What is the distance between the two points?',opts:['8 units','10 units','12 units','14 units'],ans:1,exp:'Distance = √((x₂−x₁)² + (y₂−y₁)²) = √((8−2)² + (11−3)²) = √(36 + 64) = √100 = 10 units. ✓'},
+  {calc:true,scenario:'A rectangle has a perimeter of 54 cm. The length is 5 cm more than the width.',q:'What are the dimensions of the rectangle?',opts:['Width = 10 cm, Length = 17 cm','Width = 11 cm, Length = 16 cm','Width = 12 cm, Length = 15 cm','Width = 13 cm, Length = 14 cm'],ans:1,exp:'Let w = width and w + 5 = length. Perimeter: 2w + 2(w+5) = 54 → 4w + 10 = 54 → 4w = 44 → w = 11 cm. Length = 16 cm. Check: 2(11) + 2(16) = 22 + 32 = 54 ✓'}
+],
+data:[
+  {calc:true,scenario:'A student received the following test scores: 78, 85, 91, 72, and 84.',q:'What is the mean (average) score?',opts:['82','84','85','86'],ans:0,exp:'Mean = sum ÷ count = (78 + 85 + 91 + 72 + 84) ÷ 5 = 410 ÷ 5 = 82. ✓'},
+  {calc:true,scenario:'Seven employees at a company earn the following annual salaries: $32,000, $38,000, $41,000, $44,000, $47,000, $51,000, and $98,000.',q:'Which measure of center best represents the typical salary, and why?',opts:['Mean, because it uses all the data','Median, because the $98,000 salary is an outlier that pulls the mean up','Mode, because it is the most common value','Range, because it shows the spread of salaries'],ans:1,exp:'The median is the best measure here. The $98,000 salary is an outlier (much higher than the others) that would pull the mean up to about $50,143, making it misleadingly high. The median — the middle value — is $44,000, which better represents where most salaries fall. ✓'},
+  {calc:true,scenario:'A bag contains 5 red marbles, 3 blue marbles, and 7 green marbles.',q:'If one marble is randomly selected, what is the probability it is NOT green? Express as a fraction.',opts:['7/15','8/15','1/3','2/5'],ans:1,exp:'Total marbles: 5 + 3 + 7 = 15. Green marbles: 7. P(green) = 7/15. P(NOT green) = 1 − 7/15 = 8/15. ✓'},
+  {calc:true,scenario:'A line graph shows a company\'s monthly sales. In January sales were $12,000, in April they were $18,000, and in July they were $24,000.',q:'If the trend is linear, what would sales be in October (month 10)?',opts:['$28,000','$30,000','$32,000','$34,000'],ans:1,exp:'Find the rate of change: from Jan (month 1, $12K) to July (month 7, $24K) is a $12K increase over 6 months = $2,000/month. October is month 10: $12,000 + (10−1) × $2,000 = $12,000 + $18,000 = $30,000. ✓'},
+  {calc:true,scenario:'A table shows the number of hours studied and test scores for 5 students: (1hr, 62), (2hr, 70), (3hr, 78), (4hr, 86), (5hr, 94).',q:'What type of correlation does this data show, and what would you predict for a student who studied 6 hours?',opts:['Positive correlation; predicted score: 100','Positive correlation; predicted score: 102','Negative correlation; predicted score: 100','No correlation; cannot predict'],ans:1,exp:'Each additional hour of study increases the score by 8 points — a strong positive correlation. The pattern (linear): score = 54 + 8h. For 6 hours: 54 + 48 = 102. ✓ (A score above 100 is possible in a prediction model even if the actual test caps at 100.)'},
+  {calc:true,scenario:'A company surveys 200 employees about their preferred work schedule. 80 prefer 9-to-5, 60 prefer flexible hours, 40 prefer 4 days/week, and 20 prefer remote only.',q:'What percentage of employees prefer either flexible hours or a 4-day work week?',opts:['30%','40%','50%','60%'],ans:2,exp:'Flexible + 4-day: 60 + 40 = 100 employees. Percentage: 100 ÷ 200 × 100 = 50%. ✓'},
+  {calc:true,scenario:'',q:'A data set has a mean of 45 and a median of 38. What does this most likely indicate about the data?',opts:['The data is evenly distributed around 40','There are one or more high outliers pulling the mean up','There are one or more low outliers pulling the mean down','The mode is higher than both the mean and median'],ans:1,exp:'When the mean (45) is significantly higher than the median (38), it typically means there are one or more high outliers pulling the mean up. The median is not affected by extreme values, so it better represents the "typical" value in this case. ✓'},
+  {calc:true,scenario:'A spinner has 8 equal sections numbered 1–8.',q:'What is the probability of spinning an even number greater than 4?',opts:['1/4','3/8','1/2','5/8'],ans:0,exp:'Even numbers greater than 4 on a 1–8 spinner: 6 and 8. That is 2 favorable outcomes out of 8 total. P = 2/8 = 1/4. ✓ List the qualifying numbers carefully before calculating.'},
+  {calc:true,scenario:'A scatter plot shows a negative correlation between hours of TV watched per day and GPA. A student watches 5 hours of TV per day.',q:'Based on the trend, what would you expect about this student\'s GPA compared to someone who watches 1 hour per day?',opts:['Higher GPA — more TV means more relaxation and better performance','Lower GPA — negative correlation means more TV is associated with lower GPA','The same GPA — correlation does not imply a specific outcome for individuals','It is impossible to say anything about individuals from a scatter plot trend'],ans:1,exp:'A negative correlation means as one variable increases, the other tends to decrease. More TV hours → lower GPA in the trend. Based on the pattern, a student watching 5 hrs/day would be expected to have a lower GPA than one watching 1 hr/day. ✓ Note: correlation does not prove causation, but it does allow prediction within the trend.'},
+  {calc:true,scenario:'Test scores for a class: 65, 70, 72, 75, 75, 78, 80, 83, 85, 90.',q:'What is the median score?',opts:['75','76.5','77','78'],ans:1,exp:'The data is already sorted. There are 10 values (even count), so the median is the average of the 5th and 6th values. 5th value = 75, 6th value = 78. Median = (75 + 78) ÷ 2 = 153 ÷ 2 = 76.5. ✓ Always sort the data first and remember even-count median = average of two middle values.'}
+]};
+
+let ANS={basic:{},algebra:{},geo:{},data:{}};
+let BUILT={basic:false,algebra:false,geo:false,data:false};
+const COLORS={basic:'#15803d',algebra:'#1d4ed8',geo:'#d97706',data:'#7c3aed'};
+const LABELS={basic:'Basic Math',algebra:'Algebra',geo:'Geometry',data:'Data & Graphs'};
+
+function initAllSubs(){
+  ['basic','algebra','geo','data'].forEach(s=>initSub(s));
+}
+
+function initSub(sub){
+  if(BUILT[sub])return;
+  BUILT[sub]=true;
+  const container=document.getElementById('q-'+sub);
+  QS[sub].forEach((q,i)=>{
+    const div=document.createElement('div');
+    div.className='pq-card';
+    div.id='pq-'+sub+'-'+i;
+    const calcLabel=q.calc?'Calculator allowed':'No calculator';
+    const calcCls=q.calc?'calc-tag':'nocalc-tag';
+    const scenHtml=q.scenario?`<div class="scenario">${q.scenario}</div>`:'';
+    const optsHtml=q.opts.map((o,j)=>`<li><button onclick="checkA('${sub}',${i},${j})">${'ABCD'[j]}. ${o}</button></li>`).join('');
+    div.innerHTML=`<div class="pq-meta"><span class="pq-num">Q${i+1} of ${QS[sub].length}</span><span class="pq-tag" style="background:${COLORS[sub]}22;color:${COLORS[sub]}">${LABELS[sub]}</span><span class="pq-tag ${calcCls}">${calcLabel}</span></div>${scenHtml}<div class="pq-text">${q.q}</div><ul class="opts">${optsHtml}</ul><div class="fb" id="fb-${sub}-${i}"></div>`;
+    container.appendChild(div);
+  });
+}
+
+function checkA(sub,qi,chosen){
+  if(ANS[sub][qi]!==undefined)return;
+  ANS[sub][qi]=chosen;
+  const q=QS[sub][qi];
+  const card=document.getElementById('pq-'+sub+'-'+qi);
+  card.querySelectorAll('.opts button').forEach(b=>b.disabled=true);
+  card.querySelectorAll('.opts button')[q.ans].classList.add('cr');
+  if(chosen!==q.ans)card.querySelectorAll('.opts button')[chosen].classList.add('cw');
+  const fb=document.getElementById('fb-'+sub+'-'+qi);
+  fb.className='fb show '+(chosen===q.ans?'fb-ok':'fb-no');
+  fb.innerHTML=(chosen===q.ans?'<strong>✓ Correct!</strong> ':'<strong>✗ Not quite.</strong> ')+q.exp;
+  updateProg();
+  const done=Object.keys(ANS[sub]).length;
+  if(done===QS[sub].length)showResult(sub);
+}
+
+function updateProg(){
+  const total=Object.values(QS).reduce((s,a)=>s+a.length,0);
+  const done=Object.values(ANS).reduce((s,a)=>s+Object.keys(a).length,0);
+  const correct=Object.entries(ANS).reduce((s,[sub,obj])=>s+Object.entries(obj).filter(([i,v])=>QS[sub][i].ans===v).length,0);
+  document.getElementById('prog-label').textContent=done+' of '+total+' answered';
+  document.getElementById('prog-score').textContent='Score: '+correct+' correct';
+  document.getElementById('prog-bar').style.width=Math.round((done/total)*100)+'%';
+}
+
+function showResult(sub){
+  const total=QS[sub].length;
+  const correct=Object.entries(ANS[sub]).filter(([i,v])=>QS[sub][i].ans===v).length;
+  const pct=Math.round((correct/total)*100);
+  const box=document.getElementById('sb-'+sub);
+  box.style.display='block';
+  const big=document.getElementById('sbig-'+sub);
+  big.textContent=correct+'/'+total+' ('+pct+'%)';
+  big.className='score-big '+(pct>=70?'green':'red');
+  document.getElementById('smsg-'+sub).textContent=pct>=80?'Excellent work on this section! You are well prepared.':pct>=60?'Good effort! Review the questions you missed — go back to the Concepts tab for those topics.':'Keep practicing! Review the concepts in the Study tab for this topic, then try again. Every round builds your skills.';
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function restartSub(sub){
+  ANS[sub]={};
+  const container=document.getElementById('q-'+sub);
+  container.querySelectorAll('.opts button').forEach(b=>{b.disabled=false;b.classList.remove('cr','cw')});
+  container.querySelectorAll('.fb').forEach(fb=>{fb.className='fb';fb.innerHTML=''});
+  document.getElementById('sb-'+sub).style.display='none';
+  updateProg();
+  window.scrollTo({top:document.getElementById('practice').offsetTop-20,behavior:'smooth'});
+}
+
+// ── Calculator ──
+let cVal='0',cOp='',cPrev='',cReset=false;
+function calcNum(n){
+  if(cReset){cVal=n;cReset=false;}
+  else cVal=cVal==='0'?n:cVal+n;
+  document.getElementById('calc-display').textContent=cVal;
+}
+function calcOp(op){cPrev=cVal;cOp=op;cReset=true;}
+function calcEquals(){
+  if(!cOp||!cPrev)return;
+  let a=parseFloat(cPrev),b=parseFloat(cVal),r=0;
+  if(cOp==='+')r=a+b;else if(cOp==='-')r=a-b;
+  else if(cOp==='*')r=a*b;else if(cOp==='/')r=b?a/b:'Error';
+  else if(cOp==='%')r=a*(b/100);
+  cVal=String(typeof r==='number'?parseFloat(r.toFixed(10)):r);
+  document.getElementById('calc-display').textContent=cVal;
+  cOp='';cPrev='';cReset=true;
+}
+function calcClear(){cVal='0';cOp='';cPrev='';cReset=false;document.getElementById('calc-display').textContent='0';}
+function calcDel(){cVal=cVal.length>1?cVal.slice(0,-1):'0';document.getElementById('calc-display').textContent=cVal;}
+
+initAllSubs();
+</script>
+<div class="watermark-bar">Ashley Tate<span>|</span>Adult Ed Study Prep<span>|</span>&copy; 2026 &mdash; All Rights Reserved</div>
+</body>
+</html>

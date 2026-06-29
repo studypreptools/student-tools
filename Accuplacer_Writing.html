@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accuplacer Next-Gen Writing — Passage-Based Practice</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f0;color:#1a1a1a;font-size:15px;line-height:1.6}
+.app{max-width:780px;margin:0 auto;padding:1rem 1rem 3rem}
+.top-bar{background:#1d4ed8;color:#fff;padding:1.25rem 1.5rem;border-radius:12px;margin-bottom:1.25rem}
+.top-bar h1{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px}
+.top-bar p{font-size:13px;color:#bfdbfe;line-height:1.7}
+.alert-bar{background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;font-size:13px;color:#78350f;line-height:1.75}
+.alert-bar strong{font-weight:700;display:block;margin-bottom:4px;font-size:14px}
+.main-nav{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.25rem;border-bottom:1px solid #e0e0d8;padding-bottom:1rem}
+.mnav{padding:7px 14px;font-size:13px;font-weight:600;border:1px solid #ccc;border-radius:8px;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all .15s}
+.mnav:hover{background:#f0f0e8}
+.mnav.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+.page{display:none}.page.on{display:block}
+.sec-lbl{font-size:11px;font-weight:700;color:#777;letter-spacing:.08em;text-transform:uppercase;margin:1.25rem 0 .65rem}
+.tip{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.85rem}
+.tip h3{font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:5px}
+.tip p,.tip li{font-size:13px;color:#1e40af;line-height:1.8}
+.tip ol,.tip ul{padding-left:1.1rem}
+.warn{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.85rem}
+.warn h3{font-size:13px;font-weight:700;color:#c2410c;margin-bottom:5px}
+.warn p,.warn li{font-size:13px;color:#9a3412;line-height:1.8}
+.warn ul{padding-left:1.1rem}
+/* Passage test layout */
+.test-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start}
+@media(max-width:620px){.test-wrap{grid-template-columns:1fr}}
+.passage-panel{background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1.1rem 1.25rem;position:sticky;top:1rem}
+.passage-label{font-size:11px;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem}
+.passage-title{font-size:14px;font-weight:700;margin-bottom:.75rem;color:#1a1a1a}
+.passage-text{font-size:13px;line-height:1.95;color:#333}
+.passage-text .hl{background:#fef9c3;border-radius:3px;padding:0 2px}
+.passage-text .num{font-size:11px;font-weight:700;color:#1d4ed8;margin-right:2px;vertical-align:super}
+.q-panel{display:flex;flex-direction:column;gap:.85rem}
+.q-card{background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem 1.1rem}
+.q-header{display:flex;align-items:center;gap:8px;margin-bottom:.6rem}
+.q-num{background:#1d4ed8;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.q-type{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.qt-g{background:#dbeafe;color:#1e40af}
+.qt-o{background:#d1fae5;color:#065f46}
+.qt-s{background:#ede9fe;color:#4c1d95}
+.q-text{font-size:13px;line-height:1.75;margin-bottom:.75rem;color:#1a1a1a}
+.q-text strong{font-weight:600}
+.opts{list-style:none;display:flex;flex-direction:column;gap:5px}
+.opts li button{width:100%;text-align:left;padding:9px 12px;font-size:13px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;cursor:pointer;line-height:1.55;font-family:inherit;transition:background .1s,border-color .1s}
+.opts li button:hover:not(:disabled){background:#f5f5f0;border-color:#bbb}
+.opts li button.cr{background:#dcfce7;border-color:#16a34a;color:#14532d;font-weight:600}
+.opts li button.cw{background:#fee2e2;border-color:#dc2626;color:#7f1d1d}
+.opts li button:disabled{cursor:default}
+.fb{margin-top:.65rem;font-size:13px;line-height:1.75;padding:10px 12px;border-radius:8px;display:none}
+.fb.show{display:block}
+.fb-ok{background:#dcfce7;color:#14532d;border:1px solid #86efac}
+.fb-no{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5}
+/* passage selector */
+.passage-selector{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.psel-btn{padding:7px 14px;font-size:12px;font-weight:600;border:1px solid #ccc;border-radius:8px;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all .15s}
+.psel-btn:hover{background:#f0f0e8}
+.psel-btn.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+.psel-btn.done{border-color:#16a34a;color:#14532d}
+.psel-btn.done.on{background:#15803d;border-color:#15803d;color:#fff}
+.passage-block{display:none}.passage-block.on{display:block}
+/* progress */
+.prog-bar-wrap{background:#e5e5e0;border-radius:8px;height:7px;margin:.35rem 0 .15rem;overflow:hidden}
+.prog-bar{height:7px;border-radius:8px;background:#1d4ed8;transition:width .4s}
+.prog-info{display:flex;justify-content:space-between;font-size:11px;color:#777;margin-bottom:.75rem}
+/* score summary */
+.summary-box{background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1.25rem;margin-top:1rem;display:none;text-align:center}
+.summary-big{font-size:36px;font-weight:700;margin:.4rem 0}
+.green{color:#15803d}.red{color:#b91c1c}
+/* rules */
+.rule-card{background:#fff;border:1px solid #e0e0d8;border-radius:12px;margin-bottom:.75rem;overflow:hidden}
+.rule-head{display:flex;align-items:center;gap:8px;padding:.85rem 1.1rem;cursor:pointer;user-select:none}
+.rule-head:hover{background:#fafaf7}
+.rule-title{font-size:14px;font-weight:600;flex:1}
+.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.b-hot{background:#fef3c7;color:#92400e}.b-mid{background:#d1fae5;color:#065f46}
+.chev{font-size:16px;color:#888;transition:transform .2s}
+.rule-body-wrap{display:none;padding:0 1.1rem .9rem;border-top:1px solid #f0f0e8}
+.rule-body-wrap.open{display:block}
+.chev.open{transform:rotate(180deg)}
+.rule-body{font-size:13px;color:#444;line-height:1.85;margin-top:.7rem}
+.rule-body strong{font-weight:600;color:#1a1a1a}
+.ex{margin-top:8px;background:#fafaf5;border-radius:8px;padding:10px 12px;font-size:13px;line-height:2;border:1px solid #eee}
+.ex-lbl{font-size:10px;font-weight:700;margin-bottom:2px;color:#999}
+.wr{color:#b91c1c}.ok{color:#15803d}
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.65rem;margin-top:.65rem}
+.cs-box{background:#fff;border:1px solid #e0e0d8;border-radius:8px;padding:9px 12px}
+.cs-box h4{font-size:12px;font-weight:700;margin-bottom:5px}
+.cs-box ul{font-size:12px;color:#555;line-height:2;padding-left:.9rem}
+.restart-btn{padding:8px 20px;font-size:13px;font-weight:600;border:1px solid #1d4ed8;border-radius:8px;cursor:pointer;background:#fff;color:#1d4ed8;margin-top:.75rem;font-family:inherit}
+.restart-btn:hover{background:#eff6ff}
+
+.watermark-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#1a1a1a;color:#fff;
+  text-align:center;font-size:12px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  padding:8px 16px;z-index:9999;
+  letter-spacing:0.03em;opacity:0.92;
+}
+.watermark-bar span{opacity:0.45;margin:0 8px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="top-bar">
+  <h1>Accuplacer Next-Gen Writing — Passage-Based Practice</h1>
+  <p>This tool is built to match the <strong>real test format</strong>: read a full passage (300–350 words), then answer 5 editing questions about that same passage — just like the actual Accuplacer.</p>
+</div>
+
+<div class="alert-bar">
+  <strong>&#9888; How the real Accuplacer Writing test works</strong>
+  The test gives you a full written passage of 300–350 words. ALL 25 questions come from passages — there are no stand-alone sentence questions. You read the passage and then answer 5 questions about grammar, word choice, organization, and sentence structure within that passage. This tool is designed to match that exact format.
+</div>
+
+<div class="main-nav">
+  <button class="mnav on" onclick="goPage('howit',this)">&#128270; How the test works</button>
+  <button class="mnav" onclick="goPage('practice',this)">&#9998; Practice passages</button>
+  <button class="mnav" onclick="goPage('rules',this)">&#128214; Rules reference</button>
+  <button class="mnav" onclick="goPage('strategy',this)">&#9733; Test strategy</button>
+</div>
+
+<!-- HOW IT WORKS -->
+<div id="howit" class="page on">
+  <div class="tip">
+    <h3>&#128221; What you will see on the real test</h3>
+    <p>The Accuplacer Next-Gen Writing test has <strong>25 questions</strong>, all based on <strong>written passages</strong>. Here is the exact format:</p>
+    <ol style="margin-top:8px">
+      <li>You are shown a passage of <strong>300–350 words</strong> — an essay, article, or informational piece written by someone else.</li>
+      <li>Certain words, phrases, and sentences in the passage are <strong>numbered or underlined</strong>.</li>
+      <li>Each question asks you to make an editing decision about a specific part of that passage.</li>
+      <li>There are <strong>5 questions per passage</strong>, and you see the passage the entire time you answer those 5 questions.</li>
+      <li>The test is <strong>adaptive</strong> — harder questions appear when you answer correctly.</li>
+    </ol>
+  </div>
+
+  <div class="sec-lbl">The two types of questions you will see</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem">
+    <div style="background:#fff;border:1px solid #e0e0d8;border-radius:10px;padding:1rem">
+      <div style="font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:6px">Standard English Conventions (~40%)</div>
+      <div style="font-size:12px;color:#444;line-height:1.85">
+        Grammar errors to fix in specific sentences:<br>
+        &bull; Subject-verb agreement<br>
+        &bull; Pronoun agreement<br>
+        &bull; Verb tense<br>
+        &bull; Comma splices &amp; run-ons<br>
+        &bull; Punctuation<br>
+        &bull; Commonly confused words
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #e0e0d8;border-radius:10px;padding:1rem">
+      <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:6px">Expression of Ideas (~60%)</div>
+      <div style="font-size:12px;color:#444;line-height:1.85">
+        Making the writing clearer and more effective:<br>
+        &bull; Transition words between ideas<br>
+        &bull; Moving sentences to improve flow<br>
+        &bull; Deleting irrelevant sentences<br>
+        &bull; Choosing more precise words<br>
+        &bull; Improving the intro or conclusion<br>
+        &bull; "No change" when correct as-is
+      </div>
+    </div>
+  </div>
+
+  <div class="warn">
+    <h3>&#9888; The biggest difference from isolated sentence practice</h3>
+    <ul>
+      <li>You must read the <strong>whole passage first</strong> to understand the topic, tone, and flow.</li>
+      <li>Many questions can only be answered correctly if you understand the <strong>surrounding sentences</strong> — not just the one being edited.</li>
+      <li>Transition questions depend on knowing what came <strong>before AND after</strong> the blank.</li>
+      <li>Sentence placement questions require you to understand the <strong>logical flow of the whole paragraph</strong>.</li>
+      <li>"No change" is a valid answer on every question — sometimes the original is already correct.</li>
+    </ul>
+  </div>
+
+  <div class="tip">
+    <h3>&#128161; How to use this practice tool</h3>
+    <ol>
+      <li>Go to the <strong>Practice Passages</strong> tab.</li>
+      <li>Select a passage — read the <strong>entire passage first</strong> before answering any questions.</li>
+      <li>Answer all 5 questions for that passage — the passage stays visible on the left while you work.</li>
+      <li>Tap any answer to get instant feedback and a full explanation.</li>
+      <li>Work through all 5 passages (25 questions total) to complete a full simulated test.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- PRACTICE -->
+<div id="practice" class="page">
+  <div class="passage-selector" id="passage-selector">
+    <button class="psel-btn on" onclick="showPassage(0,this)">Passage 1</button>
+    <button class="psel-btn" onclick="showPassage(1,this)">Passage 2</button>
+    <button class="psel-btn" onclick="showPassage(2,this)">Passage 3</button>
+    <button class="psel-btn" onclick="showPassage(3,this)">Passage 4</button>
+    <button class="psel-btn" onclick="showPassage(4,this)">Passage 5</button>
+  </div>
+  <div class="prog-info">
+    <span id="prog-label">0 of 25 answered</span>
+    <span id="prog-score">Score: 0 correct</span>
+  </div>
+  <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+  <div id="passages-container"></div>
+  <div class="summary-box" id="summary-box">
+    <div style="font-size:14px;color:#555">All 5 passages complete!</div>
+    <div class="summary-big" id="summary-big"></div>
+    <div style="font-size:13px;color:#555;max-width:440px;margin:0 auto;line-height:1.7" id="summary-msg"></div>
+    <button class="restart-btn" onclick="restartAll()">&#8635; Start over</button>
+  </div>
+</div>
+
+<!-- RULES REFERENCE -->
+<div id="rules" class="page">
+  <div class="tip">
+    <h3>&#128214; Use this tab to look up rules you missed in practice</h3>
+    <p>After completing a passage, if you missed a question, find the relevant rule here to understand why. Learning the rule in context — after getting a question wrong — is the most effective way to remember it.</p>
+  </div>
+
+  <div class="sec-lbl">Standard English conventions</div>
+
+  <div class="rule-card">
+    <div class="rule-head" onclick="togRule(this)"><span class="badge b-hot">Very common</span><span class="rule-title">Subject-verb agreement</span><span class="chev">&#8964;</span></div>
+    <div class="rule-body-wrap">
+      <div class="rule-body">The verb must match its subject. <strong>Trick: cross out the "of the…" phrase</strong> to find the real subject. Words that are always singular: everyone, each, someone, nobody, either, neither, anything.</div>
+      <div class="ex"><div class="ex-lbl wr">✗ Wrong</div><div class="wr">The collection of paintings <u>are</u> displayed in the hall.</div><div class="ex-lbl ok">✓ Right</div><div class="ok">The collection of paintings <u>is</u> displayed in the hall.</div><div style="font-size:12px;color:#666;margin-top:6px">Cross out "of paintings" → "The collection IS" ✓</div></div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-head" onclick="togRule(this)"><span class="badge b-hot">Very common</span><span class="rule-title">Comma splices &amp; run-ons</span><span class="chev">&#8964;</span></div>
+    <div class="rule-body-wrap">
+      <div class="rule-body">A <strong>comma splice</strong> uses only a comma to join two complete sentences. A <strong>run-on</strong> joins two sentences with no punctuation at all. Fix with: comma + FANBOYS (for, and, nor, but, or, yet, so), a semicolon, or two separate sentences.</div>
+      <div class="ex"><div class="ex-lbl wr">✗ Comma splice</div><div class="wr">The program was effective, it helped hundreds of students.</div><div class="ex-lbl ok">✓ Fixed</div><div class="ok">The program was effective, and it helped hundreds of students.</div></div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-head" onclick="togRule(this)"><span class="badge b-hot">Very common</span><span class="rule-title">Dangling &amp; misplaced modifiers</span><span class="chev">&#8964;</span></div>
+    <div class="rule-body-wrap">
+      <div class="rule-body">The describing phrase must sit right next to the word it describes. <strong>Ask: "Who is doing the action at the start of the sentence?"</strong> That person must immediately follow the comma.</div>
+      <div class="ex"><div class="ex-lbl wr">✗ Dangling</div><div class="wr">Having finished the report, the printer was used to print it.</div><div class="ex-lbl ok">✓ Fixed</div><div class="ok">Having finished the report, she used the printer to print it.</div></div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-head" onclick="togRule(this)"><span class="badge b-hot">Very common</span><span class="rule-title">Transition words — match the relationship</span><span class="chev">&#8964;</span></div>
+    <div class="rule-body-wrap">
+      <div class="rule-body">Always read the sentence before AND after the blank. Decide the logical relationship, then choose the matching word.</div>
+      <div class="ex" style="line-height:2.3"><strong>Contrast:</strong> however, nevertheless, although, yet, on the other hand<br><strong>Cause/effect:</strong> therefore, as a result, consequently, thus<br><strong>Addition:</strong> furthermore, in addition, also, moreover<br><strong>Example:</strong> for example, for instance, specifically<br><strong>Sequence:</strong> first, then, next, finally, subsequently</div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-head" onclick="togRule(this)"><span class="badge b-hot">Very common</span><span class="rule-title">"No change" — don't fix what isn't broken</span><span class="chev">&#8964;</span></div>
+    <div class="rule-body-wrap">
+      <div class="rule-body">Every question includes a "No change" option. Many students lose points by changing things that were already correct. <strong>Before picking any answer, ask: "Can I actually name the specific error here?"</strong> If you can't name it, the original is probably fine — choose "No change."</div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-head" onclick="togRule(this)"><span class="badge b-mid">Common</span><span class="rule-title">Parallel structure</span><span class="chev">&#8964;</span></div>
+    <div class="rule-body-wrap">
+      <div class="rule-body">All items in a list or series must use the same grammatical form.</div>
+      <div class="ex"><div class="ex-lbl wr">✗ Not parallel</div><div class="wr">The program focuses on teaching reading, to improve writing, and math skills.</div><div class="ex-lbl ok">✓ Parallel</div><div class="ok">The program focuses on teaching reading, improving writing, and building math skills.</div></div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-head" onclick="togRule(this)"><span class="badge b-mid">Common</span><span class="rule-title">Verb tense consistency</span><span class="chev">&#8964;</span></div>
+    <div class="rule-body-wrap">
+      <div class="rule-body">Don't switch tenses without a logical reason. Find the passage's main tense and stay in it. If the surrounding sentences are in past tense, the answer should be in past tense too.</div>
+      <div class="ex"><div class="ex-lbl wr">✗ Inconsistent</div><div class="wr">The researcher gathered her data and <u>analyzes</u> the results.</div><div class="ex-lbl ok">✓ Consistent</div><div class="ok">The researcher gathered her data and <u>analyzed</u> the results.</div></div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-head" onclick="togRule(this)"><span class="badge b-mid">Common</span><span class="rule-title">Sentence placement &amp; relevance</span><span class="chev">&#8964;</span></div>
+    <div class="rule-body-wrap">
+      <div class="rule-body"><strong>Placement:</strong> Read the passage without the sentence. Find where it follows logically from the sentence before it AND leads naturally into the sentence after it.<br><br><strong>Relevance:</strong> Ask "Does this sentence directly support the paragraph's main idea?" If not — delete it. Even interesting facts should be cut if they don't support the focus.</div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-head" onclick="togRule(this)"><span class="badge b-mid">Common</span><span class="rule-title">Precise word choice &amp; conciseness</span><span class="chev">&#8964;</span></div>
+    <div class="rule-body-wrap">
+      <div class="rule-body">Choose the most specific and clear option. Avoid vague words ("good," "things," "stuff") and wordy phrases ("due to the fact that" = "because"). The best answer says the most with the fewest words without losing meaning.</div>
+      <div class="ex"><div class="ex-lbl wr">✗ Vague and wordy</div><div class="wr">The results had a good effect on the situation in a positive way.</div><div class="ex-lbl ok">✓ Precise and concise</div><div class="ok">The results significantly improved patient outcomes.</div></div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">Night-before cheat sheet</div>
+  <div class="cs-grid">
+    <div class="cs-box"><h4>Comma splices</h4><ul><li>Comma alone = NOT enough</li><li>Comma + FANBOYS = OK</li><li>Semicolon alone = OK</li><li>Period + new sentence = OK</li></ul></div>
+    <div class="cs-box"><h4>Subject-verb</h4><ul><li>Cross out "of the…"</li><li>Find the REAL subject</li><li>Singular subject = singular verb</li><li>Everyone/each = singular</li></ul></div>
+    <div class="cs-box"><h4>Modifiers</h4><ul><li>Who is doing the action?</li><li>That person follows the comma</li><li>A thing following = dangling</li></ul></div>
+    <div class="cs-box"><h4>Transitions</h4><ul><li>Read BOTH surrounding sentences</li><li>Contrast → however</li><li>Result → therefore</li><li>Add → furthermore</li></ul></div>
+    <div class="cs-box"><h4>Placement Qs</h4><ul><li>Read without the sentence first</li><li>Where does it fit logically?</li><li>Must connect before AND after</li></ul></div>
+    <div class="cs-box"><h4>No change</h4><ul><li>Always a valid choice</li><li>Name the error first</li><li>If you can't name it → No change</li></ul></div>
+  </div>
+</div>
+
+<!-- STRATEGY -->
+<div id="strategy" class="page">
+  <div class="warn">
+    <h3>&#9888; The most important shift in mindset</h3>
+    <p>On isolated sentence practice, you only look at one sentence. On the real test, <strong>every question is connected to a full passage.</strong> You must understand the whole piece of writing before you can edit any part of it correctly. Always read the entire passage before answering question 1.</p>
+  </div>
+
+  <div class="sec-lbl">Step-by-step approach for every passage</div>
+  <div style="background:#fff;border:1px solid #e0e0d8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.85rem">
+    <ol style="padding-left:1.2rem;line-height:2.5;font-size:14px">
+      <li><strong>Read the entire passage first</strong> — don't answer anything yet. Get the topic, tone, and overall flow.</li>
+      <li><strong>Identify the main idea</strong> of each paragraph as you read.</li>
+      <li>Now go to <strong>Question 1</strong>. Read it carefully — what is it actually asking?</li>
+      <li>Go back to the passage and <strong>read the surrounding sentences</strong> — not just the targeted one.</li>
+      <li><strong>Eliminate obviously wrong answers</strong> first, then compare your top two choices.</li>
+      <li><strong>Read your chosen answer back into the passage.</strong> Does the passage flow naturally with it?</li>
+      <li>If you can't name a specific error in the original — <strong>choose "No change."</strong></li>
+    </ol>
+  </div>
+
+  <div class="sec-lbl">Question-type specific strategies</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem">
+    <div style="background:#fff;border:1px solid #e0e0d8;border-radius:10px;padding:.9rem 1rem">
+      <div style="font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:6px">Transition questions</div>
+      <div style="font-size:12px;color:#444;line-height:1.85">Read the sentence BEFORE the blank and the sentence AFTER. Decide: are these ideas adding, contrasting, or cause-effect? Then pick the matching word. Don't pick a word just because it sounds formal.</div>
+    </div>
+    <div style="background:#fff;border:1px solid #e0e0d8;border-radius:10px;padding:.9rem 1rem">
+      <div style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:6px">Sentence placement questions</div>
+      <div style="font-size:12px;color:#444;line-height:1.85">Read the passage without the sentence. Try each location — where does the sentence follow naturally from what came before AND lead into what comes next? That's the right spot.</div>
+    </div>
+    <div style="background:#fff;border:1px solid #e0e0d8;border-radius:10px;padding:.9rem 1rem">
+      <div style="font-size:13px;font-weight:700;color:#6d28d9;margin-bottom:6px">Delete or keep questions</div>
+      <div style="font-size:12px;color:#444;line-height:1.85">Ask: "Does this sentence directly support the main point of this paragraph?" If it's off-topic, repetitive, or only loosely related — delete it. Even interesting facts get cut if they don't support the focus.</div>
+    </div>
+    <div style="background:#fff;border:1px solid #e0e0d8;border-radius:10px;padding:.9rem 1rem">
+      <div style="font-size:13px;font-weight:700;color:#c2410c;margin-bottom:6px">Grammar questions</div>
+      <div style="font-size:12px;color:#444;line-height:1.85">Read the whole sentence — and the ones around it for tense context. Use the ear test: say the sentence in your head. If it sounds wrong, it probably is. Can you name the specific error? If not, consider "No change."</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <h3>&#128279; Free official Accuplacer practice — use this too!</h3>
+    <p>The College Board provides free official sample tests at <strong>accuplacer.collegeboard.org</strong>. Create a free account and take the Next-Generation Writing sample. It is the closest thing to the real test because it IS made by the same people who write the actual exam. Use it alongside this tool.</p>
+  </div>
+
+  <div class="tip">
+    <h3>&#127775; Remember: the test is adaptive</h3>
+    <p>The computer adjusts difficulty based on your answers. Getting the first several questions right is especially important — it unlocks harder, higher-scoring questions. <strong>Take extra time on the first 5–8 questions of the real test.</strong> Slow and careful beats fast and careless.</p>
+  </div>
+</div>
+
+</div><!-- end app -->
+
+<script>
+// ── Navigation ──
+function goPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.mnav').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function togRule(head){
+  const b=head.nextElementSibling,c=head.querySelector('.chev');
+  const open=b.classList.toggle('open');c.classList.toggle('open',open);
+}
+
+// ── Passages & Questions Data ──
+const PASSAGES=[
+{
+  title:'Passage 1: The Rise of Urban Farming',
+  topic:'Social sciences / Informational',
+  text:`<p>[1] In cities across the United States, a quiet revolution is taking place on rooftops, in vacant lots, and inside converted warehouses. Urban farming—the practice of growing food within city limits—<span class="hl"><span class="num">1</span>have expanded</span> dramatically over the past two decades. What was once a fringe movement has become a mainstream response to concerns about food security, environmental sustainability, and community health.</p>
+<p>[2] Proponents of urban farming point to a number of compelling benefits. Fresh produce grown locally reduces the need for long-distance transportation, <span class="hl"><span class="num">2</span>which cuts carbon emissions significantly</span>. Urban farms also tend to use less water than conventional agriculture, thanks to technologies such as hydroponics and drip irrigation. <span class="hl"><span class="num">3</span>Strawberries are one of the most popular fruits grown in home gardens.</span> Perhaps most importantly, urban farms bring fresh, affordable food to neighborhoods that often lack access to grocery stores—areas sometimes called "food deserts."</p>
+<p>[3] <span class="hl"><span class="num">4</span>However,</span> urban farming is not without its challenges. Land in cities is expensive and often contaminated with industrial pollutants that make growing food unsafe. Startup costs for equipment and infrastructure can be prohibitive for community organizations with limited budgets. Additionally, city zoning laws were not written with farming in mind, and navigating regulations can be a time-consuming and frustrating process for new urban farmers.</p>
+<p>[4] Despite these obstacles, the movement continues to grow. Cities like Detroit, Chicago, and New York have developed dedicated programs to support urban agriculture, offering grants, technical assistance, and streamlined permitting. Advocates argue that with the right policy support, urban farming could play a significant role in building more resilient and equitable food systems for future generations.</p>`,
+  questions:[
+    {text:'Question 1 refers to the underlined portion labeled <strong>[1]</strong> in the passage ("have expanded"). Which of the following is the best version of the underlined portion?',type:'g',opts:['NO CHANGE','has expanded','is expanding','expands'],ans:1,exp:'"Urban farming" is the subject — a singular noun phrase. Singular subject needs singular verb "has expanded." "Have expanded" is plural and incorrect. The other options change the tense unnecessarily — the present perfect "has expanded" best captures the ongoing growth described in the passage.'},
+    {text:'Question 2 refers to the underlined portion labeled <strong>[2]</strong> ("which cuts carbon emissions significantly"). The writer wants to be more specific about the scale of the reduction. Which choice best accomplishes this goal?',type:'o',opts:['NO CHANGE','which reduces emissions','which can lower transportation-related carbon emissions by up to 50 percent compared to conventional supply chains','which is good for the environment'],ans:2,exp:'The question asks for more specificity. Option C provides a concrete, measurable detail (up to 50 percent) and specifies what kind of emissions (transportation-related) and compared to what (conventional supply chains). Options A and B are vague, and D is the least specific of all.'},
+    {text:'Question 3 refers to the sentence labeled <strong>[3]</strong> ("Strawberries are one of the most popular fruits grown in home gardens.") Should the writer keep or delete this sentence?',type:'o',opts:['Keep it — it provides useful information about what urban farmers grow.','Keep it — it supports the paragraph\'s focus on the benefits of urban farming.','Delete it — it is about home gardens, not urban farming, and does not support the paragraph\'s main idea.','Delete it — the paragraph has too many sentences already.'],ans:2,exp:'This sentence is off-topic. Paragraph 2 focuses on the specific benefits of urban farming — carbon reduction, water savings, and food access. A fact about popular fruits in home gardens doesn\'t support any of those points. The reason to delete it is that it doesn\'t support the paragraph\'s main idea — not simply because the paragraph is too long.'},
+    {text:'Question 4 refers to the underlined word <strong>[4]</strong> at the beginning of paragraph 3 ("However"). The writer is considering replacing "However" with another transition. Which choice best maintains the logical flow between paragraph 2 and paragraph 3?',type:'o',opts:['NO CHANGE','Furthermore','As a result','For example'],ans:0,exp:'Paragraph 2 describes benefits; paragraph 3 introduces challenges. This is a contrast relationship — "However" correctly signals that the writer is shifting to opposing information. "Furthermore" would add more benefits. "As a result" would suggest the challenges are caused by the benefits. "For example" would suggest paragraph 3 illustrates something from paragraph 2. "NO CHANGE" is correct.'},
+    {text:'The writer wants to add the following sentence to paragraph 4: "In Detroit alone, more than 1,400 urban gardens and farms now operate throughout the city." Where should this sentence most logically be placed?',type:'o',opts:['At the very beginning of paragraph 4, before "Despite these obstacles"','After the sentence mentioning Detroit, Chicago, and New York','At the end of paragraph 4, after the sentence about future generations','At the end of paragraph 2, after the food deserts sentence'],ans:1,exp:'The sentence provides a specific data point about Detroit — a city named in the following sentence. It makes the most sense immediately after the sentence that mentions Detroit, Chicago, and New York, since it gives a concrete example that supports the claim that cities have developed dedicated programs. Placing it before that sentence would introduce Detroit before it has been mentioned in context.'}
+  ]
+},
+{
+  title:'Passage 2: The Science of Sleep',
+  topic:'Natural sciences / Informational',
+  text:`<p>[1] For much of human history, sleep was considered a passive state — a period of inactivity in which the body simply rested. Modern neuroscience has fundamentally changed this understanding. Sleep is now recognized as an <span class="hl"><span class="num">1</span>active, highly regulated process</span> that is essential for physical health, cognitive function, and emotional well-being.</p>
+<p>[2] During sleep, the brain cycles through distinct stages roughly every 90 minutes. The first stages involve light and deep sleep, during which the body repairs tissues, strengthens the immune system, and consolidates memories. The final stage—rapid eye movement, or REM sleep—<span class="hl"><span class="num">2</span>is when most dreaming occurs, and it plays a crucial role in emotional processing and creative thinking.</span></p>
+<p>[3] <span class="hl"><span class="num">3</span>Despite this knowledge, many Americans are chronically sleep-deprived.</span> The Centers for Disease Control and Prevention estimates that more than one-third of adults in the United States regularly get less than the recommended seven hours of sleep per night. The consequences are serious: sleep deprivation <span class="hl"><span class="num">4</span>impairs</span> judgment, slows reaction time, and increases the risk of conditions such as obesity, diabetes, and cardiovascular disease.</p>
+<p>[4] Experts recommend several strategies for improving sleep quality. Maintaining a consistent sleep schedule — going to bed and waking up at the same time every day, even on weekends — helps regulate the body's internal clock. Limiting exposure to screens before bedtime is also advised, as the blue light emitted by phones and computers <span class="hl"><span class="num">5</span>suppresses</span> melatonin production and makes it harder to fall asleep. Creating a cool, dark, and quiet sleep environment can further support restful sleep.</p>`,
+  questions:[
+    {text:'Question 1 refers to the underlined portion labeled <strong>[1]</strong> ("active, highly regulated process"). The writer is considering changing this phrase. Which version is most consistent with the formal, informational tone of the passage?',type:'o',opts:['NO CHANGE','really busy and important thing','complex and fascinating experience','active thing that the body does'],ans:0,exp:'The passage uses formal, scientific language throughout ("neuroscience," "cognitive function," "consolidates memories"). "Active, highly regulated process" matches this register precisely. Options B and D are too casual ("thing," "really busy"). Option C ("complex and fascinating") introduces a subjective judgment ("fascinating") inconsistent with the objective tone of the passage.'},
+    {text:'Question 2 refers to the underlined portion labeled <strong>[2]</strong> ("is when most dreaming occurs, and it plays a crucial role in emotional processing and creative thinking"). Which of the following best improves the clarity and conciseness of this portion?',type:'o',opts:['NO CHANGE','is when dreaming happens and also emotional processing and creative thinking happen too','supports dreaming, emotional processing, and creative thinking','is the stage where you dream the most and feel things and think creatively'],ans:2,exp:'Option C is the most concise — it eliminates the redundant "is when... occurs" construction and parallel list ("dreaming, emotional processing, and creative thinking") is cleaner and more direct. Option A is slightly wordy with "is when most dreaming occurs, and it plays." Option B is redundant ("happen too"). Option D is too casual ("feel things") for the formal tone.'},
+    {text:'Question 3 refers to the sentence labeled <strong>[3]</strong> at the beginning of paragraph 3 ("Despite this knowledge, many Americans are chronically sleep-deprived."). What role does this sentence play in the passage?',type:'o',opts:['It introduces a counterargument to the main claim of the passage.','It serves as a transition, connecting the scientific information in paragraph 2 to the problem described in paragraph 3.','It provides a definition of the term "sleep-deprived."','It should be deleted because it repeats information already stated.'],ans:1,exp:'This sentence works as a pivot. "Despite this knowledge" refers back to the scientific understanding described in paragraphs 1 and 2, while the rest of the sentence introduces the problem (sleep deprivation) that paragraph 3 will explore. It is a classic transitional sentence that bridges two sections of the passage. It does not introduce a counterargument, provide a definition, or repeat information.'},
+    {text:'Question 4 refers to the underlined word <strong>[4]</strong> ("impairs"). The sentence reads: "sleep deprivation impairs judgment, slows reaction time, and increases the risk of conditions..." Which of the following, if substituted for "impairs," would best maintain parallel structure in the sentence?',type:'g',opts:['NO CHANGE','is impairing','has impaired','impairment of'],ans:0,exp:'The sentence lists three parallel verbs: "impairs," "slows," and "increases." All three are simple present tense verbs. "NO CHANGE" preserves this parallel structure. "Is impairing" shifts to present progressive, breaking the pattern. "Has impaired" shifts to present perfect. "Impairment of" is a noun, not a verb, and completely breaks the parallel structure.'},
+    {text:'Question 5 refers to the underlined word <strong>[5]</strong> ("suppresses"). The writer wants to add a phrase after "suppresses melatonin production" to help readers who may not know what melatonin is. Which addition best accomplishes this?',type:'o',opts:['NO CHANGE — no addition is needed','suppresses melatonin production, a hormone that signals the body it is time to sleep,','suppresses melatonin production, which is a chemical substance found in the human body,','suppresses melatonin production, and this is bad for people who want to sleep'],ans:1,exp:'Option B provides a brief, accurate, and useful definition of melatonin ("a hormone that signals the body it is time to sleep") embedded naturally in the sentence as an appositive phrase. It adds clarity without disrupting the flow. Option C defines melatonin too vaguely ("a chemical substance") without explaining its role. Option D is too informal and imprecise ("this is bad for people").'}
+  ]
+},
+{
+  title:'Passage 3: Rethinking Plastic',
+  topic:'Humanities / Argumentative',
+  text:`<p>[1] Since its widespread adoption in the mid-twentieth century, plastic has become one of the defining materials of modern life. <span class="hl"><span class="num">1</span>It is durable, lightweight, inexpensive, and it costs less to produce than most alternatives.</span> Yet the very qualities that made plastic so appealing have contributed to an environmental crisis that now threatens ecosystems around the world.</p>
+<p>[2] Unlike organic materials, most plastics do not biodegrade. Instead, they break down into microplastics—tiny particles that <span class="hl"><span class="num">2</span>infiltrate</span> soil, waterways, and even the human bloodstream. Studies have detected microplastics in drinking water, seafood, and the lungs of people living in urban areas. The long-term health effects of microplastic exposure remain an active area of scientific investigation, but early evidence suggests significant cause for concern.</p>
+<p>[3] <span class="hl"><span class="num">3</span>Furthermore,</span> the production of plastic is itself a significant source of greenhouse gas emissions. Most plastics are derived from fossil fuels, and the manufacturing process releases substantial amounts of carbon dioxide and other pollutants. Addressing plastic pollution, therefore, is inseparable from addressing climate change.</p>
+<p>[4] Critics of plastic reform often argue that alternatives are too expensive or impractical for widespread use. <span class="hl"><span class="num">4</span>However,</span> the true cost of plastic — when environmental cleanup, health impacts, and carbon emissions are factored in — far exceeds the apparent savings. A growing number of companies and governments have begun to recognize this reality, <span class="hl"><span class="num">5</span>investing in biodegradable materials, redesigning products to minimize waste, and to push for stronger regulations.</span></p>`,
+  questions:[
+    {text:'Question 1 refers to the underlined sentence labeled <strong>[1]</strong> ("It is durable, lightweight, inexpensive, and it costs less to produce than most alternatives.") What is the best version of this sentence?',type:'g',opts:['NO CHANGE','It is durable, lightweight, inexpensive, and less costly to produce than most alternatives.','It is durable, lightweight, and inexpensive and also it costs less to produce.','Being durable, lightweight, and inexpensive, and it also costs less.'],ans:1,exp:'The sentence lists four qualities of plastic, but "it costs less to produce than most alternatives" breaks the parallel structure — the first three items are adjectives, but the fourth is a full clause. Option B fixes this by making all four items adjectives or adjective phrases: "durable, lightweight, inexpensive, and less costly to produce." Options C and D introduce other grammatical errors.'},
+    {text:'Question 2 refers to the underlined word <strong>[2]</strong> ("infiltrate"). Which of the following, if substituted for "infiltrate," best preserves the meaning and tone of the passage?',type:'o',opts:['decorate','permeate','visit','touch'],ans:1,exp:'"Permeate" means to spread throughout or penetrate — closely synonymous with "infiltrate" in this context and maintaining the serious, formal tone of the passage. "Decorate" and "touch" are far too gentle and positive for describing pollution. "Visit" is informal and suggests a temporary, benign presence, which is the opposite of the persistent contamination being described.'},
+    {text:'Question 3 refers to the transition word <strong>[3]</strong> at the start of paragraph 3 ("Furthermore"). Paragraph 2 discusses how plastics break down into microplastics that harm ecosystems and health. Paragraph 3 discusses how plastic production contributes to greenhouse gas emissions. Which transition word or phrase best connects these two paragraphs?',type:'o',opts:['NO CHANGE — "Furthermore" is correct','However','As a result','For example'],ans:0,exp:'Paragraph 2 presents one problem with plastic (microplastics). Paragraph 3 presents an additional, separate problem (greenhouse gas emissions from production). This is an additive relationship — "Furthermore" correctly signals that another supporting point is being added. "However" signals contrast, "As a result" signals consequence, and "For example" signals illustration — none of these fit.'},
+    {text:'Question 4 refers to the transition word <strong>[4]</strong> in paragraph 4 ("However"). What is the logical relationship between the sentence before "However" ("Critics of plastic reform often argue that alternatives are too expensive...") and the sentence containing "However" ("the true cost of plastic... far exceeds the apparent savings")?',type:'o',opts:['The second sentence adds to the critics\' argument.','The second sentence provides an example of the critics\' point.','The second sentence contradicts and refutes the critics\' argument.','The second sentence explains why critics make their argument.'],ans:2,exp:'The first sentence presents the critics\' position (alternatives are too expensive). The second sentence directly counters this (the true cost of plastic is actually far higher). "However" correctly marks this as a contrast and refutation. Understanding this logical relationship helps confirm that "However" is the right transition.'},
+    {text:'Question 5 refers to the underlined portion labeled <strong>[5]</strong> ("investing in biodegradable materials, redesigning products to minimize waste, and to push for stronger regulations"). What is wrong with this portion, and what is the best correction?',type:'g',opts:['NO CHANGE','investing in biodegradable materials, redesigning products to minimize waste, and pushing for stronger regulations','to invest in biodegradable materials, redesigning products to minimize waste, and pushing for stronger regulations','investing in biodegradable materials, to redesign products to minimize waste, and push for stronger regulations'],ans:1,exp:'This is a parallel structure error. The list has three items, but they use inconsistent forms: "investing" (gerund), "redesigning" (gerund), and "to push" (infinitive). Option B corrects this by making all three items gerunds: "investing," "redesigning," and "pushing." Options C and D introduce new inconsistencies.'}
+  ]
+},
+{
+  title:'Passage 4: The Life of Frederick Douglass',
+  topic:'Literary nonfiction / Historical',
+  text:`<p>[1] Frederick Douglass was born into slavery in Maryland in approximately 1818. He never knew his exact birth date — a detail that, he later wrote, was typical of the deliberate effort to <span class="hl"><span class="num">1</span>deny enslaved people a sense of identity and personal history</span>. Despite being forbidden by law to learn to read, Douglass secretly taught himself through observation and persistence, recognizing early that literacy was the path to freedom.</p>
+<p>[2] In 1838, at the age of twenty, Douglass escaped to the North and began a new life as a free man. <span class="hl"><span class="num">2</span>His abilities as a speaker quickly became apparent.</span> After attending an antislavery convention in 1841, Douglass was invited to share his story with the crowd. His eloquence was so striking that some listeners doubted he had ever been enslaved. In response, Douglass published his autobiography, the <em>Narrative of the Life of Frederick Douglass</em>, in 1845 — a detailed account of his experiences that became an immediate bestseller and a powerful argument against slavery.</p>
+<p>[3] Douglass went on to found an abolitionist newspaper, <em>The North Star</em>, and <span class="hl"><span class="num">3</span>became a respected advisor to President Abraham Lincoln during the Civil War</span>. He also advocated passionately for women's rights, attending the Seneca Falls Convention in 1848. <span class="hl"><span class="num">4</span>Horses were one of Douglass's personal interests throughout his life.</span> His argument was simple but radical: the struggle for human dignity was indivisible, and no group could claim freedom while others remained oppressed.</p>
+<p>[4] Douglass died in 1895, leaving behind a legacy that <span class="hl"><span class="num">5</span>continue</span> to inspire activists, scholars, and ordinary citizens alike. His life demonstrated that the pursuit of justice requires both courage and the power of words.</p>`,
+  questions:[
+    {text:'Question 1 refers to the underlined portion labeled <strong>[1]</strong> ("deny enslaved people a sense of identity and personal history"). The writer wants to make this phrase more specific and vivid. Which choice best accomplishes this?',type:'o',opts:['NO CHANGE','deny enslaved people basic things','strip enslaved people of their individual identities, family histories, and any record of their own existence','take away important things from enslaved people'],ans:2,exp:'Option C is the most specific and vivid — it enumerates exactly what was being denied (individual identities, family histories, records of existence) and uses a stronger verb ("strip") that conveys the deliberate violence of the act. Options B and D are vague ("basic things," "important things"). The passage already uses precise, formal language, and Option C matches that level.'},
+    {text:'Question 2 refers to the sentence labeled <strong>[2]</strong> ("His abilities as a speaker quickly became apparent.") The writer wants to move this sentence to improve the flow of paragraph 2. Where should it most logically be placed?',type:'o',opts:['Leave it where it is — before the sentence about the 1841 convention','Move it to after the sentence describing the crowd\'s reaction to his eloquence','Move it to the very end of paragraph 2, after the sentence about the autobiography','Delete it — the information is already implied by the rest of the paragraph'],ans:0,exp:'The sentence currently introduces the idea that Douglass had notable speaking abilities, and the following sentence ("After attending an antislavery convention...") immediately provides a concrete example of those abilities in action. This cause-and-effect arrangement works well: general statement → specific example. Moving it elsewhere would separate the claim from its evidence and disrupt the logical flow.'},
+    {text:'Question 3 refers to the underlined portion labeled <strong>[3]</strong> ("became a respected advisor to President Abraham Lincoln during the Civil War"). Which of the following best maintains the grammatical structure of the sentence it appears in?',type:'g',opts:['NO CHANGE','and he became a respected advisor to President Abraham Lincoln during the Civil War','becoming a respected advisor to President Abraham Lincoln during the Civil War','and to become a respected advisor to President Abraham Lincoln during the Civil War'],ans:0,exp:'The sentence reads: "Douglass went on to found an abolitionist newspaper... and became a respected advisor..." The verb "became" is parallel to "went on to found" — both are past tense verbs with Douglass as the subject. "NO CHANGE" is correct. Option B is redundant (repeating "he"). Option C changes to a participle, breaking the parallel. Option D uses an infinitive that doesn\'t fit grammatically.'},
+    {text:'Question 4 refers to the sentence labeled <strong>[4]</strong> ("Horses were one of Douglass\'s personal interests throughout his life.") Should the writer keep or delete this sentence?',type:'o',opts:['Keep it — it provides interesting personal details about Douglass.','Keep it — it supports the paragraph\'s focus on Douglass\'s character.','Delete it — it introduces an unrelated topic that does not support the paragraph\'s focus on Douglass\'s advocacy work.','Delete it — the sentence is too short to be useful.'],ans:2,exp:'Paragraph 3 focuses on Douglass\'s advocacy work — founding a newspaper, advising Lincoln, supporting women\'s rights, and his philosophy about human dignity. A detail about his interest in horses is completely unrelated to any of those themes. The reason to delete it is not its length but that it breaks the paragraph\'s focus. An interesting fact is not enough justification to keep an off-topic sentence.'},
+    {text:'Question 5 refers to the underlined word <strong>[5]</strong> ("continue") in the final paragraph. The sentence reads: "...leaving behind a legacy that continue to inspire activists, scholars, and ordinary citizens alike." What is the error, and what is the correct version?',type:'g',opts:['NO CHANGE','continues','continuing','continued'],ans:1,exp:'"Continue" is the error — subject-verb agreement. The subject of the relative clause is "legacy" (singular), not "activists, scholars, and citizens." Singular subject requires singular verb: "continues." The sentence is in present tense (the legacy still inspires people today), so "continuing" and "continued" are both incorrect tense choices even if the subject-verb agreement were fixed.'}
+  ]
+},
+{
+  title:'Passage 5: Careers in the Trades',
+  topic:'Careers / Informational',
+  text:`<p>[1] For decades, the dominant narrative in American education held that a four-year college degree was the only viable path to a stable and fulfilling career. <span class="hl"><span class="num">1</span>This assumption, however, is being increasingly challenged</span> as skilled trade jobs go unfilled and as many college graduates struggle with significant debt and uncertain job prospects.</p>
+<p>[2] The skilled trades — including electricians, plumbers, welders, and HVAC technicians — offer strong wages, job security, and the satisfaction of visible, tangible work. According to the Bureau of Labor Statistics, the median annual wage for electricians in 2023 was over $61,000, and demand for workers in the trades <span class="hl"><span class="num">2</span>are</span> projected to grow significantly over the next decade as an aging workforce retires.</p>
+<p>[3] <span class="hl"><span class="num">3</span>Pursuing a trade typically requires completing an apprenticeship program, earning a certification, and to pass a licensing exam.</span> These pathways often take two to four years — less time than a traditional four-year degree and at a fraction of the cost. Apprentices typically earn a wage while they learn, avoiding the student debt that burdens many college graduates.</p>
+<p>[4] <span class="hl"><span class="num">4</span>Despite</span> the clear advantages, enrollment in vocational and trade programs has declined in recent years. Many high schools have reduced or eliminated shop classes in favor of college-preparatory curricula, leaving students unaware of the opportunities available to them. Educators and policymakers are now working to reverse this trend, arguing that a well-informed student is one who understands <span class="hl"><span class="num">5</span>all of their different options and pathways and possibilities available to them in the future</span>.</p>`,
+  questions:[
+    {text:'Question 1 refers to the underlined portion labeled <strong>[1]</strong> ("This assumption, however, is being increasingly challenged"). Which of the following is the most concise version of this portion while preserving the meaning?',type:'o',opts:['NO CHANGE','This assumption, however, is being more and more challenged all the time','This assumption, however, faces growing challenges','This assumption, however, has been challenged in an increasingly significant manner'],ans:2,exp:'Option C is the most concise — it expresses the same idea in fewer words without losing any meaning. "Faces growing challenges" replaces the wordy "is being increasingly challenged" with a cleaner construction. Options B and D are more wordy than the original, not less. The goal of conciseness is to say more with fewer words.'},
+    {text:'Question 2 refers to the underlined word <strong>[2]</strong> ("are") in paragraph 2. The sentence reads: "...demand for workers in the trades are projected to grow significantly over the next decade..." What is the error?',type:'g',opts:['NO CHANGE — "are" is correct because there are many workers','The verb should be "is" because the subject is "demand," which is singular','The verb should be "were" to match the past tense context','The verb should be "have been" to indicate ongoing action'],ans:1,exp:'"Demand" is the subject of this clause, not "workers" (which is part of the prepositional phrase "for workers in the trades"). Cross out the prepositional phrase: "demand ___ projected to grow." Singular subject "demand" requires singular verb "is." This is the classic subject-verb agreement trap where intervening prepositional phrases mislead the reader about the true subject.'},
+    {text:'Question 3 refers to the underlined portion labeled <strong>[3]</strong> ("Pursuing a trade typically requires completing an apprenticeship program, earning a certification, and to pass a licensing exam.") What is wrong with this sentence?',type:'g',opts:['NO CHANGE','Pursuing a trade typically requires completing an apprenticeship program, earning a certification, and passing a licensing exam.','To pursue a trade typically requires completing an apprenticeship program, earning a certification, and to pass a licensing exam.','Pursuing a trade typically requires you to complete an apprenticeship program, earning a certification, and passing a licensing exam.'],ans:1,exp:'Parallel structure error. The list has three items: "completing" (gerund), "earning" (gerund), and "to pass" (infinitive). All three items must use the same form. Option B corrects this by making all three gerunds: "completing," "earning," and "passing." The other options introduce new inconsistencies.'},
+    {text:'Question 4 refers to the transition word <strong>[4]</strong> at the start of paragraph 4 ("Despite"). Paragraph 3 discusses the advantages of trade pathways (less time, less cost, earn while you learn). Paragraph 4 discusses declining enrollment in trade programs. Which transition word or phrase best connects these two paragraphs?',type:'o',opts:['NO CHANGE — "Despite" is correct','Therefore','Furthermore','In other words'],ans:0,exp:'Paragraph 3 outlines clear advantages of trade careers. Paragraph 4 introduces a contrasting reality — enrollment is declining despite those advantages. This is a contrast relationship, and "Despite" correctly signals that what follows contradicts the expectation set up by paragraph 3. "Therefore" would imply the decline is a result of the advantages. "Furthermore" would add more advantages. "In other words" would suggest paragraph 4 restates paragraph 3.'},
+    {text:'Question 5 refers to the underlined portion labeled <strong>[5]</strong> ("all of their different options and pathways and possibilities available to them in the future"). Which of the following is the most concise and effective revision of this wordy phrase?',type:'o',opts:['NO CHANGE','all of the many options, pathways, and possibilities that are there for them','all available options','the wide range of options and many possibilities and pathways open to students in the future'],ans:2,exp:'"All available options" is the most concise — it expresses the complete idea in three words. The original phrase repeats the same concept three times ("options," "pathways," "possibilities"), uses unnecessary qualifiers ("different," "in the future"), and is redundant ("available to them in the future" restates "options"). Option B and D are still wordy. When a phrase can be cut without losing meaning, cut it.'}
+  ]
+}
+];
+
+// ── Build all passages ──
+let answers={};// key: "p_qi" -> chosen index
+function buildPassages(){
+  const container=document.getElementById('passages-container');
+  container.innerHTML='';
+  PASSAGES.forEach((p,pi)=>{
+    const block=document.createElement('div');
+    block.className='passage-block'+(pi===0?' on':'');
+    block.id='pb-'+pi;
+    // Build question cards
+    const qCards=p.questions.map((q,qi)=>{
+      const key=pi+'_'+qi;
+      const typeLabel=q.type==='g'?'Grammar':'Organization & Ideas';
+      const typeCls=q.type==='g'?'qt-g':'qt-o';
+      const optsHtml=q.opts.map((o,j)=>`<li><button onclick="checkAns(${pi},${qi},${j})">${'ABCD'[j]}. ${o}</button></li>`).join('');
+      return `<div class="q-card" id="qc-${pi}-${qi}">
+        <div class="q-header">
+          <span class="q-num">Q${qi+1}</span>
+          <span class="q-type ${typeCls}">${typeLabel}</span>
+        </div>
+        <div class="q-text">${q.text}</div>
+        <ul class="opts">${optsHtml}</ul>
+        <div class="fb" id="fb-${pi}-${qi}"></div>
+      </div>`;
+    }).join('');
+    block.innerHTML=`
+      <div class="test-wrap">
+        <div class="passage-panel">
+          <div class="passage-label">${p.topic}</div>
+          <div class="passage-title">${p.title}</div>
+          <div class="passage-text">${p.text}</div>
+        </div>
+        <div class="q-panel">${qCards}</div>
+      </div>`;
+    container.appendChild(block);
+  });
+  renderAnswers();
+}
+
+function showPassage(pi,btn){
+  document.querySelectorAll('.passage-block').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.psel-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pb-'+pi).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo({top:document.getElementById('practice').offsetTop-20,behavior:'smooth'});
+}
+
+function checkAns(pi,qi,chosen){
+  const key=pi+'_'+qi;
+  if(answers[key]!==undefined)return;
+  answers[key]=chosen;
+  const q=PASSAGES[pi].questions[qi];
+  const card=document.getElementById('qc-'+pi+'-'+qi);
+  const btns=card.querySelectorAll('.opts button');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.ans].classList.add('cr');
+  if(chosen!==q.ans)btns[chosen].classList.add('cw');
+  const fb=document.getElementById('fb-'+pi+'-'+qi);
+  fb.className='fb show '+(chosen===q.ans?'fb-ok':'fb-no');
+  fb.innerHTML=(chosen===q.ans?'<strong>✓ Correct!</strong> ':'<strong>✗ Not quite.</strong> ')+q.exp;
+  updateProgress();
+  // Mark passage button as done if all 5 answered
+  const passageDone=PASSAGES[pi].questions.every((_,qi2)=>answers[pi+'_'+qi2]!==undefined);
+  if(passageDone){
+    document.querySelectorAll('.psel-btn')[pi].classList.add('done');
+  }
+  // Check all done
+  const total=PASSAGES.reduce((s,p)=>s+p.questions.length,0);
+  if(Object.keys(answers).length===total)showSummary();
+}
+
+function updateProgress(){
+  const total=PASSAGES.reduce((s,p)=>s+p.questions.length,0);
+  const done=Object.keys(answers).length;
+  const correct=Object.entries(answers).filter(([k,v])=>{
+    const [pi,qi]=k.split('_').map(Number);
+    return PASSAGES[pi].questions[qi].ans===v;
+  }).length;
+  const pct=total?Math.round((done/total)*100):0;
+  document.getElementById('prog-label').textContent=done+' of '+total+' answered';
+  document.getElementById('prog-score').textContent='Score: '+correct+' correct';
+  document.getElementById('prog-bar').style.width=pct+'%';
+}
+
+function renderAnswers(){
+  // Re-apply any existing answers (after restart this is empty)
+  Object.entries(answers).forEach(([k,chosen])=>{
+    const [pi,qi]=[...k.split('_').map(Number)];
+    const q=PASSAGES[pi].questions[qi];
+    const card=document.getElementById('qc-'+pi+'-'+qi);
+    if(!card)return;
+    const btns=card.querySelectorAll('.opts button');
+    btns.forEach(b=>b.disabled=true);
+    btns[q.ans].classList.add('cr');
+    if(chosen!==q.ans)btns[chosen].classList.add('cw');
+    const fb=document.getElementById('fb-'+pi+'-'+qi);
+    fb.className='fb show '+(chosen===q.ans?'fb-ok':'fb-no');
+    fb.innerHTML=(chosen===q.ans?'<strong>✓ Correct!</strong> ':'<strong>✗ Not quite.</strong> ')+q.exp;
+  });
+  updateProgress();
+}
+
+function showSummary(){
+  const total=PASSAGES.reduce((s,p)=>s+p.questions.length,0);
+  const correct=Object.entries(answers).filter(([k,v])=>{
+    const [pi,qi]=k.split('_').map(Number);
+    return PASSAGES[pi].questions[qi].ans===v;
+  }).length;
+  const pct=Math.round((correct/total)*100);
+  const box=document.getElementById('summary-box');
+  box.style.display='block';
+  const big=document.getElementById('summary-big');
+  big.textContent=correct+'/'+total+' ('+pct+'%)';
+  big.className='summary-big '+(pct>=72?'green':'red');
+  let msg='';
+  if(pct>=88)msg='Excellent work! That level of accuracy across all 5 passages is right where you need to be for the real test. You are ready.';
+  else if(pct>=72)msg='Good effort! Review the questions you missed — go to the Rules Reference tab for those topics. Focus especially on the question type that gave you the most trouble.';
+  else msg='Keep practicing! Pay attention to the explanations for questions you missed. Notice how the passage context affects every answer. The Rules Reference tab has all the key concepts.';
+  document.getElementById('summary-msg').textContent=msg;
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function restartAll(){
+  answers={};
+  document.querySelectorAll('.psel-btn').forEach(b=>b.classList.remove('done'));
+  document.getElementById('summary-box').style.display='none';
+  buildPassages();
+  showPassage(0,document.querySelectorAll('.psel-btn')[0]);
+}
+
+// Init
+buildPassages();
+</script>
+<div class="watermark-bar">Ashley Tate<span>|</span>Adult Ed Study Prep<span>|</span>&copy; 2026 &mdash; All Rights Reserved</div>
+</body>
+</html>
