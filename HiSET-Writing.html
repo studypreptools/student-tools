@@ -367,6 +367,10 @@ function showDrill(key) {
   renderDrill(key);
 }
 
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function renderDrill(key) {
   const qs = QUESTIONS[key];
   const done = qs.filter(q => answered[q.id] !== undefined).length;
@@ -374,28 +378,76 @@ function renderDrill(key) {
   document.getElementById('prog-text').textContent = done + ' of ' + qs.length + ' answered';
   document.getElementById('prog-score').textContent = corr + ' correct';
   document.getElementById('prog-bar').style.width = Math.round(done / qs.length * 100) + '%';
-  let html = '';
+
+  const container = document.getElementById('practice-container');
+  container.innerHTML = '';
+
   qs.forEach((q, qi) => {
     const isAns = answered[q.id] !== undefined;
-    html += '<div class="q-card" id="qc-' + q.id + '">';
-    html += '<div class="q-meta"><span class="q-tag ' + TAG_CLASS[key] + '">' + q.tag + '</span>';
-    html += '<span class="dok-tag">' + q.dok + '</span></div>';
-    html += '<div class="passage-box"><div class="passage-label">' + q.passage_title + '</div>';
-    html += '<div class="passage-text">' + q.passage + '</div></div>';
-    html += '<div class="q-text">Q' + (qi + 1) + '. ' + q.text + '</div>';
-    html += '<div class="choices">';
+
+    // Card wrapper
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'qc-' + q.id;
+
+    // Meta row
+    const meta = document.createElement('div');
+    meta.className = 'q-meta';
+    meta.innerHTML = '<span class="q-tag ' + TAG_CLASS[key] + '">' + escHtml(q.tag) + '</span><span class="dok-tag">' + escHtml(q.dok) + '</span>';
+    card.appendChild(meta);
+
+    // Passage box
+    const passBox = document.createElement('div');
+    passBox.className = 'passage-box';
+    const passLabel = document.createElement('div');
+    passLabel.className = 'passage-label';
+    passLabel.textContent = q.passage_title;
+    const passText = document.createElement('div');
+    passText.className = 'passage-text';
+    passText.textContent = q.passage;
+    passBox.appendChild(passLabel);
+    passBox.appendChild(passText);
+    card.appendChild(passBox);
+
+    // Question text
+    const qText = document.createElement('div');
+    qText.className = 'q-text';
+    qText.textContent = 'Q' + (qi + 1) + '. ' + q.text;
+    card.appendChild(qText);
+
+    // Choices
+    const choicesDiv = document.createElement('div');
+    choicesDiv.className = 'choices';
     q.choices.forEach((c, ci) => {
+      const btn = document.createElement('button');
       let cls = 'choice';
-      if (isAns) { if (ci === q.correct) cls += ' correct'; else if (ci === answered[q.id]) cls += ' wrong'; }
-      html += '<button class="' + cls + '" onclick="answerQ(' + JSON.stringify(q.id) + ',' + ci + ',' + q.correct + ',' + JSON.stringify(key) + ')" id="ch-' + q.id + '-' + ci + '">';
-      html += '<span class="choice-letter">' + String.fromCharCode(65 + ci) + '.</span>' + c + '</button>';
+      if (isAns) {
+        if (ci === q.correct) cls += ' correct';
+        else if (ci === answered[q.id]) cls += ' wrong';
+      }
+      btn.className = cls;
+      btn.id = 'ch-' + q.id + '-' + ci;
+      if (isAns) btn.disabled = true;
+      btn.addEventListener('click', function() { answerQ(q.id, ci, q.correct, key); });
+      const letter = document.createElement('span');
+      letter.className = 'choice-letter';
+      letter.textContent = String.fromCharCode(65 + ci) + '.';
+      btn.appendChild(letter);
+      btn.appendChild(document.createTextNode(' ' + c));
+      choicesDiv.appendChild(btn);
     });
-    html += '</div>';
-    html += '<div class="explanation" id="exp-' + q.id + '" style="' + (isAns ? 'display:block' : '') + '">';
-    html += '<div class="exp-title">&#10003; Explanation:</div><p>' + q.explain + '</p>';
-    html += '<div class="strategy-note">&#128204; Strategy: ' + q.strategy + '</div></div></div>';
+    card.appendChild(choicesDiv);
+
+    // Explanation
+    const expDiv = document.createElement('div');
+    expDiv.className = 'explanation';
+    expDiv.id = 'exp-' + q.id;
+    expDiv.style.display = isAns ? 'block' : 'none';
+    expDiv.innerHTML = '<div class="exp-title">&#10003; Explanation:</div><p>' + escHtml(q.explain) + '</p><div class="strategy-note">&#128204; Strategy: ' + escHtml(q.strategy) + '</div>';
+    card.appendChild(expDiv);
+
+    container.appendChild(card);
   });
-  document.getElementById('practice-container').innerHTML = html;
 }
 
 function answerQ(qid, chosen, correct, key) {
