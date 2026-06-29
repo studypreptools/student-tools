@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HiSET Practice Exam</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#1a1a1a;background:#f5f5f3;min-height:100vh}
+.app{max-width:760px;margin:0 auto;padding:1.5rem 1rem 4rem}
+h1{font-size:24px;font-weight:600;margin-bottom:4px}
+.subtitle{font-size:14px;color:#666;margin-bottom:1.5rem}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #e0e0e0}
+.nav-btn{padding:7px 14px;border:1px solid #d0d0d0;border-radius:8px;background:#fff;color:#444;font-size:13px;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.nav-btn:hover{background:#f0f0f0;border-color:#bbb}
+.nav-btn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.section{display:none}
+.section.active{display:block}
+.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.q-num{font-size:11px;color:#999;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em}
+.q-text{font-size:15px;line-height:1.65;margin-bottom:1rem;font-weight:500}
+.q-passage{font-size:14px;line-height:1.7;color:#555;background:#f8f8f6;border-left:3px solid #ccc;padding:0.75rem 1rem;border-radius:0 8px 8px 0;margin-bottom:1rem}
+.choices{display:flex;flex-direction:column;gap:7px}
+.choice{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;transition:all 0.15s;font-size:14px;line-height:1.5;text-align:left;background:#fff;color:#1a1a1a;width:100%;font-family:inherit}
+.choice:hover:not(:disabled){border-color:#aaa;background:#fafafa}
+.choice.selected{border-color:#3b82f6;background:#eff6ff;color:#1e3a8a}
+.choice.correct{border-color:#16a34a;background:#f0fdf4;color:#14532d}
+.choice.wrong{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
+.choice:disabled{cursor:default}
+.choice-letter{font-weight:600;min-width:20px;flex-shrink:0}
+.explanation{font-size:14px;line-height:1.6;padding:10px 14px;border-radius:8px;margin-top:10px;background:#f8f8f6;color:#555;display:none;border-left:3px solid #3b82f6}
+.btn{padding:9px 20px;border:1px solid #d0d0d0;border-radius:8px;background:#fff;color:#1a1a1a;font-size:14px;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.btn:hover{background:#f0f0f0}
+.btn.primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.btn.primary:hover{background:#333}
+.btn-row{display:flex;gap:8px;align-items:center;margin-top:1rem;flex-wrap:wrap}
+.progress-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding:0.75rem 1rem;background:#fff;border-radius:8px;border:1px solid #e8e8e8;font-size:13px;color:#666}
+.progress-bar-track{flex:1;height:6px;background:#e8e8e8;border-radius:3px;overflow:hidden;margin:0 12px}
+.progress-bar-fill{height:100%;background:#1a1a1a;border-radius:3px;transition:width 0.4s}
+.badge{display:inline-block;font-size:12px;padding:3px 10px;border-radius:6px;font-weight:500}
+.badge-pass{background:#dcfce7;color:#14532d}
+.badge-fail{background:#fee2e2;color:#7f1d1d}
+.badge-pending{background:#f3f4f6;color:#6b7280}
+.essay-prompt{font-size:15px;line-height:1.7;padding:1rem 1.25rem;background:#f8f8f6;border-radius:8px;margin-bottom:1rem;color:#333}
+.essay-area{width:100%;min-height:300px;padding:1rem;border:1px solid #d0d0d0;border-radius:8px;font-size:14px;line-height:1.75;font-family:inherit;resize:vertical;background:#fff;color:#1a1a1a}
+.essay-area:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,0.15)}
+.rubric-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:0.5rem}
+.rubric-table td,.rubric-table th{padding:8px 12px;border:1px solid #e8e8e8;line-height:1.5}
+.rubric-table th{background:#f8f8f6;font-weight:600;text-align:left}
+.rubric-table tr:nth-child(even) td{background:#fafaf8}
+.formula-table{width:100%;border-collapse:collapse;font-size:13px}
+.formula-table td,.formula-table th{padding:7px 12px;border:1px solid #e8e8e8}
+.formula-table th{background:#f8f8f6;font-weight:600;text-align:left}
+.formula-table tr:nth-child(even) td{background:#fafaf8}
+.calc-display{font-size:26px;font-weight:500;text-align:right;padding:14px 16px;background:#f8f8f6;border:1px solid #e0e0e0;border-radius:8px;margin-bottom:8px;min-height:56px;word-break:break-all;color:#1a1a1a}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.calc-btn{padding:14px 8px;border:1px solid #e0e0e0;border-radius:8px;background:#fff;font-size:16px;cursor:pointer;transition:all 0.12s;color:#1a1a1a;font-family:inherit}
+.calc-btn:hover{background:#f0f0f0}
+.calc-btn:active{transform:scale(0.96)}
+.calc-btn.op{color:#3b82f6;font-weight:600;background:#eff6ff;border-color:#dbeafe}
+.calc-btn.op:hover{background:#dbeafe}
+.calc-btn.action{background:#f3f4f6;font-size:14px}
+.prompt-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1rem}
+.prompt-tab{padding:5px 12px;border:1px solid #e0e0e0;border-radius:6px;font-size:12px;cursor:pointer;background:#fff;color:#666;font-family:inherit;transition:all 0.12s}
+.prompt-tab:hover{border-color:#aaa}
+.prompt-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.word-count{font-size:12px;color:#999;margin-top:5px;text-align:right}
+.ai-feedback{font-size:14px;line-height:1.7;padding:1.25rem;background:#f8f8f6;border-radius:8px;margin-top:1rem;display:none;border-left:3px solid #3b82f6}
+.ai-feedback h4{font-size:15px;font-weight:600;margin-bottom:0.75rem;color:#1a1a1a}
+.ai-feedback p{margin-bottom:0.6rem;color:#444}
+.ai-feedback .label{font-weight:600;color:#1a1a1a;display:block;margin-top:0.75rem;margin-bottom:0.25rem}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #e0e0e0;border-top-color:#666;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
+.home-card{padding:1.25rem;background:#fff;border:1px solid #e8e8e8;border-radius:12px;cursor:pointer;transition:all 0.15s;text-align:center}
+.home-card:hover{border-color:#aaa;box-shadow:0 2px 8px rgba(0,0,0,0.08);transform:translateY(-1px)}
+.home-card-icon{font-size:28px;margin-bottom:8px}
+.home-card-title{font-size:14px;font-weight:600;margin-bottom:3px;color:#1a1a1a}
+.home-card-sub{font-size:12px;color:#888}
+.passing-note{font-size:13px;color:#555;line-height:1.7;padding:0.75rem 1rem;background:#fff;border:1px solid #e8e8e8;border-radius:8px;margin-bottom:1.25rem}
+.tracker-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:1.25rem}
+.tracker-card{padding:1rem;background:#f8f8f6;border-radius:8px;text-align:center;border:1px solid #e8e8e8}
+.tracker-num{font-size:24px;font-weight:600;color:#1a1a1a}
+.tracker-label{font-size:11px;color:#888;margin-top:3px}
+.score-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.score-bar-label{font-size:13px;color:#666;width:120px;flex-shrink:0}
+.bar-track{flex:1;height:8px;background:#e8e8e8;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.5s}
+.score-bar-val{font-size:13px;color:#666;width:44px;text-align:right;flex-shrink:0}
+.section-header{margin-bottom:1.25rem}
+.section-header h2{font-size:18px;font-weight:600;margin-bottom:3px}
+.section-header p{font-size:13px;color:#888}
+.online-note{font-size:12px;color:#999;margin-top:6px;font-style:italic}
+@media(max-width:500px){
+  .home-grid{grid-template-columns:repeat(2,1fr)}
+  .calc-btn{padding:12px 6px;font-size:14px}
+  .nav-btn{font-size:12px;padding:6px 10px}
+}
+
+.watermark{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#1a1a1a;
+  color:#fff;
+  text-align:center;
+  font-size:12px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  padding:8px 16px;
+  z-index:9999;
+  letter-spacing:0.03em;
+  opacity:0.92;
+}
+.watermark span{
+  opacity:0.5;
+  margin:0 8px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<h1>HiSET Practice Exam</h1>
+<p class="subtitle">5 subtests · 100 questions · Built-in calculator · Essay scorer</p>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('home')">🏠 Home</button>
+  <button class="nav-btn" onclick="showSection('reading')">📖 LA – Reading</button>
+  <button class="nav-btn" onclick="showSection('writing')">✏️ LA – Writing</button>
+  <button class="nav-btn" onclick="showSection('math')">🔢 Mathematics</button>
+  <button class="nav-btn" onclick="showSection('science')">🔬 Science</button>
+  <button class="nav-btn" onclick="showSection('social')">🌎 Social Studies</button>
+  <button class="nav-btn" onclick="showSection('tracker')">📊 Score Tracker</button>
+</div>
+
+<!-- HOME -->
+<div id="section-home" class="section active">
+  <div class="passing-note">
+    <strong>Passing requirements:</strong> Minimum score of <strong>8 out of 20</strong> on each subtest &nbsp;·&nbsp; Minimum <strong>2 out of 6</strong> on the essay &nbsp;·&nbsp; Total score of <strong>45 or higher</strong> out of 100
+  </div>
+  <div class="home-grid">
+    <div class="home-card" onclick="showSection('reading')">
+      <div class="home-card-icon">📖</div>
+      <div class="home-card-title">LA – Reading</div>
+      <div class="home-card-sub">20 questions</div>
+    </div>
+    <div class="home-card" onclick="showSection('writing')">
+      <div class="home-card-icon">✏️</div>
+      <div class="home-card-title">LA – Writing</div>
+      <div class="home-card-sub">15 questions + essay</div>
+    </div>
+    <div class="home-card" onclick="showSection('math')">
+      <div class="home-card-icon">🔢</div>
+      <div class="home-card-title">Mathematics</div>
+      <div class="home-card-sub">20 questions + calculator</div>
+    </div>
+    <div class="home-card" onclick="showSection('science')">
+      <div class="home-card-icon">🔬</div>
+      <div class="home-card-title">Science</div>
+      <div class="home-card-sub">20 questions</div>
+    </div>
+    <div class="home-card" onclick="showSection('social')">
+      <div class="home-card-icon">🌎</div>
+      <div class="home-card-title">Social Studies</div>
+      <div class="home-card-sub">20 questions</div>
+    </div>
+    <div class="home-card" onclick="showSection('tracker')">
+      <div class="home-card-icon">📊</div>
+      <div class="home-card-title">Score Tracker</div>
+      <div class="home-card-sub">Track all 5 subtests</div>
+    </div>
+  </div>
+</div>
+
+<!-- READING -->
+<div id="section-reading" class="section">
+  <div class="section-header">
+    <h2>Language Arts – Reading</h2>
+    <p>Read each passage and answer the question. Tap an answer to reveal the explanation.</p>
+  </div>
+  <div class="progress-row" id="prog-reading">
+    <span id="prog-reading-text">0 / 20 answered</span>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-reading-bar" style="width:0%"></div></div>
+    <span id="prog-reading-score">0 correct</span>
+  </div>
+  <div id="qs-reading"></div>
+</div>
+
+<!-- WRITING -->
+<div id="section-writing" class="section">
+  <div class="section-header">
+    <h2>Language Arts – Writing</h2>
+    <p>Part 1: Grammar & mechanics questions. Part 2: Extended response (essay).</p>
+  </div>
+  <div class="progress-row" id="prog-writing">
+    <span id="prog-writing-text">0 / 15 answered</span>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-writing-bar" style="width:0%"></div></div>
+    <span id="prog-writing-score">0 correct</span>
+  </div>
+  <div id="qs-writing"></div>
+  <div class="card" style="margin-top:1.5rem">
+    <div class="section-header" style="margin-bottom:1rem">
+      <h2>Writing task — extended response</h2>
+      <p>Choose a prompt and write your essay. Aim for 4–7 paragraphs.</p>
+      <p class="online-note">* Essay scoring requires an internet connection.</p>
+    </div>
+    <div class="prompt-tabs" id="prompt-tabs"></div>
+    <div class="essay-prompt" id="essay-prompt-text"></div>
+    <textarea class="essay-area" id="essay-text" placeholder="Write your essay here..." oninput="updateWordCount()"></textarea>
+    <div class="word-count" id="word-count">0 words</div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="scoreEssay()">Score my essay</button>
+      <button class="btn" onclick="toggleRubric()">Show / hide rubric</button>
+    </div>
+    <div class="ai-feedback" id="essay-feedback"></div>
+  </div>
+  <div class="card" id="rubric-card" style="display:none">
+    <h3 style="font-size:16px;font-weight:600;margin-bottom:1rem">HiSET essay rubric (scored 1–6)</h3>
+    <table class="rubric-table">
+      <tr><th>Score</th><th>Description</th></tr>
+      <tr><td><strong>6</strong></td><td>Well-focused, thoroughly developed argument with strong evidence and varied sentence structure. Virtually free of errors.</td></tr>
+      <tr><td><strong>5</strong></td><td>Focused and well-developed with clear evidence. Minor errors that don't interfere with meaning.</td></tr>
+      <tr><td><strong>4</strong></td><td>Generally focused with adequate development and relevant evidence. Some errors but meaning is clear.</td></tr>
+      <tr><td><strong>3</strong></td><td>Somewhat focused but inconsistent development. Limited evidence. Errors may occasionally obscure meaning.</td></tr>
+      <tr><td><strong>2</strong></td><td>Weak focus and development. Little relevant evidence. Frequent errors that interfere with communication.</td></tr>
+      <tr><td><strong>1</strong></td><td>Minimal or no focus, undeveloped. Severe errors make it difficult to understand.</td></tr>
+    </table>
+    <p style="font-size:12px;color:#999;margin-top:0.75rem">Passing = 2 or higher. Two raters score independently; scores are averaged.</p>
+  </div>
+</div>
+
+<!-- MATH -->
+<div id="section-math" class="section">
+  <div class="section-header">
+    <h2>Mathematics</h2>
+    <p>Use the built-in calculator and formula sheet below as needed.</p>
+  </div>
+  <div class="progress-row" id="prog-math">
+    <span id="prog-math-text">0 / 20 answered</span>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-math-bar" style="width:0%"></div></div>
+    <span id="prog-math-score">0 correct</span>
+  </div>
+  <div id="qs-math"></div>
+
+  <div class="card" style="margin-top:1.5rem">
+    <h3 style="font-size:16px;font-weight:600;margin-bottom:1rem">🧮 Calculator</h3>
+    <div class="calc-display" id="calc-disp">0</div>
+    <div class="calc-grid">
+      <button class="calc-btn action" onclick="calcAC()">AC</button>
+      <button class="calc-btn action" onclick="calcSign()">+/-</button>
+      <button class="calc-btn action" onclick="calcPercent()">%</button>
+      <button class="calc-btn op" onclick="calcOpr('÷')">÷</button>
+      <button class="calc-btn" onclick="calcNum('7')">7</button>
+      <button class="calc-btn" onclick="calcNum('8')">8</button>
+      <button class="calc-btn" onclick="calcNum('9')">9</button>
+      <button class="calc-btn op" onclick="calcOpr('×')">×</button>
+      <button class="calc-btn" onclick="calcNum('4')">4</button>
+      <button class="calc-btn" onclick="calcNum('5')">5</button>
+      <button class="calc-btn" onclick="calcNum('6')">6</button>
+      <button class="calc-btn op" onclick="calcOpr('−')">−</button>
+      <button class="calc-btn" onclick="calcNum('1')">1</button>
+      <button class="calc-btn" onclick="calcNum('2')">2</button>
+      <button class="calc-btn" onclick="calcNum('3')">3</button>
+      <button class="calc-btn op" onclick="calcOpr('+')">+</button>
+      <button class="calc-btn" style="grid-column:span 2" onclick="calcNum('0')">0</button>
+      <button class="calc-btn" onclick="calcDot()">.</button>
+      <button class="calc-btn op" onclick="calcEquals()">=</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:16px;font-weight:600;margin-bottom:1rem">📐 Formula Reference Sheet</h3>
+    <table class="formula-table">
+      <tr><th>Shape / Concept</th><th>Formula</th></tr>
+      <tr><td>Rectangle area</td><td>A = l × w</td></tr>
+      <tr><td>Triangle area</td><td>A = ½ × b × h</td></tr>
+      <tr><td>Circle area</td><td>A = π r²</td></tr>
+      <tr><td>Circle circumference</td><td>C = 2πr</td></tr>
+      <tr><td>Rectangle perimeter</td><td>P = 2l + 2w</td></tr>
+      <tr><td>Pythagorean theorem</td><td>a² + b² = c²</td></tr>
+      <tr><td>Slope</td><td>m = (y₂ − y₁) / (x₂ − x₁)</td></tr>
+      <tr><td>Slope-intercept form</td><td>y = mx + b</td></tr>
+      <tr><td>Distance formula</td><td>d = √[(x₂−x₁)² + (y₂−y₁)²]</td></tr>
+      <tr><td>Quadratic formula</td><td>x = [−b ± √(b²−4ac)] / 2a</td></tr>
+      <tr><td>Mean (average)</td><td>Sum ÷ number of values</td></tr>
+      <tr><td>Percent</td><td>Part / Whole × 100</td></tr>
+      <tr><td>Simple interest</td><td>I = P × r × t</td></tr>
+      <tr><td>Cylinder volume</td><td>V = πr²h</td></tr>
+      <tr><td>Rectangular prism volume</td><td>V = l × w × h</td></tr>
+      <tr><td>π (pi) ≈</td><td>3.14159</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- SCIENCE -->
+<div id="section-science" class="section">
+  <div class="section-header">
+    <h2>Science</h2>
+    <p>Covers life science, physical science, and Earth &amp; space science.</p>
+  </div>
+  <div class="progress-row" id="prog-science">
+    <span id="prog-science-text">0 / 20 answered</span>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-science-bar" style="width:0%"></div></div>
+    <span id="prog-science-score">0 correct</span>
+  </div>
+  <div id="qs-science"></div>
+</div>
+
+<!-- SOCIAL STUDIES -->
+<div id="section-social" class="section">
+  <div class="section-header">
+    <h2>Social Studies</h2>
+    <p>Covers civics, U.S. history, world history, geography, and economics.</p>
+  </div>
+  <div class="progress-row" id="prog-social">
+    <span id="prog-social-text">0 / 20 answered</span>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="prog-social-bar" style="width:0%"></div></div>
+    <span id="prog-social-score">0 correct</span>
+  </div>
+  <div id="qs-social"></div>
+</div>
+
+<!-- SCORE TRACKER -->
+<div id="section-tracker" class="section">
+  <div class="section-header">
+    <h2>Score Tracker</h2>
+    <p>Your progress across all five subtests.</p>
+  </div>
+  <div class="card">
+    <div class="tracker-grid" id="tracker-summary"></div>
+    <div id="tracker-bars"></div>
+    <div class="btn-row" style="margin-top:1.25rem">
+      <button class="btn" onclick="clearScores()">Reset all scores</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:0.75rem">Passing requirements</h3>
+    <ul style="font-size:14px;color:#555;line-height:2;padding-left:1.25rem">
+      <li>Each subtest: minimum score of <strong>8 out of 20</strong></li>
+      <li>Essay: minimum score of <strong>2 out of 6</strong></li>
+      <li>Total score: <strong>45 or higher</strong> out of 100</li>
+      <li>Individual subtests can be retaken separately</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- end .app -->
+
+<script>
+const QUESTIONS = {
+reading:[
+{id:'r1',passage:'Many scientists believe that the bee population has declined significantly in recent decades due to habitat loss, pesticides, and disease. Bees are responsible for pollinating about one-third of the food humans eat.',q:'What is the main idea of this passage?',choices:['Bees are interesting insects','Bee population decline is a serious concern for food supply','Scientists disagree about bee habitats','Pesticides are the only cause of bee decline'],correct:1,explain:'The passage emphasizes the seriousness of bee decline and its link to food supply — choice B captures both ideas.'},
+{id:'r2',passage:'When Rosa Parks refused to give up her seat on a Montgomery, Alabama bus in 1955, she was arrested. Her act of defiance sparked the Montgomery Bus Boycott, a pivotal moment in the American civil rights movement.',q:"What was a direct result of Rosa Parks' arrest?",choices:['The Civil Rights Act was passed','The Montgomery Bus Boycott began','Schools were desegregated','Martin Luther King Jr. was elected'],correct:1,explain:'The passage directly states her arrest sparked the Montgomery Bus Boycott.'},
+{id:'r3',passage:'The Great Wall of China stretches over 13,000 miles and was built over many centuries. Contrary to popular belief, it is not visible from space with the naked eye.',q:'What common belief does the passage correct?',choices:['That the wall is 13,000 miles long','That the wall was built quickly','That the wall is visible from space','That the wall is in China'],correct:2,explain:'The phrase "contrary to popular belief" introduces the correction about the wall not being visible from space.'},
+{id:'r4',passage:'Renewable energy sources like solar and wind power are growing rapidly. In 2022, renewables accounted for about 30% of global electricity generation, up from 22% in 2015.',q:'What does the data in the passage suggest?',choices:['Renewable energy is declining','Fossil fuels still dominate 100% of electricity','Renewable energy use is increasing','Solar power alone generates 30% of electricity'],correct:2,explain:'The data shows an increase from 22% to 30% — a clear upward trend in renewable energy use.'},
+{id:'r5',passage:'A persuasive essay argues that zoos harm animals by confining them in artificial environments that cause psychological distress, reduce lifespan, and prevent natural behaviors.',q:'This passage is best described as which type of writing?',choices:['Informational','Persuasive','Narrative','Descriptive'],correct:1,explain:'The passage presents a clear argument (zoos harm animals) intended to persuade the reader.'},
+{id:'r6',passage:"Water covers about 71% of Earth's surface, but only about 3% of that water is fresh. Of that 3%, most is locked in glaciers, leaving less than 1% accessible for human use.",q:"According to the passage, what percentage of Earth's water is readily available for humans?",choices:['71%','3%','Less than 1%','About 30%'],correct:2,explain:'The passage states most fresh water is in glaciers, leaving less than 1% accessible.'},
+{id:'r7',passage:'Satire uses humor, irony, and exaggeration to criticize society. Jonathan Swift\'s "A Modest Proposal" sarcastically suggested eating Irish babies to mock English policies toward the Irish.',q:'What literary technique is described in this passage?',choices:['Alliteration','Satire','Metaphor','Allusion'],correct:1,explain:'The passage explicitly names satire and provides a classic literary example.'},
+{id:'r8',passage:"The Amazon Rainforest produces about 20% of the world's oxygen and is home to 10% of all species on Earth. Deforestation threatens both biodiversity and global oxygen supply.",q:"What is the author's purpose in writing this passage?",choices:['To entertain with animal stories','To inform readers about the Amazon\'s importance','To argue that deforestation is legal','To describe a personal trip to the Amazon'],correct:1,explain:"The passage uses facts to inform readers about the Amazon's critical role."},
+{id:'r9',passage:'The tone of a piece of writing refers to the author\'s attitude toward the subject. A writer describing war as "glorious" has a very different tone than one describing it as "senseless slaughter."',q:'What does this passage say determines tone?',choices:['Word choice','Paragraph length','Number of sentences','Punctuation marks'],correct:0,explain:'The contrasting examples ("glorious" vs. "senseless slaughter") show how word choice creates different tones.'},
+{id:'r10',passage:'"The fog comes on little cat feet." — Carl Sandburg. This line compares fog to a cat moving quietly.',q:'What poetic device does this line use?',choices:['Simile','Metaphor','Hyperbole','Personification'],correct:1,explain:'A metaphor states one thing IS another without using "like" or "as." The fog IS described as having cat feet.'},
+{id:'r11',passage:'Primary sources are original documents from the time being studied — diaries, letters, and government records. Secondary sources interpret or analyze primary sources, like textbooks and biographies.',q:'Which of the following would be a primary source?',choices:['A textbook about World War II','A biography of Abraham Lincoln','A diary written by a Civil War soldier','A documentary film about the moon landing'],correct:2,explain:'A diary written during the period is an original document — a primary source by definition.'},
+{id:'r12',passage:'In 1969, Neil Armstrong became the first human to walk on the moon. He described the moment as "one small step for man, one giant leap for mankind."',q:'The phrase "one small step for man, one giant leap for mankind" is an example of:',choices:['Literal language','Antithesis','A simile','A cliché'],correct:1,explain:'Antithesis places contrasting ideas side by side ("small step" vs. "giant leap") for effect.'},
+{id:'r13',passage:'Context clues help readers determine the meaning of unfamiliar words. For example: "The child was intrepid, fearlessly climbing trees and jumping over streams without hesitation."',q:'Based on context, what does "intrepid" most likely mean?',choices:['Tired','Fearless','Careful','Clumsy'],correct:1,explain:'The description "fearlessly... without hesitation" signals that intrepid means fearless or bold.'},
+{id:'r14',passage:'The Harlem Renaissance was a cultural movement in the 1920s–30s that celebrated African American art, literature, and music. Writers like Langston Hughes and Zora Neale Hurston rose to prominence.',q:'The Harlem Renaissance is primarily described as which type of movement?',choices:['Political','Economic','Cultural','Military'],correct:2,explain:'The passage describes art, literature, and music — all aspects of culture.'},
+{id:'r15',passage:'Informational text aims to educate readers about a topic using facts, data, and evidence. It is objective and avoids personal opinions.',q:'Which sentence would NOT belong in an informational text?',choices:['The Amazon River is over 4,000 miles long.','Climate change is the most terrifying threat of our time.','The human body contains 206 bones.','Water boils at 100°C at sea level.'],correct:1,explain:'"Most terrifying" is a personal opinion — informational text must remain objective.'},
+{id:'r16',passage:'Idioms are phrases whose meanings differ from the literal words. "It\'s raining cats and dogs" means it\'s raining heavily — not that animals are falling from the sky.',q:'What does the idiom "bite the bullet" most likely mean?',choices:['Eat metal objects','Endure a painful situation without complaining','Run away quickly','Shoot a gun'],correct:1,explain:'This idiom means to endure hardship bravely — not a literal action.'},
+{id:'r17',passage:'A theme is the central message or life lesson in a piece of writing. The theme of a story about a dishonest boy who loses all his friends might be: "Honesty is the foundation of trust."',q:'What is a theme?',choices:['The main character of a story','The setting where events occur','A central message or life lesson','The order of events in a plot'],correct:2,explain:'The passage explicitly defines theme as "the central message or life lesson."'},
+{id:'r18',passage:'Hurricanes form over warm ocean water when warm, moist air rises and creates a low-pressure system. As storms intensify, wind speeds can exceed 157 mph in Category 5 storms.',q:'What condition is essential for hurricane formation according to the passage?',choices:['Cold Arctic winds','Warm ocean water','Desert terrain','Mountain ranges'],correct:1,explain:'The passage states hurricanes form "over warm ocean water" — the essential condition.'},
+{id:'r19',passage:"An author's argument must be supported by credible evidence. Anecdotes (personal stories) alone are not sufficient — data, expert opinions, and research studies strengthen an argument.",q:'Which type of evidence BEST strengthens an argument?',choices:['Personal anecdotes','Emotional appeals','Data and research studies','Opinions of friends'],correct:2,explain:'The passage explicitly states that data, expert opinions, and research studies strengthen arguments.'},
+{id:'r20',passage:'Cause and effect relationships explain why events happen. A cause is what makes something happen; an effect is the result. Identifying these relationships helps readers understand texts.',q:'In "Heavy rain caused flooding," what is the effect?',choices:['Heavy rain','The weather','Flooding','A river'],correct:2,explain:'The cause is heavy rain; the effect (the result that happened because of it) is flooding.'}
+],
+writing:[
+{id:'w1',q:'Which sentence is grammatically correct?',choices:['Him and me went to the store.','He and I went to the store.','He and me went to the store.','Him and I went to the store.'],correct:1,explain:'"He" and "I" are both subject pronouns and correct as the subject of the verb "went."'},
+{id:'w2',q:'Choose the sentence with correct punctuation.',choices:['I wanted to go however, it rained.','I wanted to go; however, it rained.','I wanted to go, however it rained.','I wanted to go however it rained.'],correct:1,explain:'"However" as a conjunctive adverb joining two independent clauses needs a semicolon before it and a comma after.'},
+{id:'w3',q:'Which word is spelled correctly?',choices:['Recieve','Neccessary','Accommodate','Occured'],correct:2,explain:'"Accommodate" has two c\'s and two m\'s. The other options are all misspelled.'},
+{id:'w4',q:'Identify the sentence with a misplaced modifier.',choices:['Running quickly, Maria won the race.','The dog barked at the stranger loudly.','Covered in mud, the car needed washing.','She almost drove her kids to school every day.'],correct:3,explain:'"Almost" should modify "every day." The corrected sentence: "She drove her kids to school almost every day."'},
+{id:'w5',q:'Which transition best shows contrast between two ideas?',choices:['Furthermore','In addition','However','Therefore'],correct:2,explain:'"However" signals a contrast or contradiction between ideas. The others signal addition or result.'},
+{id:'w6',q:'Which sentence uses the correct verb tense?',choices:['Yesterday, she walks to the park.','Tomorrow, I walked to school.','By noon, they had finished their work.','She will finished the project.'],correct:2,explain:'"Had finished" is the past perfect tense — correct for an action completed before another past moment.'},
+{id:'w7',q:'Select the sentence free of run-on errors.',choices:['I love reading, I read every night.','She was tired she went to bed.','Although he was tired, he finished his work.','He loves pizza he eats it every Friday.'],correct:2,explain:'"Although he was tired" is a dependent clause followed by an independent clause — grammatically complete.'},
+{id:'w8',q:'Which choice correctly uses a comma?',choices:['I need eggs, milk and butter.','I need eggs milk, and butter.','I need eggs, milk, and butter.','I need eggs milk and butter.'],correct:2,explain:'The serial (Oxford) comma separates items in a list: eggs, milk, and butter.'},
+{id:'w9',q:'Which sentence is most concise and clear?',choices:['Due to the fact that it was raining, we stayed inside.','It was raining, so we stayed inside.','On account of the rain that was falling, staying inside was what we did.','We stayed inside due to the rainy weather conditions.'],correct:1,explain:'"It was raining, so we stayed inside" conveys the same idea with the fewest words.'},
+{id:'w10',q:'Identify the sentence with a subject-verb agreement error.',choices:['The team plays every Saturday.','Each of the students has a book.','The dogs barks at strangers.','Neither of them was ready.'],correct:2,explain:'"Dogs" is plural and requires the plural verb "bark," not "barks."'},
+{id:'w11',q:'Which word correctly completes this sentence: "I had _____ food than I expected."',choices:['less','fewer','little','much'],correct:0,explain:'"Less" is used for uncountable nouns (food). "Fewer" is for countable items (pieces of food).'},
+{id:'w12',q:"Choose the sentence that uses the apostrophe correctly.",choices:["The cat's toy is missing.","The cats toy is missing.","The cats' are playing.","Its raining outside."],correct:0,explain:"\"Cat's toy\" correctly shows singular possession — the toy belonging to the cat."},
+{id:'w13',q:'Which sentence uses parallel structure?',choices:['She likes swimming, to run, and hike.','She likes swimming, running, and hiking.','She likes to swim, running, and to hike.','She likes swim, run, and hiking.'],correct:1,explain:'Parallel structure requires matching grammatical forms: swimming, running, and hiking (all gerunds).'},
+{id:'w14',q:'Which sentence is in the active voice?',choices:['The report was written by the manager.','Mistakes were made.','The manager wrote the report.','The ball was kicked by the player.'],correct:2,explain:'Active voice: the subject (manager) performs the action (wrote). In passive voice, the subject receives the action.'},
+{id:'w15',q:'Choose the word that best completes: "The scientist made a _____ discovery that changed medicine forever."',choices:['mediocre','groundbreaking','tedious','trivial'],correct:1,explain:'"Groundbreaking" means revolutionary or unprecedented — perfectly fitting a discovery that changed medicine.'}
+],
+math:[
+{id:'m1',q:'What is 15% of 240?',choices:['30','36','40','24'],correct:1,explain:'15% × 240 = 0.15 × 240 = 36'},
+{id:'m2',q:'Solve for x: 3x + 7 = 22',choices:['x = 3','x = 5','x = 7','x = 4'],correct:1,explain:'Subtract 7: 3x = 15. Divide by 3: x = 5'},
+{id:'m3',q:'What is the area of a rectangle with length 12 cm and width 7 cm?',choices:['38 cm²','84 cm²','19 cm²','96 cm²'],correct:1,explain:'Area = length × width = 12 × 7 = 84 cm²'},
+{id:'m4',q:'Simplify: ⅔ + ¾',choices:['5/7','17/12','9/12','5/6'],correct:1,explain:'LCD = 12: 8/12 + 9/12 = 17/12'},
+{id:'m5',q:'A shirt costs $45 and is on sale for 20% off. What is the sale price?',choices:['$25','$36','$40','$30'],correct:1,explain:'20% of $45 = $9. Sale price = $45 − $9 = $36'},
+{id:'m6',q:'What is the slope of a line passing through (2, 3) and (6, 7)?',choices:['1','2','½','4'],correct:0,explain:'Slope = (7−3)/(6−2) = 4/4 = 1'},
+{id:'m7',q:'A car travels 240 miles in 4 hours. What is its average speed?',choices:['60 mph','50 mph','80 mph','40 mph'],correct:0,explain:'Speed = distance ÷ time = 240 ÷ 4 = 60 mph'},
+{id:'m8',q:'What is the value of 5² + 3³?',choices:['34','43','52','28'],correct:2,explain:'5² = 25 and 3³ = 27. 25 + 27 = 52'},
+{id:'m9',q:'The circumference of a circle with radius 5 is approximately:',choices:['31.4','25','78.5','15.7'],correct:0,explain:'C = 2πr = 2 × 3.14 × 5 = 31.4'},
+{id:'m10',q:'Solve: 2(x − 3) = 4x + 2',choices:['x = −4','x = 4','x = −1','x = 2'],correct:0,explain:'2x − 6 = 4x + 2 → −6 − 2 = 4x − 2x → −8 = 2x → x = −4'},
+{id:'m11',q:'What is the median of: 3, 7, 9, 2, 5?',choices:['5','7','2','3'],correct:0,explain:'Ordered: 2, 3, 5, 7, 9. The middle value (3rd of 5) is 5.'},
+{id:'m12',q:'Convert 0.375 to a fraction in lowest terms.',choices:['3/7','375/1000','3/8','37/100'],correct:2,explain:'0.375 = 375/1000. Divide numerator and denominator by 125: 3/8'},
+{id:'m13',q:'If a triangle has a base of 10 and a height of 6, what is its area?',choices:['60','30','16','20'],correct:1,explain:'Area = ½ × base × height = ½ × 10 × 6 = 30'},
+{id:'m14',q:'Which of the following is NOT a rational number?',choices:['√4','0.333...','√2','½'],correct:2,explain:'√2 cannot be expressed as a fraction — it is irrational. Note: √4 = 2, which is rational.'},
+{id:'m15',q:'A bag has 4 red, 3 blue, and 5 green marbles. What is the probability of picking blue?',choices:['¼','3/12','1/3','3/4'],correct:1,explain:'3 blue out of 12 total = 3/12 = ¼'},
+{id:'m16',q:'What is 2.5 × 10³?',choices:['250','2,500','25,000','0.0025'],correct:1,explain:'10³ = 1,000. So 2.5 × 1,000 = 2,500'},
+{id:'m17',q:'Solve: x² − 9 = 0',choices:['x = 3 only','x = ±9','x = ±3','x = 9 only'],correct:2,explain:'x² = 9 → x = ±3 (both +3 and −3 satisfy the equation since both squared equal 9)'},
+{id:'m18',q:'What is the mean of: 10, 20, 30, 40?',choices:['25','30','20','15'],correct:0,explain:'Mean = (10 + 20 + 30 + 40) / 4 = 100 / 4 = 25'},
+{id:'m19',q:'How many degrees are in the interior angles of a triangle?',choices:['360°','90°','180°','270°'],correct:2,explain:'The sum of interior angles of any triangle is always 180°.'},
+{id:'m20',q:'If y = 2x + 4, what is y when x = −1?',choices:['6','2','0','−2'],correct:1,explain:'y = 2(−1) + 4 = −2 + 4 = 2'}
+],
+science:[
+{id:'s1',q:'What is the powerhouse of the cell?',choices:['Nucleus','Cell wall','Mitochondria','Ribosome'],correct:2,explain:'Mitochondria produce ATP through cellular respiration — the energy currency of the cell.'},
+{id:'s2',q:"Which of Newton's Laws states that for every action there is an equal and opposite reaction?",choices:['First Law','Second Law','Third Law','Law of Gravity'],correct:2,explain:"Newton's Third Law: every action has an equal and opposite reaction."},
+{id:'s3',q:'What gas do plants absorb during photosynthesis?',choices:['Oxygen','Nitrogen','Carbon dioxide','Hydrogen'],correct:2,explain:'Plants absorb CO₂ and release oxygen during photosynthesis.'},
+{id:'s4',q:'What is the atomic number of Carbon?',choices:['12','6','4','14'],correct:1,explain:'Carbon (C) has 6 protons — its atomic number is 6. (The mass number is 12.)'},
+{id:'s5',q:'Which type of rock is formed from cooled magma or lava?',choices:['Sedimentary','Metamorphic','Igneous','Fossil'],correct:2,explain:'Igneous rocks form when magma (underground) or lava (surface) cools and solidifies.'},
+{id:'s6',q:'What is the process by which DNA makes a copy of itself?',choices:['Transcription','Translation','Replication','Mitosis'],correct:2,explain:'DNA replication copies DNA before cell division.'},
+{id:'s7',q:'Which planet is closest to the Sun?',choices:['Venus','Earth','Mercury','Mars'],correct:2,explain:'Mercury is the closest planet to the Sun, though Venus is the hottest.'},
+{id:'s8',q:'What is the pH of pure water?',choices:['0','14','7','5'],correct:2,explain:'Pure water has a neutral pH of 7 — neither acidic nor basic.'},
+{id:'s9',q:'In a food chain, what are producers?',choices:['Animals that eat plants','Animals that eat other animals','Plants that make their own food','Decomposers that break down waste'],correct:2,explain:'Producers (plants) make their own food via photosynthesis — they form the base of the food chain.'},
+{id:'s10',q:'What is the speed of light in a vacuum (approximately)?',choices:['300,000 km/s','30,000 km/s','3,000,000 km/s','3,000 km/s'],correct:0,explain:'The speed of light is approximately 300,000 km/s (3 × 10⁸ m/s).'},
+{id:'s11',q:'Which organelle is responsible for protein synthesis?',choices:['Golgi apparatus','Ribosome','Vacuole','Lysosome'],correct:1,explain:'Ribosomes are the site of protein synthesis — they read mRNA and assemble amino acids into proteins.'},
+{id:'s12',q:'What is natural selection?',choices:["Animals choosing their habitats","Survival of individuals best suited to their environment","Humans breeding animals","Random mutations in DNA"],correct:1,explain:'Natural selection: individuals with traits better suited to their environment survive and reproduce more.'},
+{id:'s13',q:'What type of bond holds atoms together within a water molecule (H₂O)?',choices:['Ionic bond','Covalent bond','Metallic bond','Hydrogen bond'],correct:1,explain:'Within a water molecule, oxygen and hydrogen share electrons — this is a covalent bond.'},
+{id:'s14',q:'What does the law of conservation of energy state?',choices:['Energy can be created from matter','Energy can be destroyed by heat','Energy cannot be created or destroyed, only transformed','All energy eventually becomes light'],correct:2,explain:'Energy cannot be created or destroyed — it only changes from one form to another.'},
+{id:'s15',q:'Which part of the human brain controls balance and coordination?',choices:['Cerebrum','Cerebellum','Brainstem','Hippocampus'],correct:1,explain:'The cerebellum coordinates movement, balance, and fine motor control.'},
+{id:'s16',q:'What is the function of red blood cells?',choices:['Fight infection','Carry oxygen throughout the body','Aid in blood clotting','Produce antibodies'],correct:1,explain:'Red blood cells contain hemoglobin, which binds and transports oxygen from the lungs to body tissues.'},
+{id:'s17',q:"Which layer of Earth do we live on?",choices:['Mantle','Inner core','Outer core','Crust'],correct:3,explain:"The crust is Earth's outermost layer — where continents, oceans, and all life exist."},
+{id:'s18',q:'What is a hypothesis?',choices:['A proven scientific law','A testable prediction or educated guess','A final scientific conclusion','An observation made in an experiment'],correct:1,explain:'A hypothesis is a testable prediction — an educated guess that can be supported or refuted by evidence.'},
+{id:'s19',q:"Which gas makes up most of Earth's atmosphere?",choices:['Oxygen','Carbon dioxide','Argon','Nitrogen'],correct:3,explain:"Nitrogen makes up about 78% of Earth's atmosphere; oxygen is about 21%."},
+{id:'s20',q:'What type of energy does a stretched rubber band have?',choices:['Kinetic energy','Thermal energy','Potential energy','Chemical energy'],correct:2,explain:'A stretched rubber band stores elastic potential energy, which converts to kinetic energy when released.'}
+],
+social:[
+{id:'ss1',q:'The United States has three branches of government. Which branch makes the laws?',choices:['Executive','Judicial','Legislative','Military'],correct:2,explain:'Congress (Senate + House of Representatives) forms the legislative branch and creates federal laws.'},
+{id:'ss2',q:'What was the primary cause of the American Civil War?',choices:["Religious differences","Slavery and states' rights","British taxation","Economic trade routes"],correct:1,explain:"The Civil War's root cause was the institution of slavery and the right of Southern states to maintain it."},
+{id:'ss3',q:'What economic system is most common in Western democracies?',choices:['Communism','Command economy','Market capitalism','Feudalism'],correct:2,explain:'Most Western democracies use a mixed market economy — predominantly capitalist with some government regulation.'},
+{id:'ss4',q:'What is the "checks and balances" system designed to do?',choices:['Track government spending','Prevent any one branch from having too much power','Ensure fair elections','Manage international trade'],correct:1,explain:'Checks and balances ensures no single branch (executive, legislative, judicial) can dominate the others.'},
+{id:'ss5',q:'Which continent experienced European colonization most extensively during the 18th and 19th centuries?',choices:['South America','Asia','Africa','North America'],correct:2,explain:'Africa was colonized most extensively during the Scramble for Africa (1880s–1900s), when European powers divided nearly the entire continent.'},
+{id:'ss6',q:'What does GDP stand for?',choices:['General Defense Policy','Gross Domestic Product','Government Daily Pay','Global Development Plan'],correct:1,explain:'GDP — Gross Domestic Product — measures the total economic output of a country.'},
+{id:'ss7',q:'The First Amendment to the U.S. Constitution protects which rights?',choices:['Right to bear arms','Freedom of speech, religion, press, assembly, and petition','Right to a fair trial','Protection from unreasonable search'],correct:1,explain:'The First Amendment protects speech, religion, press, assembly, and the right to petition the government.'},
+{id:'ss8',q:'What was the main goal of the Marshall Plan after World War II?',choices:['To punish Germany for the war','To rebuild war-torn European economies','To establish the United Nations','To divide Europe between the US and USSR'],correct:1,explain:'The Marshall Plan (1948) provided US financial aid to rebuild Western European economies devastated by WWII.'},
+{id:'ss9',q:'Supply and demand determines what in a market economy?',choices:['Tax rates','Laws and regulations','Prices of goods and services','Government budgets'],correct:2,explain:'Prices are determined by supply (how much is available) and demand (how much is wanted).'},
+{id:'ss10',q:'What was the significance of the 19th Amendment (1920)?',choices:['Ended slavery','Gave women the right to vote','Established prohibition','Gave citizens the right to bear arms'],correct:1,explain:'The 19th Amendment granted women the right to vote in the United States.'},
+{id:'ss11',q:'Which term describes a government in which one person holds absolute power?',choices:['Democracy','Republic','Autocracy','Oligarchy'],correct:2,explain:'An autocracy is a system where one person holds unlimited, unchecked power.'},
+{id:'ss12',q:'What geographic feature most influenced the development of ancient Egyptian civilization?',choices:['The Sahara Desert','The Mediterranean Sea','The Nile River','The Red Sea'],correct:2,explain:'The Nile River provided fresh water, fertile soil, and transportation — making Egyptian civilization possible.'},
+{id:'ss13',q:'What does "inflation" mean in economics?',choices:['A decrease in government spending','A general rise in the prices of goods and services over time','An increase in the value of currency','A decline in national employment'],correct:1,explain:'Inflation is the general increase in prices over time, which reduces the purchasing power of money.'},
+{id:'ss14',q:'The Cold War was primarily a conflict between which two superpowers?',choices:['USA and China','USA and Germany','USA and USSR','UK and USSR'],correct:2,explain:'The Cold War (1947–1991) was a geopolitical tension between the United States and the Soviet Union.'},
+{id:'ss15',q:'Which of the following is an example of a push factor in migration?',choices:["Better job opportunities in a new country","A high standard of living in the destination","Natural disaster destroying one's home","Family members already living abroad"],correct:2,explain:"Push factors drive people away from their current location — a natural disaster is a classic example."},
+{id:'ss16',q:'What is the purpose of the Electoral College in the United States?',choices:['To elect members of Congress','To formally elect the President and Vice President','To approve Supreme Court justices','To ratify constitutional amendments'],correct:1,explain:'The Electoral College is the mechanism by which the President and Vice President are formally elected.'},
+{id:'ss17',q:'What year did the Berlin Wall fall, signaling the end of the Cold War era?',choices:['1979','1989','1991','1985'],correct:1,explain:'The Berlin Wall fell on November 9, 1989 — symbolizing the collapse of Soviet-era communism.'},
+{id:'ss18',q:'Which international organization was formed after World War II to promote global peace?',choices:['NATO','The League of Nations','The United Nations','The European Union'],correct:2,explain:'The United Nations was founded in 1945 to promote international cooperation and prevent future wars.'},
+{id:'ss19',q:'What is a tariff?',choices:['A type of tax on imported goods','A military alliance between nations','A form of government','An economic recession'],correct:0,explain:'A tariff is a tax placed on imported goods — used to protect domestic industries or generate revenue.'},
+{id:'ss20',q:'What does the term "due process" refer to?',choices:['The speed of law enforcement','The government following fair legal procedures before depriving someone of life, liberty, or property','The process of passing a new law','The right to vote in elections'],correct:1,explain:'Due process (5th and 14th Amendments) requires fair legal procedures before the government can deprive anyone of fundamental rights.'}
+]
+};
+
+const ESSAY_PROMPTS=[
+{type:'Argumentative',label:'Tech in schools',topic:'Technology in schools',prompt:'Some people believe that giving every student a personal device (laptop or tablet) in school improves learning. Others argue it creates distractions and reduces social interaction.\n\nWrite an essay arguing your position on whether schools should provide personal devices to all students. Support your argument with specific reasons and examples.'},
+{type:'Argumentative',label:'Gap year',topic:'Gap year',prompt:'Some high school graduates choose to take a "gap year" — a year off before starting college to travel, work, or volunteer. Others argue that taking time off harms academic momentum.\n\nWrite an essay arguing whether taking a gap year is beneficial or harmful to a student\'s future. Use specific reasons and examples to support your position.'},
+{type:'Explanatory',label:'A challenge',topic:'A meaningful challenge',prompt:'Think about a significant challenge you have faced in your life.\n\nWrite an essay explaining how you addressed that challenge and what you learned from it. Use specific details and examples to develop your response.'},
+{type:'Explanatory',label:'An important skill',topic:'An important skill',prompt:'Think about a skill that you believe is essential for success in today\'s world.\n\nWrite an essay explaining what that skill is, why it is important, and how a person can develop it. Use specific details and examples to support your ideas.'}
+];
+
+let scores={reading:{correct:0,total:0},writing:{correct:0,total:0},math:{correct:0,total:0},science:{correct:0,total:0},social:{correct:0,total:0},essay:null};
+let answered={};
+let calcDisplay='0',calcOp=null,calcPrev=null,calcReset=false;
+let currentPrompt=0;
+
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active')});
+  if(id==='tracker')renderTracker();
+}
+
+function buildQuestions(key,questions){
+  const container=document.getElementById('qs-'+key);
+  if(!container||container.children.length>0)return;
+  let html='';
+  questions.forEach((q,qi)=>{
+    html+=`<div class="card" id="card-${q.id}">
+    <div class="q-num">Question ${qi+1} of ${questions.length}</div>
+    ${q.passage?`<div class="q-passage">${q.passage}</div>`:''}
+    <div class="q-text">${q.q}</div>
+    <div class="choices" id="choices-${q.id}">`;
+    q.choices.forEach((c,ci)=>{
+      html+=`<button class="choice" onclick="answer('${q.id}',${ci},${q.correct},'${key}',${questions.length})" id="ch-${q.id}-${ci}"><span class="choice-letter">${String.fromCharCode(65+ci)}.</span> ${c}</button>`;
+    });
+    html+=`</div><div class="explanation" id="exp-${q.id}">${q.explain}</div></div>`;
+  });
+  container.innerHTML=html;
+}
+
+function answer(qid,chosen,correct,section,total){
+  if(answered[qid]!==undefined)return;
+  answered[qid]=chosen;
+  for(let ci=0;ci<4;ci++){
+    const btn=document.getElementById('ch-'+qid+'-'+ci);
+    if(!btn)continue;
+    btn.disabled=true;
+    if(ci===correct)btn.classList.add('correct');
+    else if(ci===chosen)btn.classList.add('wrong');
+  }
+  document.getElementById('exp-'+qid).style.display='block';
+  const qs=QUESTIONS[section];
+  const done=qs.filter(q=>answered[q.id]!==undefined).length;
+  const corr=qs.filter(q=>answered[q.id]===q.correct).length;
+  scores[section]={correct:corr,total:done};
+  const pct=Math.round((done/qs.length)*100);
+  const ptxt=document.getElementById('prog-'+section+'-text');
+  const pbar=document.getElementById('prog-'+section+'-bar');
+  const psc=document.getElementById('prog-'+section+'-score');
+  if(ptxt)ptxt.textContent=`${done} / ${qs.length} answered`;
+  if(pbar)pbar.style.width=pct+'%';
+  if(psc)psc.textContent=`${corr} correct`;
+}
+
+function buildEssayPrompts(){
+  const tabs=document.getElementById('prompt-tabs');
+  if(!tabs)return;
+  tabs.innerHTML=ESSAY_PROMPTS.map((p,i)=>`<button class="prompt-tab ${i===0?'active':''}" onclick="selectPrompt(${i})">${p.type}: ${p.label}</button>`).join('');
+  document.getElementById('essay-prompt-text').textContent=ESSAY_PROMPTS[0].prompt;
+}
+
+function selectPrompt(i){
+  currentPrompt=i;
+  document.getElementById('essay-prompt-text').textContent=ESSAY_PROMPTS[i].prompt;
+  document.querySelectorAll('.prompt-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.getElementById('essay-text').value='';
+  document.getElementById('word-count').textContent='0 words';
+  document.getElementById('essay-feedback').style.display='none';
+}
+
+function updateWordCount(){
+  const txt=document.getElementById('essay-text').value.trim();
+  const n=txt?txt.split(/\s+/).length:0;
+  document.getElementById('word-count').textContent=n+' word'+(n!==1?'s':'');
+}
+
+function toggleRubric(){
+  const rc=document.getElementById('rubric-card');
+  rc.style.display=rc.style.display==='none'?'block':'none';
+}
+
+function scoreEssay(){
+  const txt=document.getElementById('essay-text').value.trim();
+  if(txt.length<80){alert('Please write at least a few paragraphs before scoring.');return;}
+  const fb=document.getElementById('essay-feedback');
+  fb.style.display='block';
+  fb.innerHTML=`
+  <h4 style="margin-bottom:1rem">&#9997; Self-Score Your Essay</h4>
+  <p style="font-size:13px;color:#555;margin-bottom:1rem">Rate yourself honestly on each category. Your total will calculate your estimated HiSET essay score (1&ndash;6). Passing = 2 or higher.</p>
+
+  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px">A. Development of Central Position</div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px">Clear argument with evidence from BOTH passages?</div>
+    <select id="sc-a" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
+      <option value="">-- Select --</option>
+      <option value="4">Strong (4pts) &mdash; Clear claim, well-developed, evidence from both passages</option>
+      <option value="3">Adequate (3pts) &mdash; Clear claim, some development, references passages</option>
+      <option value="2">Developing (2pts) &mdash; Weak development or limited passage use</option>
+      <option value="1">Beginning (1pt) &mdash; Unclear claim, little development, passages not used</option>
+    </select>
+  </div>
+
+  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px">B. Organization of Ideas</div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px">Clear intro, body paragraphs, and conclusion with transitions?</div>
+    <select id="sc-b" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
+      <option value="">-- Select --</option>
+      <option value="4">Strong (4pts) &mdash; Clear structure, logical order, effective transitions</option>
+      <option value="3">Adequate (3pts) &mdash; Generally organized, transitions present but inconsistent</option>
+      <option value="2">Developing (2pts) &mdash; Some organization but hard to follow in places</option>
+      <option value="1">Beginning (1pt) &mdash; Little organization, ideas seem random</option>
+    </select>
+  </div>
+
+  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px">C. Language Facility</div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px">Precise word choice and varied sentence structures?</div>
+    <select id="sc-c" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
+      <option value="">-- Select --</option>
+      <option value="4">Strong (4pts) &mdash; Precise word choice, varied sentences, consistent tone</option>
+      <option value="3">Adequate (3pts) &mdash; Generally clear, some variety, mostly appropriate tone</option>
+      <option value="2">Developing (2pts) &mdash; Basic vocabulary, repetitive sentences</option>
+      <option value="1">Beginning (1pt) &mdash; Vague words, simple/repetitive sentences</option>
+    </select>
+  </div>
+
+  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px">D. Writing Conventions</div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px">Grammar, punctuation, spelling, and capitalization?</div>
+    <select id="sc-d" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
+      <option value="">-- Select --</option>
+      <option value="4">Strong (4pts) &mdash; Few or no errors, meaning always clear</option>
+      <option value="3">Adequate (3pts) &mdash; Some errors but meaning is always clear</option>
+      <option value="2">Developing (2pts) &mdash; Frequent errors that sometimes interfere with meaning</option>
+      <option value="1">Beginning (1pt) &mdash; Many errors that make essay hard to understand</option>
+    </select>
+  </div>
+
+  <div id="essay-score-result" style="display:none;padding:1rem;background:#f0fdf4;border-radius:10px;border-left:3px solid #16a34a;margin-top:0.5rem"></div>
+  `;
+}
+
+function calcEssayScore(){
+  const a=parseInt(document.getElementById('sc-a').value)||0;
+  const b=parseInt(document.getElementById('sc-b').value)||0;
+  const c=parseInt(document.getElementById('sc-c').value)||0;
+  const d=parseInt(document.getElementById('sc-d').value)||0;
+  if(!a||!b||!c||!d)return;
+  const total=a+b+c+d;
+  let score,label,tips;
+  if(total>=14){score=6;label='Exceptional';tips='Outstanding work! Strong development, clear organization, precise language, and solid conventions. You are well prepared for the HiSET essay.';}
+  else if(total>=12){score=5;label='Strong';tips='Great essay! Make your passage evidence more specific and vary your sentence structures to push toward a 6.';}
+  else if(total>=10){score=4;label='Adequate';tips='Solid effort. Add more specific quotes or details from both passages and work on smoother transitions between paragraphs.';}
+  else if(total>=8){score=3;label='Developing';tips='Make sure your thesis is stated clearly in the first paragraph. Add at least one specific detail from each passage.';}
+  else if(total>=6){score=2;label='Beginning';tips='Focus on: (1) A clear one-sentence thesis. (2) One specific detail from each passage. (3) A clear intro and conclusion.';}
+  else{score=1;label='Needs Work';tips='Start with a plan: decide your position, write one clear thesis, then write 2-3 body paragraphs each with one reason and one piece of passage evidence.';}
+  const passing=score>=2;
+  const cls=passing?'badge-pass':'badge-fail';
+  const result=document.getElementById('essay-score-result');
+  result.style.display='block';
+  result.innerHTML='<p style="font-size:16px;font-weight:700;margin-bottom:8px">Estimated score: <span class="'+cls+'">'+score+' / 6 &mdash; '+label+'</span></p>'
+    +'<p style="font-size:13px;color:#444;margin-bottom:8px">'+tips+'</p>'
+    +'<p style="font-size:12px;color:#888">Passing = 2 or higher &middot; Raw points: '+total+'/16</p>';
+  scores.essay=passing?'pass':'not yet';
+}
+
+function calcNum(n){
+  if(calcReset){calcDisplay='0';calcReset=false;}
+  if(calcDisplay==='0'&&n!=='.')calcDisplay=n;
+  else if(calcDisplay.length<14)calcDisplay+=n;
+  updCalc();
+}
+function calcDot(){if(!calcDisplay.includes('.'))calcDisplay+='.';updCalc();}
+function calcAC(){calcDisplay='0';calcOp=null;calcPrev=null;calcReset=false;updCalc();}
+function calcSign(){calcDisplay=String(-parseFloat(calcDisplay)||0);updCalc();}
+function calcPercent(){calcDisplay=String(parseFloat(calcDisplay)/100);updCalc();}
+function calcOpr(op){calcPrev=parseFloat(calcDisplay);calcOp=op;calcReset=true;}
+function calcEquals(){
+  if(calcOp===null||calcPrev===null)return;
+  const cur=parseFloat(calcDisplay);let r;
+  if(calcOp==='÷')r=cur===0?'Error':calcPrev/cur;
+  else if(calcOp==='×')r=calcPrev*cur;
+  else if(calcOp==='−')r=calcPrev-cur;
+  else r=calcPrev+cur;
+  calcDisplay=typeof r==='string'?r:String(Math.round(r*1e10)/1e10);
+  calcOp=null;calcPrev=null;calcReset=true;updCalc();
+}
+function updCalc(){const d=document.getElementById('calc-disp');if(d)d.textContent=calcDisplay;}
+
+function renderTracker(){
+  const labels={reading:'LA – Reading',writing:'LA – Writing',math:'Mathematics',science:'Science',social:'Social Studies'};
+  const colors={reading:'#3b82f6',writing:'#16a34a',math:'#ea580c',science:'#7c3aed',social:'#d97706'};
+  let total=0;
+  let sumHtml='';let barsHtml='';
+  ['reading','writing','math','science','social'].forEach(k=>{
+    const v=scores[k];
+    const scaledScore=v.total>0?Math.round((v.correct/20)*20):0;
+    total+=scaledScore;
+    const pct=Math.round((v.correct/20)*100);
+    const pass=scaledScore>=8;
+    const display=v.total>0?`${scaledScore}/20`:'—';
+    sumHtml+=`<div class="tracker-card"><div class="tracker-num">${display}</div><div class="tracker-label">${labels[k]}</div>${v.total>0?`<div style="margin-top:4px"><span class="badge ${pass?'badge-pass':'badge-fail'}">${pass?'Pass':'Below 8'}</span></div>`:''}</div>`;
+    barsHtml+=`<div class="score-bar"><span class="score-bar-label">${labels[k]}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colors[k]}"></div></div><span class="score-bar-val">${display}</span></div>`;
+  });
+  sumHtml+=`<div class="tracker-card"><div class="tracker-num">${total}/100</div><div class="tracker-label">Total</div><div style="margin-top:4px"><span class="badge ${total>=45?'badge-pass':'badge-pending'}">${total>=45?'Passing!':total>0?'Need 45':'Not started'}</span></div></div>`;
+  if(scores.essay){sumHtml+=`<div class="tracker-card"><div class="tracker-num">${scores.essay==='pass'?'✓':'–'}</div><div class="tracker-label">Essay</div><div style="margin-top:4px"><span class="badge ${scores.essay==='pass'?'badge-pass':'badge-fail'}">${scores.essay==='pass'?'Pass':'Not yet'}</span></div></div>`;}
+  document.getElementById('tracker-summary').innerHTML=sumHtml;
+  document.getElementById('tracker-bars').innerHTML=barsHtml;
+}
+
+function clearScores(){
+  if(!confirm('Reset all scores and answers? This cannot be undone.'))return;
+  scores={reading:{correct:0,total:0},writing:{correct:0,total:0},math:{correct:0,total:0},science:{correct:0,total:0},social:{correct:0,total:0},essay:null};
+  answered={};
+  ['reading','writing','math','science','social'].forEach(k=>{
+    const c=document.getElementById('qs-'+k);if(c)c.innerHTML='';
+    const pb=document.getElementById('prog-'+k+'-bar');if(pb)pb.style.width='0%';
+    const pt=document.getElementById('prog-'+k+'-text');if(pt)pt.textContent=`0 / ${k==='writing'?15:20} answered`;
+    const ps=document.getElementById('prog-'+k+'-score');if(ps)ps.textContent='0 correct';
+  });
+  buildAll();
+  renderTracker();
+}
+
+function buildAll(){
+  buildQuestions('reading',QUESTIONS.reading);
+  buildQuestions('writing',QUESTIONS.writing);
+  buildQuestions('math',QUESTIONS.math);
+  buildQuestions('science',QUESTIONS.science);
+  buildQuestions('social',QUESTIONS.social);
+  buildEssayPrompts();
+}
+
+buildAll();
+</script>
+<div class="watermark">Ashley Tate<span>|</span>Adult Ed Study Prep<span>|</span>&copy; 2026 &mdash; All Rights Reserved</div>
+</body>
+</html>
