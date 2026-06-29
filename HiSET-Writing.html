@@ -589,6 +589,7 @@ function showSection(id) {
     if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active');
   });
   if (id === 'tracker') renderTracker();
+  if (id === 'practice') showDrill(currentDrill);
 }
 
 buildEssayPrompts();
