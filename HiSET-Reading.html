@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>HiSET Reading – Personalized Study Tool</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;color:#1a1a1a;background:#f2f1ee;min-height:100vh}
+.app{max-width:820px;margin:0 auto;padding:1rem 1rem 5rem}
+
+/* HEADER */
+.header{background:#1a1a1a;color:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem}
+.header h1{font-size:20px;font-weight:700;margin-bottom:2px}
+.header p{font-size:13px;opacity:0.65}
+.goal-row{display:flex;gap:10px;margin-top:1rem;flex-wrap:wrap}
+.goal-pill{background:rgba(255,255,255,0.12);border-radius:8px;padding:6px 12px;font-size:12px;color:#fff}
+.goal-pill strong{color:#fbbf24}
+
+/* NAV */
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:11px 16px;border:none;border-radius:10px;background:#fff;color:#555;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:inherit;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.nav-btn:active{transform:scale(0.97)}
+.nav-btn.active{background:#1a1a1a;color:#fff}
+.nav-btn .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle}
+
+/* SECTIONS */
+.section{display:none}
+.section.active{display:block}
+
+/* CARDS */
+.card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
+.card-title{font-size:16px;font-weight:700;margin-bottom:0.75rem;display:flex;align-items:center;gap:8px}
+
+/* SCORE GAUGE */
+.score-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1rem}
+.score-cell{border-radius:12px;padding:1rem;text-align:center}
+.score-cell .pct{font-size:28px;font-weight:800;line-height:1}
+.score-cell .lbl{font-size:12px;margin-top:4px;font-weight:500}
+.score-cell .sublbl{font-size:11px;margin-top:2px;opacity:0.7}
+.s-crit{background:#fee2e2;color:#991b1b}
+.s-low{background:#fef3c7;color:#92400e}
+.s-mid{background:#e0f2fe;color:#075985}
+.s-ok{background:#d1fae5;color:#064e3b}
+.priority-badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:6px;vertical-align:middle}
+.p-critical{background:#fee2e2;color:#991b1b}
+.p-high{background:#fef3c7;color:#92400e}
+.p-med{background:#e0f2fe;color:#075985}
+
+/* STRATEGY TIPS */
+.tip-section{margin-bottom:1.25rem}
+.tip-header{font-size:14px;font-weight:700;margin-bottom:0.6rem;display:flex;align-items:center;gap:6px}
+.tip-card{background:#f8f8f6;border-radius:10px;padding:1rem 1.1rem;margin-bottom:0.6rem;border-left:4px solid #ccc;font-size:14px;line-height:1.65;color:#333}
+.tip-card.critical{border-left-color:#ef4444}
+.tip-card.high{border-left-color:#f59e0b}
+.tip-card.med{border-left-color:#3b82f6}
+.tip-card strong{color:#1a1a1a}
+.tip-steps{margin-top:0.5rem;padding-left:1.1rem}
+.tip-steps li{margin-bottom:4px;font-size:13px;color:#444;line-height:1.55}
+
+/* PASSAGE */
+.passage-box{background:#f8f8f6;border-radius:10px;padding:1rem 1.1rem;font-size:14px;line-height:1.8;color:#333;margin-bottom:1rem;border-left:4px solid #94a3b8}
+.passage-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:6px}
+.passage-title{font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:8px}
+
+/* QUESTIONS */
+.q-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.07)}
+.q-meta{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.q-tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px}
+.tag-d{background:#fce7f3;color:#831843}
+.tag-a{background:#f3e8ff;color:#581c87}
+.tag-b{background:#dbeafe;color:#1e3a8a}
+.tag-c{background:#dcfce7;color:#14532d}
+.dok-tag{font-size:11px;color:#888;background:#f1f5f9;padding:3px 8px;border-radius:6px}
+.q-text{font-size:15px;font-weight:500;line-height:1.6;margin-bottom:1rem;color:#1a1a1a}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border:1.5px solid #e5e7eb;border-radius:10px;cursor:pointer;font-size:14px;line-height:1.55;text-align:left;background:#fff;color:#1a1a1a;width:100%;font-family:inherit;min-height:48px;transition:all 0.12s}
+.choice:active{transform:scale(0.99)}
+.choice:hover:not(:disabled){border-color:#9ca3af;background:#fafafa}
+.choice.correct{border-color:#16a34a;background:#f0fdf4;color:#14532d}
+.choice.wrong{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
+.choice-letter{font-weight:700;min-width:22px;flex-shrink:0;font-size:14px}
+.explanation{display:none;margin-top:10px;padding:12px 14px;background:#f0fdf4;border-radius:10px;font-size:13px;line-height:1.65;color:#14532d;border-left:3px solid #16a34a}
+.explanation .why{font-weight:700;margin-bottom:4px}
+.strategy-note{margin-top:6px;padding:8px 10px;background:#fffbeb;border-radius:8px;font-size:12px;color:#92400e;border-left:3px solid #f59e0b}
+
+/* PROGRESS */
+.prog-bar-wrap{background:#e5e7eb;border-radius:6px;height:8px;overflow:hidden;margin:6px 0 3px}
+.prog-bar-fill{height:100%;border-radius:6px;background:#1a1a1a;transition:width 0.4s}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:1rem}
+
+/* SECTION HEADER */
+.sec-header{margin-bottom:1rem}
+.sec-header h2{font-size:18px;font-weight:700;margin-bottom:2px}
+.sec-header p{font-size:13px;color:#666;line-height:1.5}
+
+/* DRILL TABS */
+.drill-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.drill-tab{padding:9px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all 0.12s}
+.drill-tab:active{transform:scale(0.97)}
+.drill-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.drill-tab .badge-count{display:inline-block;background:rgba(255,255,255,0.2);border-radius:4px;padding:1px 6px;font-size:10px;margin-left:4px}
+.drill-tab:not(.active) .badge-count{background:#f1f5f9;color:#888}
+
+/* FLASHCARDS */
+.flashcard{background:#1a1a1a;color:#fff;border-radius:16px;padding:2rem 1.5rem;text-align:center;min-height:200px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;margin-bottom:1rem;transition:all 0.2s}
+.flashcard:active{transform:scale(0.98)}
+.flashcard .fc-label{font-size:11px;opacity:0.5;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem}
+.flashcard .fc-term{font-size:22px;font-weight:700;line-height:1.3;margin-bottom:0.5rem}
+.flashcard .fc-hint{font-size:12px;opacity:0.4;margin-top:0.75rem}
+.flashcard.flipped{background:#1e3a5f}
+.flashcard .fc-def{font-size:15px;line-height:1.65;opacity:0.95}
+.fc-nav{display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:1rem}
+.fc-nav button{padding:11px 22px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500}
+.fc-nav button:active{transform:scale(0.97)}
+.fc-counter{font-size:13px;color:#888}
+
+/* TRACKER */
+.tracker-section{margin-bottom:1.25rem}
+.tracker-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.tracker-row:last-child{border-bottom:none}
+.tracker-label{font-size:13px;font-weight:600;width:160px;flex-shrink:0}
+.tracker-bar-track{flex:1;height:10px;background:#e5e7eb;border-radius:5px;overflow:hidden}
+.tracker-bar-fill{height:100%;border-radius:5px;transition:width 0.5s}
+.tracker-pct{font-size:13px;color:#888;width:36px;text-align:right}
+.tracker-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:1rem}
+.tracker-card{padding:1rem;border-radius:12px;text-align:center}
+.tracker-card .tn{font-size:26px;font-weight:800}
+.tracker-card .tl{font-size:11px;margin-top:2px;font-weight:500}
+
+/* BTN */
+.btn{padding:13px 22px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn:active{transform:scale(0.97)}
+.btn-dark{background:#1a1a1a;color:#fff}
+.btn-outline{background:#fff;color:#1a1a1a;border:1.5px solid #e5e7eb}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem}
+
+@media(max-width:480px){
+  .score-grid{grid-template-columns:repeat(2,1fr)}
+  .tracker-label{width:120px;font-size:12px}
+  .flashcard .fc-term{font-size:18px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <h1>HiSET Reading – Personalized Study Tool</h1>
+  <p>Built from your May 2023 performance report · Targeting a score of 11+</p>
+  <div class="goal-row">
+    <div class="goal-pill">Current score: <strong>5</strong></div>
+    <div class="goal-pill">Goal: <strong>11+</strong></div>
+    <div class="goal-pill">Biggest gap: <strong>Synthesis & Generalization</strong></div>
+    <div class="goal-pill">Test time: <strong>65 min · 50 questions</strong></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('dashboard')"><span class="dot" style="background:#f59e0b"></span>My Profile</button>
+  <button class="nav-btn" onclick="showSection('strategies')"><span class="dot" style="background:#3b82f6"></span>Strategies</button>
+  <button class="nav-btn" onclick="showSection('flashcards')"><span class="dot" style="background:#8b5cf6"></span>Flashcards</button>
+  <button class="nav-btn" onclick="showSection('practice')"><span class="dot" style="background:#10b981"></span>Practice</button>
+  <button class="nav-btn" onclick="showSection('tracker')"><span class="dot" style="background:#ef4444"></span>Progress</button>
+</div>
+
+<!-- ═══════════════════════════════════════════ DASHBOARD -->
+<div id="section-dashboard" class="section active">
+
+  <div class="card">
+    <div class="card-title">📊 Your Score Report — May 2023</div>
+    <div class="score-grid">
+      <div class="score-cell s-low">
+        <div class="pct">41%</div>
+        <div class="lbl">A. Comprehension</div>
+        <div class="sublbl">Explicit details, vocabulary, word choice</div>
+      </div>
+      <div class="score-cell s-mid">
+        <div class="pct">50%</div>
+        <div class="lbl">B. Inference</div>
+        <div class="sublbl">Best area — keep building</div>
+      </div>
+      <div class="score-cell s-low">
+        <div class="pct">45%</div>
+        <div class="lbl">C. Analysis</div>
+        <div class="sublbl">Main idea, author's purpose, structure</div>
+      </div>
+      <div class="score-cell s-crit">
+        <div class="pct">25%</div>
+        <div class="lbl">D. Synthesis</div>
+        <div class="sublbl">⚠️ Biggest gap — priority focus</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:#666;line-height:1.6">The test has 50 questions. <strong>60% are informational texts</strong> and <strong>40% are literary texts.</strong> Synthesis questions are DOK Level 4 — the most complex — but they follow a pattern you can learn.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Your Study Priority Plan</div>
+    <div style="font-size:14px;line-height:1.75;color:#333">
+      <p style="margin-bottom:10px"><strong style="color:#991b1b">🔴 Priority 1 — Synthesis & Generalization (25%)</strong><br>
+      This is where the most points are being lost. These questions ask you to compare two passages, draw broad conclusions, or make predictions using evidence from multiple parts of the text. Practice these first, every session.</p>
+      <p style="margin-bottom:10px"><strong style="color:#92400e">🟡 Priority 2 — Comprehension (41%)</strong><br>
+      These are the "easier" questions but you're still missing more than half. Focus on reading for explicit details and using context clues for vocabulary.</p>
+      <p style="margin-bottom:10px"><strong style="color:#075985">🔵 Priority 3 — Analysis (45%)</strong><br>
+      Finding the main idea, identifying author's purpose, and recognizing text structure. A few solid strategies can push this score up quickly.</p>
+      <p><strong style="color:#064e3b">🟢 Maintain — Inference (50%)</strong><br>
+      Your strongest area. Keep practicing to hold this score and push it higher.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 About the Real Test</div>
+    <div style="font-size:14px;line-height:1.8;color:#444">
+      <p>• <strong>50 questions</strong> in <strong>65 minutes</strong> (about 1 min 18 sec per question)</p>
+      <p>• Passages are <strong>400–600 words</strong> each — read actively, not passively</p>
+      <p>• Some questions won't count toward your score (unscored pilot questions)</p>
+      <p>• <strong>60% Informational</strong>: articles, editorials, essays, biographical sketches</p>
+      <p>• <strong>40% Literary</strong>: fiction, memoirs, poetry, narratives</p>
+      <p>• You do NOT need outside knowledge — all answers are in the passage</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ STRATEGIES -->
+<div id="section-strategies" class="section">
+  <div class="sec-header">
+    <h2>Reading Strategies</h2>
+    <p>Start here every study session. These are ranked by your biggest gaps first.</p>
+  </div>
+
+  <div class="tip-section">
+    <div class="tip-header">🔴 Synthesis & Generalization <span class="priority-badge p-critical">Priority 1</span></div>
+
+    <div class="tip-card critical">
+      <strong>What are Synthesis questions?</strong>
+      <p style="margin-top:6px">These questions give you <em>two passages</em> on the same topic and ask you to compare them, draw a conclusion that covers both, or make a prediction. You must pull ideas from multiple places — not just one paragraph.</p>
+    </div>
+
+    <div class="tip-card critical">
+      <strong>Strategy: The "Both Passages" Test</strong>
+      <p style="margin-top:4px">When you see a synthesis question, ask: <em>Does this answer choice apply to BOTH passages?</em> Wrong answers usually only describe one passage. The correct answer works for both.</p>
+      <ul class="tip-steps">
+        <li>Read Passage 1 → write one sentence about its main point</li>
+        <li>Read Passage 2 → write one sentence about its main point</li>
+        <li>Ask: "What do both passages agree on? What's different?"</li>
+        <li>Choose the answer that honestly covers both</li>
+      </ul>
+    </div>
+
+    <div class="tip-card critical">
+      <strong>Strategy: Drawing Conclusions from Evidence</strong>
+      <p style="margin-top:4px">These questions say things like: "Based on both passages, what can be concluded?" The answer must be <em>supported by the text</em> — not just something that sounds reasonable.</p>
+      <ul class="tip-steps">
+        <li>Underline 2–3 specific details (one from each passage if possible)</li>
+        <li>Eliminate answers that go too far beyond what the text actually says</li>
+        <li>Eliminate answers that only use one passage</li>
+        <li>Pick the answer that your underlined evidence directly supports</li>
+      </ul>
+    </div>
+
+    <div class="tip-card critical">
+      <strong>Strategy: Making Predictions</strong>
+      <p style="margin-top:4px">"What would the author most likely do next?" or "What would happen if...?" Stay inside the text's logic. The prediction must follow naturally from the evidence — not be a guess.</p>
+      <ul class="tip-steps">
+        <li>Find the author's main argument or attitude</li>
+        <li>Ask: "What action is consistent with this attitude?"</li>
+        <li>Eliminate anything that contradicts the author's point of view</li>
+      </ul>
+    </div>
+
+    <div class="tip-card critical">
+      <strong>Key question words for Synthesis (watch for these on the test):</strong>
+      <ul class="tip-steps">
+        <li>"Both passages suggest that…"</li>
+        <li>"Compared to Passage 1, Passage 2…"</li>
+        <li>"Which statement would both authors most likely agree with?"</li>
+        <li>"Based on both passages, what can be concluded?"</li>
+        <li>"How do the authors differ in their approach to…?"</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip-section">
+    <div class="tip-header">🟡 Comprehension <span class="priority-badge p-high">Priority 2</span></div>
+
+    <div class="tip-card high">
+      <strong>Strategy: Stay in the Text</strong>
+      <p style="margin-top:4px">Comprehension questions ask about things the text <em>explicitly states</em>. The answer is always there — you just have to find it. Never answer from memory or opinion.</p>
+      <ul class="tip-steps">
+        <li>When you read a question, go back to the passage before answering</li>
+        <li>Find the sentence or paragraph that contains the answer</li>
+        <li>Eliminate choices that sound good but aren't in the text</li>
+      </ul>
+    </div>
+
+    <div class="tip-card high">
+      <strong>Strategy: Vocabulary from Context Clues</strong>
+      <p style="margin-top:4px">"What does the word _____ mean as it is used in the passage?" Don't rely on what you already think the word means — the passage tells you.</p>
+      <ul class="tip-steps">
+        <li>Cover the word and read the full sentence</li>
+        <li>Predict your own meaning from context</li>
+        <li>Substitute each answer choice back into the sentence</li>
+        <li>Pick the one that makes the most sense in context</li>
+      </ul>
+    </div>
+
+    <div class="tip-card high">
+      <strong>Strategy: Word Choice and Tone</strong>
+      <p style="margin-top:4px">"Why does the author use the word _____ here?" Think about the feeling or attitude that word creates. Is it positive/negative? Urgent/calm? Formal/casual?</p>
+    </div>
+  </div>
+
+  <div class="tip-section">
+    <div class="tip-header">🔵 Analysis <span class="priority-badge p-med">Priority 3</span></div>
+
+    <div class="tip-card med">
+      <strong>Strategy: Finding the Main Idea</strong>
+      <p style="margin-top:4px">The main idea is what the <em>whole passage</em> is about — not just one paragraph. It's the author's central point.</p>
+      <ul class="tip-steps">
+        <li>Read the first and last paragraphs carefully — main idea is often there</li>
+        <li>Ask: "What is the author trying to tell me overall?"</li>
+        <li>Eliminate answers that are too specific (one detail) or too broad (not in the text)</li>
+        <li>The correct answer covers the whole passage, not just one part</li>
+      </ul>
+    </div>
+
+    <div class="tip-card med">
+      <strong>Strategy: Author's Purpose</strong>
+      <p style="margin-top:4px">Every author writes for a reason: to <strong>inform</strong>, to <strong>persuade</strong>, to <strong>entertain</strong>, or to <strong>describe</strong>. Look at the language and type of text.</p>
+      <ul class="tip-steps">
+        <li>Informational/news article → to inform</li>
+        <li>Editorial/opinion piece → to persuade</li>
+        <li>Story or memoir → to entertain or describe</li>
+        <li>Check: does the author use facts, opinions, or emotions?</li>
+      </ul>
+    </div>
+
+    <div class="tip-card med">
+      <strong>Strategy: Text Structure</strong>
+      <p style="margin-top:4px">Recognizing how a text is organized helps you find answers faster.</p>
+      <ul class="tip-steps">
+        <li><strong>Chronological</strong>: events in time order → look for dates, "first/then/finally"</li>
+        <li><strong>Cause & Effect</strong>: why something happened → "because, as a result, therefore"</li>
+        <li><strong>Compare & Contrast</strong>: similarities and differences → "however, on the other hand, similarly"</li>
+        <li><strong>Problem & Solution</strong>: a problem is stated, then a solution is offered</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip-section">
+    <div class="tip-header">🟢 Inference & Interpretation <span class="priority-badge" style="background:#d1fae5;color:#064e3b">Maintain</span></div>
+
+    <div class="tip-card med" style="border-left-color:#10b981">
+      <strong>Strategy: Reading Between the Lines</strong>
+      <p style="margin-top:4px">Inference questions ask what the author <em>implies</em> but doesn't directly say. The answer is supported by clues in the text — but you have to connect the dots.</p>
+      <ul class="tip-steps">
+        <li>Find 2 or more clues in the text that point to an answer</li>
+        <li>Eliminate answers that have no textual support</li>
+        <li>Eliminate answers that go too far beyond what is suggested</li>
+        <li>The correct answer is always the most reasonable interpretation of the evidence</li>
+      </ul>
+    </div>
+
+    <div class="tip-card med" style="border-left-color:#10b981">
+      <strong>Strategy: Figurative Language</strong>
+      <p style="margin-top:4px">Simile (like/as), metaphor (says one thing IS another), personification (gives human qualities to non-human things), symbolism (object represents an idea).</p>
+      <p style="margin-top:4px">Ask: <em>What feeling or idea does this create?</em> The answer is always about meaning, not the literal words.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ FLASHCARDS -->
+<div id="section-flashcards" class="section">
+  <div class="sec-header">
+    <h2>Vocabulary Flashcards</h2>
+    <p>Tap the card to flip it. These are the key terms for the HiSET Reading test.</p>
+  </div>
+
+  <div class="flashcard" id="flashcard" onclick="flipCard()">
+    <div class="fc-label" id="fc-category">Category</div>
+    <div id="fc-front">
+      <div class="fc-term" id="fc-term">Term</div>
+      <div class="fc-hint">Tap to see definition</div>
+    </div>
+    <div id="fc-back" style="display:none">
+      <div class="fc-def" id="fc-def">Definition</div>
+    </div>
+  </div>
+
+  <div class="fc-nav">
+    <button class="btn-outline btn" onclick="prevCard()">← Back</button>
+    <span class="fc-counter" id="fc-counter">1 / 28</span>
+    <button class="btn-outline btn" onclick="nextCard()">Next →</button>
+  </div>
+
+  <div class="card" style="margin-top:0.5rem">
+    <div style="font-size:13px;color:#666;line-height:1.7">
+      <strong>Tip:</strong> These terms appear directly in HiSET Reading questions. If you know what the question is asking, you're halfway to the answer.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ PRACTICE -->
+<div id="section-practice" class="section">
+  <div class="sec-header">
+    <h2>Practice Questions</h2>
+    <p>Organized by your priority areas. Start with Synthesis — it's your biggest opportunity.</p>
+  </div>
+
+  <div class="drill-tabs">
+    <button class="drill-tab active" onclick="showDrill('D')">🔴 Synthesis <span class="badge-count">8 Q</span></button>
+    <button class="drill-tab" onclick="showDrill('A')">🟡 Comprehension <span class="badge-count">8 Q</span></button>
+    <button class="drill-tab" onclick="showDrill('C')">🔵 Analysis <span class="badge-count">8 Q</span></button>
+    <button class="drill-tab" onclick="showDrill('B')">🟢 Inference <span class="badge-count">8 Q</span></button>
+  </div>
+
+  <div id="prog-row" class="prog-row">
+    <span id="prog-text">0 of 8 answered</span>
+    <span id="prog-score">0 correct</span>
+  </div>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-bar" style="width:0%"></div></div>
+
+  <div id="practice-container"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════ TRACKER -->
+<div id="section-tracker" class="section">
+  <div class="sec-header">
+    <h2>My Progress</h2>
+    <p>Track how your accuracy improves in each skill area.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Accuracy by skill area</div>
+    <div class="tracker-section" id="tracker-bars"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Session summary</div>
+    <div class="tracker-cards" id="tracker-cards"></div>
+    <div class="btn-row" style="margin-top:1.25rem">
+      <button class="btn btn-outline" onclick="resetProgress()">Reset progress</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📌 Score target guide</div>
+    <div style="font-size:14px;line-height:1.85;color:#444">
+      <p>To reach a <strong>score of 11</strong> on the HiSET Reading subtest, aim for roughly <strong>60–65% accuracy</strong> across all question types.</p>
+      <p style="margin-top:8px">Your priority: get Synthesis above <strong>50%</strong> accuracy in practice. That single area has the most room for improvement and the most impact on your score.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .app -->
+
+<script>
+// ─── FLASHCARD DATA ──────────────────────────────────────────────
+const FLASHCARDS = [
+  {cat:'D – Synthesis',term:'Synthesis',def:'Combining ideas from two or more texts to form a new understanding. You are building something bigger than what either text says alone.'},
+  {cat:'D – Synthesis',term:'Generalization',def:'A broad conclusion that applies beyond the specific details of the text. It\'s a statement that is true in general, supported by evidence from the passage(s).'},
+  {cat:'D – Synthesis',term:'Compare & Contrast',def:'To identify how two texts, characters, or ideas are similar (compare) and different (contrast). Look for signal words: however, on the other hand, similarly, likewise, but, both.'},
+  {cat:'D – Synthesis',term:'Textual Evidence',def:'Specific details, quotes, or examples from the text that support your answer. On the HiSET, every correct answer must be backed by the text.'},
+  {cat:'D – Synthesis',term:'Point of View',def:'The perspective or attitude an author brings to a topic. Two authors can write about the same topic from very different points of view.'},
+  {cat:'D – Synthesis',term:'Text Structure',def:'How a passage is organized: chronological, cause & effect, compare & contrast, problem & solution, or description.'},
+  {cat:'A – Comprehension',term:'Explicit Detail',def:'Information that is directly stated in the text — you don\'t have to guess or infer it. The answer is right there in the words.'},
+  {cat:'A – Comprehension',term:'Context Clues',def:'Words or phrases surrounding an unfamiliar word that hint at its meaning. Use the sentences around the word to figure out what it means.'},
+  {cat:'A – Comprehension',term:'Connotation',def:'The feeling or emotion a word carries beyond its dictionary definition. "Home" and "house" have the same definition but different connotations.'},
+  {cat:'A – Comprehension',term:'Denotation',def:'The literal dictionary definition of a word — without emotional associations.'},
+  {cat:'A – Comprehension',term:'Tone',def:'The author\'s attitude toward the subject or audience. Words like "angry," "hopeful," "sarcastic," or "neutral" describe tone.'},
+  {cat:'A – Comprehension',term:'Mood',def:'The feeling that the writing creates in the reader. Tone is the author\'s attitude; mood is the reader\'s emotional response.'},
+  {cat:'B – Inference',term:'Inference',def:'A conclusion you draw from evidence in the text — something the author implies but doesn\'t directly state. You "read between the lines."'},
+  {cat:'B – Inference',term:'Implied Meaning',def:'An idea the author suggests without stating outright. You must use clues in the text to figure it out.'},
+  {cat:'B – Inference',term:'Figurative Language',def:'Language that means something other than its literal words. Includes simile, metaphor, personification, hyperbole, and symbolism.'},
+  {cat:'B – Inference',term:'Simile',def:'A comparison using "like" or "as." Example: "Her voice was like music." It describes one thing by comparing it to another.'},
+  {cat:'B – Inference',term:'Metaphor',def:'A comparison that says one thing IS another, without using "like" or "as." Example: "Life is a journey." Stronger than a simile.'},
+  {cat:'B – Inference',term:'Personification',def:'Giving human qualities to a non-human thing. Example: "The wind whispered through the trees." The wind cannot actually whisper.'},
+  {cat:'B – Inference',term:'Symbolism',def:'When an object, person, or place represents a larger idea. Example: a dove symbolizes peace; a storm often symbolizes conflict or trouble.'},
+  {cat:'B – Inference',term:'Character Motive',def:'The reason a character does something. Look for clues in their actions, words, and feelings — the text doesn\'t always tell you directly.'},
+  {cat:'C – Analysis',term:'Main Idea',def:'The central point the author is making about the whole text. Not a detail — it\'s the big picture. Often found in the first or last paragraph.'},
+  {cat:'C – Analysis',term:'Theme',def:'The life lesson or message of a literary text. It\'s a broad statement about life, not just a summary of what happened.'},
+  {cat:'C – Analysis',term:"Author's Purpose",def:'Why the author wrote the text. The three main purposes are: to inform (teach facts), to persuade (change your mind), to entertain (tell a story or create emotion).'},
+  {cat:'C – Analysis',term:'Chronological Order',def:'Events arranged in the order they happened in time. Signal words: first, then, next, after, finally, before, when.'},
+  {cat:'C – Analysis',term:'Cause & Effect',def:'One event (cause) makes another event happen (effect). Signal words: because, as a result, therefore, consequently, since, so.'},
+  {cat:'C – Analysis',term:'Irony',def:'When what is said or what happens is the opposite of what is expected. There are three types: verbal (saying the opposite of what you mean), situational (unexpected outcomes), dramatic (reader knows more than the character).'},
+  {cat:'C – Analysis',term:'Foreshadowing',def:"Hints or clues the author gives early in a text about what will happen later. It builds suspense and prepares the reader for future events."},
+  {cat:'C – Analysis',term:'Argument & Evidence',def:'In persuasive texts, the author makes a claim (argument) and supports it with evidence (facts, statistics, examples, expert opinions). Ask: is the evidence relevant and convincing?'}
+];
+
+let fcIndex = 0;
+let fcFlipped = false;
+
+function renderCard() {
+  const c = FLASHCARDS[fcIndex];
+  const card = document.getElementById('flashcard');
+  card.classList.remove('flipped');
+  document.getElementById('fc-category').textContent = c.cat;
+  document.getElementById('fc-term').textContent = c.term;
+  document.getElementById('fc-def').textContent = c.def;
+  document.getElementById('fc-front').style.display = 'block';
+  document.getElementById('fc-back').style.display = 'none';
+  document.getElementById('fc-counter').textContent = (fcIndex+1) + ' / ' + FLASHCARDS.length;
+  fcFlipped = false;
+}
+
+function flipCard() {
+  const card = document.getElementById('flashcard');
+  fcFlipped = !fcFlipped;
+  if (fcFlipped) {
+    card.classList.add('flipped');
+    document.getElementById('fc-front').style.display = 'none';
+    document.getElementById('fc-back').style.display = 'block';
+  } else {
+    card.classList.remove('flipped');
+    document.getElementById('fc-front').style.display = 'block';
+    document.getElementById('fc-back').style.display = 'none';
+  }
+}
+
+function nextCard() { fcIndex = (fcIndex+1) % FLASHCARDS.length; renderCard(); }
+function prevCard() { fcIndex = (fcIndex-1+FLASHCARDS.length) % FLASHCARDS.length; renderCard(); }
+renderCard();
+
+// ─── PRACTICE QUESTIONS ──────────────────────────────────────────
+const DRILLS = {
+
+D: {
+  label: 'Synthesis & Generalization',
+  color: '#ef4444',
+  sets: [
+    {
+      label: 'Passage Set 1 — Two views on technology',
+      p1title: 'Passage 1: The Benefits of Smartphones in Daily Life',
+      p1: 'Smartphones have fundamentally changed how people manage their daily lives. With a single device, users can set reminders, track their health, navigate unfamiliar streets, and stay connected with loved ones across the world. Studies have shown that older adults who use smartphones report feeling less isolated and more capable of handling everyday tasks independently. Proponents argue that the smartphone is not a distraction but a tool — one that, when used intentionally, increases productivity and quality of life. The key, many experts say, is developing healthy habits around device use rather than avoiding technology altogether.',
+      p2title: 'Passage 2: The Hidden Costs of Always Being Connected',
+      p2: 'While smartphones offer undeniable convenience, researchers are growing concerned about their long-term effects on mental health. A growing body of evidence links heavy smartphone use to increased rates of anxiety, depression, and disrupted sleep — particularly among young people. The constant availability of news and social media means that many users feel they can never truly disconnect or rest. Critics argue that the same technology promising connection is, paradoxically, leaving people feeling more isolated than ever. The solution, they suggest, lies not in smarter phones but in conscious choices about when to set them down.',
+      questions: [
+        {id:'d1',q:'Based on both passages, what point would both authors most likely agree on?',choices:['Smartphones should be banned for young people.','How people use smartphones matters more than the devices themselves.','Smartphones are primarily responsible for mental health problems.','Older adults benefit most from smartphone technology.'],correct:1,explain:'Both authors suggest the issue is HOW smartphones are used. Passage 1 says "develop healthy habits"; Passage 2 says "conscious choices about when to set them down." Neither calls for banning or blames the device alone.',strategy:'Synthesis tip: Find the ONE idea both passages support. Passage 1 = healthy habits. Passage 2 = conscious choices. Both point to user behavior, not the phone itself.'},
+        {id:'d2',q:'How do the two authors differ in their approach to the topic of smartphones?',choices:['Passage 1 focuses on young people; Passage 2 focuses on older adults.','Passage 1 emphasizes benefits while Passage 2 emphasizes risks.','Both passages agree that smartphones are harmful.','Passage 2 ignores the emotional effects of smartphones.'],correct:1,explain:'Passage 1 highlights productivity and independence (benefits). Passage 2 discusses anxiety, depression, and isolation (risks). This is the clearest contrast between them.',strategy:'Compare & contrast tip: Ask "What is each author\'s overall attitude?" Passage 1 = positive. Passage 2 = cautionary. That contrast is the answer.'},
+        {id:'d3',q:'Based on both passages, which conclusion is best supported by the evidence?',choices:['Smartphones are universally harmful to all age groups.','Technology always leads to greater social isolation.','The impact of smartphones depends largely on how they are used.','Smartphones will eventually replace all other forms of communication.'],correct:2,explain:'Both passages point to usage patterns as key. Neither says smartphones are universally harmful or always good. The evidence supports the idea that outcomes depend on behavior.',strategy:'Drawing conclusions tip: Your conclusion must be supported by BOTH passages. Eliminate anything that goes beyond what the text actually says.'},
+      ]
+    },
+    {
+      label: 'Passage Set 2 — Two perspectives on city parks',
+      p1title: 'Passage 1: Why Green Spaces Are Essential',
+      p1: 'Urban parks are far more than pleasant places to take a walk. Research consistently shows that access to green space reduces stress, lowers blood pressure, and improves mental health among city residents. Parks provide free recreational space for families who cannot afford gym memberships or private facilities. They serve as the lungs of the city, filtering air pollution and reducing the urban heat island effect — a phenomenon in which dense city surfaces absorb and retain heat. City planners increasingly recognize that investing in parks is investing in public health, and that cities with more green space tend to have higher levels of resident satisfaction and community cohesion.',
+      p2title: 'Passage 2: Are We Investing in Parks for Everyone?',
+      p2: 'While advocates celebrate the benefits of urban parks, a troubling pattern has emerged: the parks in wealthier neighborhoods are consistently better funded, better maintained, and better equipped than those in low-income areas. A study of ten major U.S. cities found that parks in high-income neighborhoods received more than three times the per-acre funding of parks in low-income areas. This disparity means that the residents who would benefit most from green space — those with the fewest alternatives — often have access to the least of it. Investing in parks is only meaningful if that investment reaches all communities equitably.',
+      questions: [
+        {id:'d4',q:'Both passages support which of the following conclusions?',choices:['Parks are used only by families with children.','City parks provide important benefits, but access and equity are concerns.','All cities invest equally in their park systems.','Parks should be privately funded rather than publicly maintained.'],correct:1,explain:'Passage 1 argues parks provide important health and community benefits. Passage 2 agrees parks are important but argues they must be accessible to all. Together they support the idea that parks matter AND equity is a problem.',strategy:'Synthesis tip: Read each answer and ask — does Passage 1 support this? Does Passage 2 support this? The right answer needs evidence from both.'},
+        {id:'d5',q:'How does the author of Passage 2 build on the ideas in Passage 1?',choices:['By arguing that parks have no real health benefits.','By agreeing that parks are valuable but pointing out an inequity in how they are distributed.','By providing the same evidence as Passage 1 but in more detail.','By suggesting that parks should be replaced with other public services.'],correct:1,explain:'Passage 2 does not reject Passage 1\'s argument — it accepts that parks are valuable. But it adds a critical point: the benefits are not being shared equally. This is "building on" the first passage.',strategy:'When one passage builds on another, it usually accepts the main point and adds a "but" or "however." Look for that shift.'},
+      ]
+    },
+    {
+      label: 'Passage Set 3 — Predictions & generalization',
+      p1title: 'Passage 1: The Rise of Remote Work',
+      p1: 'The shift to remote work, accelerated by the global pandemic, has permanently altered expectations in the modern workplace. Surveys conducted in 2022 and 2023 indicate that more than 60 percent of knowledge workers prefer a hybrid or fully remote schedule. Employers who have insisted on a full return to the office have reported higher rates of employee turnover. Meanwhile, companies offering flexible arrangements have seen improvements in worker satisfaction and, in many cases, productivity. Urban economists note that this shift is already affecting commercial real estate, with downtown office vacancy rates reaching historic highs in several major cities.',
+      p2title: 'Passage 2: What Cities Must Do to Adapt',
+      p2: 'City governments are beginning to grapple with a new reality: the traditional model of downtown as the economic and social center of urban life is under strain. Empty office buildings mean reduced tax revenue, fewer lunch customers for nearby restaurants, and declining foot traffic for small businesses. Some cities are converting unused commercial space into residential units, hoping to attract remote workers who value urban living without the daily commute. Urban planners warn, however, that these solutions take years to implement. In the meantime, cities must find creative ways to activate empty spaces and support small businesses that depended on a daily workforce.',
+      questions: [
+        {id:'d6',q:'Based on both passages, what prediction is most strongly supported?',choices:['Remote work will disappear as companies return to normal.','Cities and businesses will need to continue adapting to long-term changes in how people work.','Downtown offices will be fully converted to apartments within the next year.','Workers will eventually prefer returning to the office full-time.'],correct:1,explain:'Passage 1 shows remote work is a lasting trend. Passage 2 shows cities are already adapting. Together they predict ongoing change — not a return to normal or an instant solution.',strategy:'Prediction tip: Your prediction must follow from what the text says. Use evidence from both passages. Eliminate answers that go too far or reverse the trend described.'},
+        {id:'d7',q:'What theme is shared by both passages?',choices:['Technology always creates more problems than it solves.','Major shifts in behavior require a response from institutions and communities.','Remote work is only popular among young workers.','Cities are unwilling to change their approach to urban planning.'],correct:1,explain:'Passage 1 shows workers and companies shifting their behavior. Passage 2 shows cities having to respond. Both passages illustrate the same theme: big changes in how people live and work require broader institutional responses.',strategy:'Theme tip: The shared theme must apply to BOTH passages. Test each answer: Is this what Passage 1 is about? Is this what Passage 2 is about? Reject any that only fit one.'},
+        {id:'d8',q:'Which statement would both authors most likely support?',choices:['Remote work has had no effect on cities or businesses.','The changes caused by remote work are temporary and will soon reverse.','Both workers and cities are still in the process of adjusting to a significant shift in work culture.','City governments have successfully solved the problems caused by empty offices.'],correct:2,explain:'Passage 1 notes the shift is still underway (high turnover for return-to-office mandates). Passage 2 notes cities are still working on solutions. Both support the idea that adjustment is ongoing, not complete.',strategy:'"}Both authors" questions require evidence from each passage. Go back and find one thing each passage says that points to the same answer.'}
+      ]
+    }
+  ]
+},
+
+A: {
+  label: 'Comprehension',
+  color: '#f59e0b',
+  sets: [
+    {
+      label: 'Passage: Ocean Plastic Pollution',
+      p1title: '',
+      p1: 'Every year, an estimated 8 million metric tons of plastic enter the world\'s oceans. This plastic does not disappear — it breaks into smaller and smaller pieces called microplastics, which are now found in every ocean on Earth, from the surface to the deepest trenches. Marine animals, including sea turtles, seabirds, and whales, often mistake plastic debris for food, leading to internal injuries, malnutrition, and death. The Great Pacific Garbage Patch, a massive accumulation of plastic in the North Pacific Ocean, spans an area roughly twice the size of Texas. Scientists warn that without dramatic reductions in plastic production and improved waste management, the amount of plastic in the ocean could triple by 2040.',
+      p2title: '',
+      p2: '',
+      questions: [
+        {id:'a1',q:'According to the passage, what happens to plastic after it enters the ocean?',choices:['It dissolves into the water over time.','It is eaten entirely by marine animals.','It breaks into smaller pieces called microplastics.','It sinks to the ocean floor and disappears.'],correct:2,explain:'The passage explicitly states: "it breaks into smaller and smaller pieces called microplastics." This is directly stated — no inference needed.',strategy:'Comprehension tip: The answer to "according to the passage" is always stated directly in the text. Go back and find the sentence.'},
+        {id:'a2',q:'What does the word "malnutrition" most likely mean as used in the passage?',choices:['A condition caused by eating too much food','A disease caused by bacteria in the ocean','A condition caused by not getting proper nutrients from food','A type of injury caused by sharp objects'],correct:2,explain:'The context says animals "mistake plastic for food" leading to "malnutrition." If they eat plastic instead of food, they aren\'t getting nutrients — so malnutrition means a lack of proper nutrition.',strategy:'Vocabulary tip: Cover the word. Read the surrounding sentences. What would make sense here? "Eating plastic instead of food" → not getting nutrients → malnutrition.'},
+        {id:'a3',q:'The author uses the comparison "roughly twice the size of Texas" to help the reader understand:',choices:['where exactly the garbage patch is located','how large and significant the Great Pacific Garbage Patch is','why Texas has ocean pollution problems','what types of plastic are found in the patch'],correct:1,explain:'The comparison to Texas helps the reader visualize the enormous size of the garbage patch — it makes an abstract number feel real and significant.',strategy:'Word choice tip: Ask "Why did the author choose THIS comparison?" The purpose is almost always to help the reader understand scale, importance, or emotion.'},
+        {id:'a4',q:'Based on the passage, what is the author\'s main concern about plastic in the ocean?',choices:['The cost of cleaning up the Great Pacific Garbage Patch','The effect of plastic pollution on marine life and the future growth of the problem','The difficulty of producing biodegradable plastics','The location of plastic waste in the deepest ocean trenches'],correct:1,explain:'The passage discusses harm to marine animals AND warns the problem could triple by 2040. Both details together show the author\'s concern is about harm to wildlife and the growing scale of the crisis.',strategy:'Stay in the text: the author mentions marine animals AND the future projection. The correct answer must cover both — not just one.'},
+      ]
+    },
+    {
+      label: 'Passage: The Art of Listening',
+      p1title: '',
+      p1: 'Most people assume they are good listeners. Research suggests otherwise. Studies show that immediately after hearing a ten-minute presentation, the average person retains only about 50 percent of what was said. Within 48 hours, that figure drops to roughly 25 percent. Listening is not a passive activity — it requires active engagement, including maintaining eye contact, avoiding interruptions, and mentally summarizing what the speaker is saying. Experts distinguish between hearing, which is the physical act of perceiving sound, and listening, which involves processing, understanding, and retaining information. Improving listening skills has been linked to stronger personal relationships, better job performance, and increased empathy.',
+      p2title: '',
+      p2: '',
+      questions: [
+        {id:'a5',q:'According to the passage, how much of a presentation does the average person remember 48 hours later?',choices:['About 75%','About 50%','About 10%','About 25%'],correct:3,explain:'The passage states explicitly: "Within 48 hours, that figure drops to roughly 25 percent." This is a direct detail — the answer is stated in the text.',strategy:'For questions with numbers or statistics, go back to the exact sentence in the passage. Don\'t rely on memory.'},
+        {id:'a6',q:'According to the passage, what is the difference between hearing and listening?',choices:['Hearing requires focus; listening is automatic.','Hearing is a physical process; listening involves understanding and retaining information.','Hearing and listening are the same thing described differently.','Listening is easier than hearing because it requires less effort.'],correct:1,explain:'The passage defines them directly: "hearing, which is the physical act of perceiving sound, and listening, which involves processing, understanding, and retaining information."',strategy:'Definition questions: Find where the text defines both terms and match the answer to those exact definitions.'},
+        {id:'a7',q:'Which of the following is listed in the passage as a skill involved in active listening?',choices:['Speaking clearly and confidently','Avoiding eye contact to avoid distraction','Taking detailed written notes during conversations','Maintaining eye contact and mentally summarizing what is said'],correct:3,explain:'The passage states active listening includes "maintaining eye contact, avoiding interruptions, and mentally summarizing what the speaker is saying."',strategy:'List questions: scan the passage for the list mentioned and match it directly to one of the answer choices.'},
+        {id:'a8',q:'What does the author\'s use of the word "passive" suggest about how most people listen?',choices:['Most people listen with great concentration.','Most people treat listening as something that requires no effort.','Most people prefer not to listen at all.','Most people are better at listening than speaking.'],correct:1,explain:'"Passive" means without effort or active engagement. The author says "Listening is NOT a passive activity," implying most people mistakenly treat it as effortless — requiring no work.',strategy:'Word choice tip: What feeling does this word carry? "Passive" = no effort. The author uses it to contrast with what good listening actually requires.'},
+      ]
+    }
+  ]
+},
+
+C: {
+  label: 'Analysis',
+  color: '#3b82f6',
+  sets: [
+    {
+      label: 'Passage: A Call to Protect Local Journalism',
+      p1title: '',
+      p1: 'Over the past two decades, more than 2,000 local newspapers in the United States have closed. The communities left behind — often called "news deserts" — face measurable consequences. Research has linked the decline of local news to decreased voter turnout, reduced civic engagement, and less government accountability. When no reporter is watching, local officials are more likely to act in their own interests rather than the public\'s. The loss is not only informational but civic: newspapers have historically served as the connective tissue of a community, introducing neighbors to each other\'s concerns and keeping residents informed of what their leaders are actually doing. Without local journalism, the democratic promise of an informed citizenry is increasingly hollow.',
+      p2title: '',
+      p2: '',
+      questions: [
+        {id:'c1',q:'What is the main idea of this passage?',choices:['Newspapers are no longer profitable businesses.','The decline of local journalism threatens democracy and civic life.','Voter turnout has always been low in small communities.','Local officials are generally less trustworthy than state or national officials.'],correct:1,explain:'The passage covers multiple effects of losing local news: civic engagement, accountability, community connection. All of these connect to the broader argument that democracy suffers without local journalism.',strategy:'Main idea tip: Ask "What is the author\'s overall message — not just one detail?" The right answer covers the whole passage, not one example.'},
+        {id:'c2',q:'What is the author\'s primary purpose in writing this passage?',choices:['To entertain readers with stories about newspaper reporters','To inform readers about the history of American newspapers','To persuade readers that the decline of local news is a serious civic problem','To describe how online news has replaced traditional newspapers'],correct:2,explain:'The author uses phrases like "measurable consequences," "democratic promise is increasingly hollow," and "less government accountability" — all loaded with concern. The purpose is to persuade readers this is a serious problem worth addressing.',strategy:'Author\'s purpose: If the author uses emotional language and takes a clear position, the purpose is persuasive. Informational texts are more neutral.'},
+        {id:'c3',q:'The author uses the phrase "connective tissue" to describe local newspapers. What does this metaphor suggest?',choices:['Newspapers are fragile and easily damaged.','Newspapers physically connect different parts of a city.','Newspapers hold a community together and create shared understanding.','Newspapers are biological organisms that grow over time.'],correct:2,explain:'"Connective tissue" in biology holds body parts together. Used metaphorically, it suggests newspapers hold communities together — connecting residents to each other and to shared information.',strategy:'Metaphor analysis: Ask "What does this term literally mean, and how does that meaning apply to what the author is describing?" The answer transfers the literal meaning to the subject.'},
+        {id:'c4',q:'How does the author structure the argument in this passage?',choices:['By telling a personal story about a newspaper closing','By presenting a problem, then providing evidence of its consequences','By comparing two different types of journalism','By listing solutions to the decline of local news'],correct:1,explain:'The passage opens with a problem (2,000 closures) then provides evidence of consequences: lower voter turnout, reduced civic engagement, less accountability. This is a problem-then-evidence structure.',strategy:'Text structure: Read the first sentence of each paragraph. What is the author introducing? Does it set up a problem? Provide evidence? Offer a solution?'},
+      ]
+    },
+    {
+      label: 'Literary passage: "The Last Garden"',
+      p1title: '"The Last Garden" (fiction excerpt)',
+      p1: 'Every morning before the city woke, Marta walked the length of her garden. It was small — barely thirty feet from the back door to the crumbling wall — but she had made it something extraordinary over forty years of stubborn attention. She knew the name of every plant, the year she had introduced it, and the precise spot it preferred. Her neighbor\'s children called it "the jungle," not unkindly, and sometimes she found they had pressed their faces against the iron fence to watch the bees move lazily from flower to flower.\n\nThe letter from the city had arrived three weeks ago. Marta had placed it on the kitchen table and not moved it since. She watered her plants instead. She fed the birds. She read the letter\'s language — "redevelopment," "eminent domain," "fair compensation" — with the same expression she used when someone told her a lie she had no energy to correct.',
+      p2title: '',
+      p2: '',
+      questions: [
+        {id:'c5',q:'What does Marta\'s daily morning walk through the garden reveal about her character?',choices:['She is indifferent to the changes happening around her.','She is deeply devoted to and knowledgeable about her garden.','She is trying to sell her garden for a profit.','She is lonely and has no other way to spend her time.'],correct:1,explain:'The passage says she "knew the name of every plant, the year she had introduced it, and the precise spot it preferred." This deep knowledge, developed over 40 years, shows profound devotion.',strategy:'Character analysis: Look at what a character does, says, and knows. These details reveal who they are.'},
+        {id:'c6',q:'What does the phrase "the same expression she used when someone told her a lie she had no energy to correct" reveal about how Marta feels about the city\'s letter?',choices:['She agrees that the redevelopment is a good idea.','She is confused by the legal language in the letter.','She recognizes the injustice but feels powerless to fight it.','She plans to respond to the letter with a legal challenge.'],correct:2,explain:'The comparison to "a lie she had no energy to correct" suggests she sees the situation as wrong — but the phrase "no energy to correct" signals resignation or powerlessness, not acceptance or agreement.',strategy:'Inference tip: Focus on the comparison the author chooses. A "lie she has no energy to correct" = she sees it as wrong but can\'t fight it. That\'s resignation, not agreement.'},
+        {id:'c7',q:'What is the mood created by the description of Marta\'s morning routine?',choices:['Tense and frightening','Peaceful, but tinged with sadness','Exciting and full of possibility','Angry and defiant'],correct:1,explain:'Words like "before the city woke," "lazily," and "forty years of stubborn attention" create a quiet, peaceful atmosphere. But the presence of the letter — left untouched for three weeks — creates an undercurrent of sadness and dread.',strategy:'Mood tip: List the words the author uses to describe the scene. What emotion do those words suggest? Then check if there\'s a contrasting element that changes or complicates that feeling.'},
+        {id:'c8',q:'The author\'s use of words like "redevelopment," "eminent domain," and "fair compensation" in quotation marks most likely suggests:',choices:['Marta does not understand what those words mean.','These are terms the author invented for the story.','Marta sees these official terms as cold, impersonal, and disconnected from what she is actually losing.','The city is being honest and transparent about its plans.'],correct:2,explain:'Putting official terms in quotation marks can signal that a character finds them hollow or dishonest. Coming just after the "lie she had no energy to correct" comparison, the quotation marks emphasize the gap between the bureaucratic language and the real human loss.',strategy:'When an author puts words in quotation marks that aren\'t direct quotes, they\'re usually signaling irony or distance — the character doesn\'t accept these words at face value.'}
+      ]
+    }
+  ]
+},
+
+B: {
+  label: 'Inference & Interpretation',
+  color: '#10b981',
+  sets: [
+    {
+      label: 'Passage: Maria\'s First Day',
+      p1title: 'Literary passage: "New Ground" (fiction excerpt)',
+      p1: 'Maria arrived at the community college twenty minutes early, found a seat near the door of Room 114, and arranged her notebooks, pens, and highlighters in a precise row. She had purchased three different colors of highlighter, though she was not entirely sure which color would mean what. Around her, other students drifted in, most of them ten years younger, scrolling phones with the effortless confidence of people who had been doing this their whole lives. Maria kept her eyes on the blank whiteboard.\n\nWhen the professor entered and said, "Let\'s start by going around and saying why we\'re here," Maria\'s stomach dropped. She had a reason — a real one, one she had carried quietly for eleven years since leaving school to care for her mother — but putting it into words in front of strangers felt like being asked to open a door she had worked hard to keep closed.',
+      p2title: '',
+      p2: '',
+      questions: [
+        {id:'b1',q:'What can the reader infer about Maria based on the way she prepares for class?',choices:['She has recently graduated from a different college.','She is nervous and wants to feel prepared and in control.','She is not interested in the class but was required to attend.','She is more experienced than the other students.'],correct:1,explain:'Maria arrives early, arranges supplies "in a precise row," and buys three highlighters — small acts of preparation that suggest anxiety. She\'s trying to create a sense of control in a situation that feels uncertain.',strategy:'Inference tip: Look at what Maria DOES, not what she says. Her actions (arriving early, arranging things carefully) reveal her emotional state even without the author directly saying she\'s nervous.'},
+        {id:'b2',q:'The phrase "scrolling phones with the effortless confidence of people who had been doing this their whole lives" most likely refers to:',choices:['The younger students\' skill with technology','The younger students\' ease and familiarity with being in a college setting','The professor\'s attitude toward modern students','Maria\'s own comfort with her phone'],correct:1,explain:'The phrase "doing this their whole lives" doesn\'t just mean scrolling phones — it means being students, being in college, being comfortable in an academic setting. Maria sees them as natural in a world where she feels like an outsider.',strategy:'Figurative language interpretation: Ask what the author is REALLY describing. "Effortless confidence... doing this their whole lives" = being students naturally, not just phone users.'},
+        {id:'b3',q:'What does the metaphor "opening a door she had worked hard to keep closed" suggest about Maria\'s past?',choices:['Maria has literal difficulty with doors and enclosed spaces.','Maria has painful memories she has deliberately avoided talking about.','Maria has applied to college many times and been rejected.','Maria left school because she did not enjoy studying.'],correct:1,explain:'A "door she worked hard to keep closed" is a metaphor for emotions or memories she has intentionally suppressed. The detail about leaving school "to care for her mother" confirms there is a real, emotionally significant story she hasn\'t shared.',strategy:'Metaphor analysis: What does a "closed door" represent in human experience? A boundary around something painful or private. Pair that with the context clue ("leaving school to care for her mother") to understand what is behind the door.'},
+        {id:'b4',q:'Based on the passage, how does Maria most likely feel about returning to school?',choices:['Confident and eager to prove herself to younger students','Indifferent — she is attending only because she has to','A mix of hope and fear, shaped by a past she has not fully processed','Angry at the professor for asking students to share personal reasons'],correct:2,explain:'Maria has a "real reason" she cares about (hope) but the idea of sharing it "felt like opening a door she had worked hard to keep closed" (fear and unresolved emotion). The passage gives evidence for both feelings simultaneously.',strategy:'Complex character feelings: Don\'t pick the simplest answer. People — and characters — often feel more than one thing at once. Look for evidence of both emotions in the text.'},
+      ]
+    },
+    {
+      label: 'Informational passage: Wolves & ecosystems',
+      p1title: '',
+      p1: 'When wolves were reintroduced to Yellowstone National Park in 1995, scientists expected some changes to the elk population. What they did not anticipate was a cascade of effects reaching far beyond predator and prey. As wolves hunted elk, the elk changed their grazing behavior — avoiding open valleys and riverbanks where they were most vulnerable. This allowed riverside vegetation to recover. Willows, aspens, and cottonwoods grew tall along the water\'s edge. Beavers returned, drawn by the vegetation, and built dams that created ponds and wetlands. Songbirds increased. Fish populations improved as the streams stabilized. Scientists now refer to this chain of ecological effects triggered by a single predator as a "trophic cascade."',
+      p2title: '',
+      p2: '',
+      questions: [
+        {id:'b5',q:'What can be inferred about the relationship between wolves and the overall health of Yellowstone\'s ecosystem?',choices:['Wolves directly harmed the beaver and fish populations.','The presence of wolves had a surprisingly broad positive effect on the entire ecosystem.','Scientists had predicted all of these changes before the reintroduction.','Elk populations grew significantly after wolves were reintroduced.'],correct:1,explain:'The passage says scientists "did not anticipate" the cascade of effects — implying the broad positive effects were a surprise. The chain reaction (wolves → elk behavior → vegetation → beavers → wetlands → birds → fish) shows widespread ecosystem improvement.',strategy:'Inference tip: The phrase "did not anticipate" is a key clue. It tells you the outcome was unexpected — and the outcome described is positive. Combine those to infer surprise + benefit.'},
+        {id:'b6',q:'Based on the passage, what does the term "trophic cascade" most likely mean?',choices:['A sudden increase in the number of predators in an ecosystem','A chain of ecological effects triggered when one species influences another throughout a food web','A type of rapid flooding caused by changes in vegetation','The seasonal migration of animals through a national park'],correct:1,explain:'The passage describes a chain: wolves → elk behavior → vegetation → beavers → wetlands → birds → fish. Then it defines "trophic cascade" as "a chain of ecological effects triggered by a single predator." The definition matches the example.',strategy:'Technical vocabulary inference: When a passage gives you an example and THEN names the concept, use the example to define the term. What happened? A chain of effects from one predator.'},
+        {id:'b7',q:'The author\'s use of the phrase "What they did not anticipate" suggests:',choices:['Scientists made a serious error in reintroducing wolves.','The effects of the reintroduction went beyond what scientists predicted.','Scientists were disappointed by the results.','The wolves did not behave as expected.'],correct:1,explain:'"Did not anticipate" means they didn\'t predict it — not that it was wrong or disappointing. The rest of the passage describes positive outcomes. The phrase signals that reality exceeded expectations.',strategy:'Tone clue: "Did not anticipate" is neutral — not negative. Pair it with the positive outcomes described after it. Together they mean: surprised, but pleasantly so.'},
+        {id:'b8',q:'Which statement can be inferred from the passage about ecosystems?',choices:['Removing one species from an ecosystem rarely affects others.','Predators like wolves are harmful to ecosystems in the long run.','The connections between species in an ecosystem can be complex and far-reaching.','Beavers and songbirds cannot coexist in the same environment.'],correct:2,explain:'The entire passage illustrates how one change (reintroducing wolves) created effects that spread across many species and habitats. This demonstrates that species are deeply interconnected in ways that are complex and sometimes surprising.',strategy:'Big-picture inference: Step back and ask what the whole passage is teaching. The story of wolves, elk, beavers, birds, and fish all together illustrates the complexity and interconnection of ecosystems.'}
+      ]
+    }
+  ]
+}
+};
+
+// ─── PROGRESS TRACKING ───────────────────────────────────────────
+let progress = {A:{correct:0,total:0},B:{correct:0,total:0},C:{correct:0,total:0},D:{correct:0,total:0}};
+let answered = {};
+let currentDrill = 'D';
+
+function showDrill(key) {
+  currentDrill = key;
+  document.querySelectorAll('.drill-tab').forEach((t,i) => {
+    const keys = ['D','A','C','B'];
+    t.classList.toggle('active', keys[i] === key);
+  });
+  renderDrill(key);
+}
+
+function renderDrill(key) {
+  const drill = DRILLS[key];
+  const container = document.getElementById('practice-container');
+  let total = 0;
+  drill.sets.forEach(s => { total += s.questions.length; });
+  const done = drill.sets.reduce((acc,s) => acc + s.questions.filter(q => answered[q.id] !== undefined).length, 0);
+  const corr = drill.sets.reduce((acc,s) => acc + s.questions.filter(q => answered[q.id] === q.correct).length, 0);
+  document.getElementById('prog-text').textContent = `${done} of ${total} answered`;
+  document.getElementById('prog-score').textContent = `${corr} correct`;
+  document.getElementById('prog-bar').style.width = total > 0 ? Math.round(done/total*100)+'%' : '0%';
+
+  let html = '';
+  drill.sets.forEach((set, si) => {
+    html += `<div class="card">`;
+    if (set.label) html += `<div style="font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">${set.label}</div>`;
+    if (set.p1title) html += `<div class="passage-label" style="color:${drill.color}">${set.p1title}</div>`;
+    html += `<div class="passage-box">${set.p1.replace(/\n\n/g,'<br><br>')}</div>`;
+    if (set.p2 && set.p2title) {
+      html += `<div class="passage-label" style="color:${drill.color};margin-top:0.75rem">${set.p2title}</div>`;
+      html += `<div class="passage-box" style="border-left-color:#6366f1">${set.p2}</div>`;
+    }
+    html += `</div>`;
+    set.questions.forEach((q, qi) => {
+      const isAnswered = answered[q.id] !== undefined;
+      html += `<div class="q-card" id="qcard-${q.id}">
+      <div class="q-meta">
+        <span class="q-tag tag-${key.toLowerCase()}">${key}. ${DRILLS[key].label}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="choices">`;
+      q.choices.forEach((c, ci) => {
+        let cls = 'choice';
+        if (isAnswered) {
+          if (ci === q.correct) cls += ' correct';
+          else if (ci === answered[q.id]) cls += ' wrong';
+        }
+        html += `<button class="${cls}" onclick="answerQ('${q.id}',${ci},${q.correct},'${key}')" id="ch-${q.id}-${ci}">${String.fromCharCode(65+ci)}. ${c}</button>`;
+      });
+      html += `</div>`;
+      html += `<div class="explanation" id="exp-${q.id}" style="${isAnswered?'display:block':''}">
+        <div class="why">✓ Why this answer is correct:</div>
+        <p>${q.explain}</p>
+        <div class="strategy-note">📌 Strategy reminder: ${q.strategy}</div>
+      </div></div>`;
+    });
+  });
+  container.innerHTML = html;
+}
+
+function answerQ(qid, chosen, correct, section) {
+  if (answered[qid] !== undefined) return;
+  answered[qid] = chosen;
+  const allChoices = document.querySelectorAll(`[id^="ch-${qid}-"]`);
+  allChoices.forEach((btn, ci) => {
+    btn.disabled = true;
+    if (ci === correct) btn.classList.add('correct');
+    else if (ci === chosen) btn.classList.add('wrong');
+  });
+  document.getElementById('exp-'+qid).style.display = 'block';
+  // update progress
+  const drill = DRILLS[section];
+  let done=0, corr=0, total=0;
+  drill.sets.forEach(s => {
+    total += s.questions.length;
+    s.questions.forEach(q => {
+      if (answered[q.id] !== undefined) done++;
+      if (answered[q.id] === q.correct) corr++;
+    });
+  });
+  progress[section] = {correct:corr, total:done};
+  document.getElementById('prog-text').textContent = `${done} of ${total} answered`;
+  document.getElementById('prog-score').textContent = `${corr} correct`;
+  document.getElementById('prog-bar').style.width = total>0 ? Math.round(done/total*100)+'%' : '0%';
+}
+
+function renderTracker() {
+  const labels = {D:'Synthesis & Generalization',A:'Comprehension',B:'Inference',C:'Analysis'};
+  const colors = {D:'#ef4444',A:'#f59e0b',B:'#10b981',C:'#3b82f6'};
+  const baselines = {D:25,A:41,B:50,C:45};
+  let barsHtml = '';
+  let totalCorr=0, totalDone=0;
+  ['D','A','C','B'].forEach(k => {
+    const v = progress[k];
+    const pct = v.total > 0 ? Math.round(v.correct/v.total*100) : baselines[k];
+    const label = v.total > 0 ? `${v.correct}/${v.total}` : `Baseline: ${baselines[k]}%`;
+    totalCorr += v.correct; totalDone += v.total;
+    barsHtml += `<div class="tracker-row">
+      <span class="tracker-label">${labels[k]}</span>
+      <div class="tracker-bar-track"><div class="tracker-bar-fill" style="width:${pct}%;background:${colors[k]}"></div></div>
+      <span class="tracker-pct">${pct}%</span>
+    </div>`;
+  });
+  document.getElementById('tracker-bars').innerHTML = barsHtml;
+  const overallPct = totalDone > 0 ? Math.round(totalCorr/totalDone*100) : '—';
+  document.getElementById('tracker-cards').innerHTML = `
+    <div class="tracker-card" style="background:#f0fdf4"><div class="tn" style="color:#14532d">${totalCorr}</div><div class="tl" style="color:#14532d">Total correct</div></div>
+    <div class="tracker-card" style="background:#eff6ff"><div class="tn" style="color:#1e3a8a">${totalDone}</div><div class="tl" style="color:#1e3a8a">Questions done</div></div>
+    <div class="tracker-card" style="background:#fffbeb"><div class="tn" style="color:#92400e">${overallPct}${totalDone>0?'%':''}</div><div class="tl" style="color:#92400e">Overall accuracy</div></div>
+    <div class="tracker-card" style="background:#fef3c7"><div class="tn" style="color:#92400e">${totalDone>0&&overallPct>=60?'✓ On track':'Keep going'}</div><div class="tl" style="color:#92400e">Goal: 60%+</div></div>`;
+}
+
+function resetProgress() {
+  if (!confirm('Reset all your practice progress?')) return;
+  progress={A:{correct:0,total:0},B:{correct:0,total:0},C:{correct:0,total:0},D:{correct:0,total:0}};
+  answered={};
+  renderDrill(currentDrill);
+  renderTracker();
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active');
+  });
+  if (id === 'tracker') renderTracker();
+}
+
+// Init
+showDrill('D');
+</script>
+</body>
+</html>

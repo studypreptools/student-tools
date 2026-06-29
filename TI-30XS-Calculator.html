@@ -1,0 +1,462 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+#app{display:flex;gap:20px;padding:16px 0;flex-wrap:wrap}
+#left{flex:0 0 260px}
+#right{flex:1;min-width:280px}
+
+/* Calculator shell */
+#calc{background:#1a1a2e;border-radius:12px;padding:12px;width:260px;border:2px solid #0f0f1a;box-shadow:none}
+#calc-top{background:#16213e;border-radius:8px;padding:8px;margin-bottom:10px}
+#screen{background:#c8d8a0;border-radius:4px;padding:8px 10px;min-height:72px;font-family:var(--font-mono);position:relative;border:2px inset #8a9a60}
+#entry-line{font-size:13px;color:#2a3a10;min-height:18px;word-break:break-all}
+#result-line{font-size:22px;color:#1a2a08;font-weight:500;text-align:right;margin-top:4px;min-height:28px}
+#mode-line{font-size:10px;color:#4a5a30;margin-bottom:2px;display:flex;gap:8px}
+
+/* Key grid */
+#keys{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.key{border-radius:4px;border:none;cursor:pointer;font-family:var(--font-sans);font-weight:500;text-align:center;padding:0;position:relative;transition:transform 0.08s}
+.key:active,.key.pressed{transform:scale(0.93)}
+.key .main{display:block;font-size:11px;line-height:1;padding:6px 2px 5px}
+.key .top{display:block;font-size:8px;line-height:1;padding:2px 2px 0;font-weight:400;opacity:0.85}
+.key .bot{display:block;font-size:8px;line-height:1;padding:0 2px 2px;font-weight:400;opacity:0.85}
+
+/* Key colors */
+.k-num{background:#4a5568;color:#fff}
+.k-op{background:#2d6a4f;color:#95d5b2}
+.k-fn{background:#264653;color:#90e0ef}
+.k-2nd{background:#e07c24;color:#fff}
+.k-clear{background:#c1121f;color:#fff}
+.k-enter{background:#2d6a4f;color:#fff;grid-row:span 1}
+.k-gray{background:#374151;color:#e5e7eb}
+.k-special{background:#1e3a5f;color:#90caf9}
+.key:hover{filter:brightness(1.18)}
+
+/* Highlight for lesson */
+.key.highlight{outline:3px solid #f59e0b;outline-offset:2px;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{outline-color:#f59e0b}50%{outline-color:#fcd34d}}
+
+/* Right panel */
+#lesson-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:6px 12px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;font-size:13px}
+.tab.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+
+#lesson-box{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:10px;padding:16px;margin-bottom:12px}
+#lesson-title{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+#lesson-desc{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:12px}
+#step-box{background:var(--color-background-secondary);border-radius:8px;padding:12px;margin-bottom:10px}
+#step-title{font-size:12px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+#step-text{font-size:14px;color:var(--color-text-primary);line-height:1.6}
+.key-hint{display:inline-block;background:#1a1a2e;color:#90e0ef;font-family:var(--font-mono);font-size:12px;padding:2px 7px;border-radius:4px;margin:1px 2px;border:1px solid #264653}
+
+#progress-bar-wrap{background:var(--color-background-secondary);border-radius:99px;height:6px;margin-bottom:10px}
+#progress-bar{background:#2d6a4f;height:6px;border-radius:99px;transition:width .3s}
+
+#btns{display:flex;gap:8px;flex-wrap:wrap}
+#btns button{padding:8px 16px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;font-size:13px}
+#btns button:hover{background:var(--color-background-secondary)}
+#btn-next{background:#2d6a4f !important;color:#fff !important;border-color:#2d6a4f !important}
+
+#quiz-box{display:none;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:10px;padding:16px}
+#quiz-q{font-size:14px;color:var(--color-text-primary);margin-bottom:10px;line-height:1.6}
+#quiz-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.choice{padding:8px 12px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);cursor:pointer;font-size:13px;text-align:center}
+.choice:hover{border-color:var(--color-border-primary)}
+.choice.correct{background:var(--color-background-success);color:var(--color-text-success);border-color:var(--color-border-success)}
+.choice.wrong{background:var(--color-background-danger);color:var(--color-text-danger);border-color:var(--color-border-danger)}
+#quiz-feedback{font-size:13px;min-height:20px;color:var(--color-text-secondary);margin-bottom:8px}
+
+#tip-bar{background:var(--color-background-warning);border:0.5px solid var(--color-border-warning);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--color-text-warning);line-height:1.5}
+</style>
+
+<h2 class="sr-only">TI-30XS MultiView interactive calculator trainer for HiSET and Accuplacer math</h2>
+
+<div id="app">
+<div id="left">
+<div id="calc">
+  <div id="calc-top">
+    <div id="screen">
+      <div id="mode-line"><span id="m-deg">DEG</span><span id="m-2nd" style="display:none;color:#e07c24">2ND</span></div>
+      <div id="entry-line"></div>
+      <div id="result-line">0</div>
+    </div>
+  </div>
+  <div id="keys">
+    <!-- Row 1: 2nd, mode, del, clear -->
+    <button class="key k-2nd" data-key="2nd"><span class="main">2nd</span></button>
+    <button class="key k-fn" data-key="mode"><span class="top" style="color:#e07c24">QUIT</span><span class="main">mode</span></button>
+    <button class="key k-gray" data-key="del"><span class="top" style="color:#e07c24">INS</span><span class="main">del</span></button>
+    <button class="key k-clear" data-key="clear" style="grid-column:span 2"><span class="main">clear</span></button>
+
+    <!-- Row 2: trig/log row -->
+    <button class="key k-fn" data-key="sin"><span class="top" style="color:#e07c24">sin⁻¹</span><span class="main">sin</span></button>
+    <button class="key k-fn" data-key="cos"><span class="top" style="color:#e07c24">cos⁻¹</span><span class="main">cos</span></button>
+    <button class="key k-fn" data-key="tan"><span class="top" style="color:#e07c24">tan⁻¹</span><span class="main">tan</span></button>
+    <button class="key k-fn" data-key="log"><span class="top" style="color:#e07c24">10^x</span><span class="main">log</span></button>
+    <button class="key k-fn" data-key="ln"><span class="top" style="color:#e07c24">e^x</span><span class="main">ln</span></button>
+
+    <!-- Row 3: power/root -->
+    <button class="key k-fn" data-key="xsq"><span class="top" style="color:#e07c24">√</span><span class="main">x²</span></button>
+    <button class="key k-fn" data-key="pow"><span class="top" style="color:#e07c24">x√y</span><span class="main">^</span></button>
+    <button class="key k-fn" data-key="recip"><span class="top" style="color:#e07c24">EE</span><span class="main">x⁻¹</span></button>
+    <button class="key k-fn" data-key="abs"><span class="top" style="color:#e07c24">π</span><span class="main">|x|</span></button>
+    <button class="key k-op" data-key="div"><span class="main">÷</span></button>
+
+    <!-- Row 4: num + ops -->
+    <button class="key k-num" data-key="7"><span class="main">7</span></button>
+    <button class="key k-num" data-key="8"><span class="main">8</span></button>
+    <button class="key k-num" data-key="9"><span class="main">9</span></button>
+    <button class="key k-op" data-key="mul"><span class="main">×</span></button>
+    <button class="key k-fn" data-key="paren"><span class="main">( )</span></button>
+
+    <!-- Row 5 -->
+    <button class="key k-num" data-key="4"><span class="main">4</span></button>
+    <button class="key k-num" data-key="5"><span class="main">5</span></button>
+    <button class="key k-num" data-key="6"><span class="main">6</span></button>
+    <button class="key k-op" data-key="sub"><span class="main">−</span></button>
+    <button class="key k-fn" data-key="frac"><span class="main">n/d</span></button>
+
+    <!-- Row 6 -->
+    <button class="key k-num" data-key="1"><span class="main">1</span></button>
+    <button class="key k-num" data-key="2"><span class="main">2</span></button>
+    <button class="key k-num" data-key="3"><span class="main">3</span></button>
+    <button class="key k-op" data-key="add"><span class="main">+</span></button>
+    <button class="key k-special" data-key="enter" style="grid-row:span 2"><span class="main">enter</span></button>
+
+    <!-- Row 7 -->
+    <button class="key k-fn" data-key="neg"><span class="main">(−)</span></button>
+    <button class="key k-num" data-key="0"><span class="main">0</span></button>
+    <button class="key k-num" data-key="dot"><span class="main">.</span></button>
+    <button class="key k-fn" data-key="perc"><span class="main">%</span></button>
+  </div>
+</div>
+<div style="margin-top:10px;font-size:11px;color:var(--color-text-tertiary);text-align:center">TI-30XS MultiView Simulator</div>
+</div>
+
+<div id="right">
+  <div id="lesson-tabs">
+    <button class="tab active" onclick="loadLesson(0)">Basics</button>
+    <button class="tab" onclick="loadLesson(1)">Fractions</button>
+    <button class="tab" onclick="loadLesson(2)">Powers & Roots</button>
+    <button class="tab" onclick="loadLesson(3)">Percentages</button>
+    <button class="tab" onclick="loadLesson(4)">Negatives</button>
+    <button class="tab" onclick="loadLesson(5)">Order of Ops</button>
+  </div>
+
+  <div id="lesson-box">
+    <div id="lesson-title"></div>
+    <div id="lesson-desc"></div>
+    <div style="margin-bottom:8px">
+      <div id="progress-bar-wrap"><div id="progress-bar" style="width:0%"></div></div>
+    </div>
+    <div id="step-box">
+      <div id="step-title">Step 1</div>
+      <div id="step-text"></div>
+    </div>
+    <div id="btns">
+      <button onclick="prevStep()">← Back</button>
+      <button id="btn-next" onclick="nextStep()">Next →</button>
+      <button onclick="startQuiz()">Take quiz ↗</button>
+    </div>
+  </div>
+
+  <div id="quiz-box">
+    <div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px" id="quiz-counter"></div>
+    <div id="quiz-q"></div>
+    <div id="quiz-choices"></div>
+    <div id="quiz-feedback"></div>
+    <button onclick="nextQuiz()" id="btn-quiz-next" style="display:none;padding:8px 16px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:#2d6a4f;color:#fff;cursor:pointer;font-size:13px">Next question →</button>
+  </div>
+
+  <div id="tip-bar"></div>
+</div>
+</div>
+
+<script>
+const lessons = [
+  {
+    title:"Basic arithmetic & the display",
+    desc:"The TI-30XS shows your entry line on top and the answer below. Learn how to enter problems and use the clear key.",
+    tip:"Always press <clear> once to clear an entry, or twice to fully reset the calculator. On the HiSET you get a fresh start any time!",
+    highlight:[],
+    steps:[
+      {title:"Step 1 of 5 — the display",text:"The TI-30XS has two lines. The <span class='key-hint'>entry line</span> (top) shows what you type. The <span class='key-hint'>result line</span> (bottom) shows the answer. Try typing any number on the simulator to the left.",keys:[]},
+      {title:"Step 2 of 5 — clearing",text:"Press <span class='key-hint'>clear</span> once to delete your current entry. Press <span class='key-hint'>clear</span> again to clear everything. This is your safety net — use it freely!",keys:["clear"]},
+      {title:"Step 3 of 5 — addition",text:"Let's add 45 + 78. Press: <span class='key-hint'>4</span> <span class='key-hint'>5</span> <span class='key-hint'>+</span> <span class='key-hint'>7</span> <span class='key-hint'>8</span> <span class='key-hint'>enter</span>. The answer (123) appears on the result line.",keys:["4","5","add","7","8","enter"]},
+      {title:"Step 4 of 5 — subtraction & multiplication",text:"Try 15 × 8: press <span class='key-hint'>1</span> <span class='key-hint'>5</span> <span class='key-hint'>×</span> <span class='key-hint'>8</span> <span class='key-hint'>enter</span>. Then try 200 − 47 the same way.",keys:["1","5","mul","8","enter"]},
+      {title:"Step 5 of 5 — division",text:"Divide 144 ÷ 12: press <span class='key-hint'>1</span> <span class='key-hint'>4</span> <span class='key-hint'>4</span> <span class='key-hint'>÷</span> <span class='key-hint'>1</span> <span class='key-hint'>2</span> <span class='key-hint'>enter</span>. The TI-30XS may show this as a fraction — press <span class='key-hint'>enter</span> again to toggle decimal.",keys:["1","4","4","div","1","2","enter"]}
+    ],
+    quiz:[
+      {q:"What key do you press to get the answer after typing a problem?",choices:["clear","del","enter","mode"],ans:2},
+      {q:"You made a mistake entering a number. Which key removes the last digit you typed?",choices:["clear","del","(−)","2nd"],ans:1},
+      {q:"Which order is correct to compute 36 ÷ 4?",choices:["enter → 3 → 6 → ÷ → 4","3 → 6 → ÷ → 4 → enter","÷ → 3 → 6 → 4","4 → ÷ → 3 → 6 → enter"],ans:1}
+    ]
+  },
+  {
+    title:"Fractions with the n/d key",
+    desc:"The TI-30XS has a dedicated fraction key. This is very useful for HiSET problems that work with fractions.",
+    tip:"The n/d key enters fractions directly. After pressing n/d, type the numerator, press ▼ (down arrow — use enter here), then type the denominator.",
+    highlight:["frac"],
+    steps:[
+      {title:"Step 1 of 4 — entering a fraction",text:"To enter ¾, press <span class='key-hint'>n/d</span>, type <span class='key-hint'>3</span>, press <span class='key-hint'>enter</span> (acts as ▼ to move to denominator), type <span class='key-hint'>4</span>, then press <span class='key-hint'>enter</span>.",keys:["frac","3","enter","4","enter"]},
+      {title:"Step 2 of 4 — adding fractions",text:"Add ½ + ⅓: press <span class='key-hint'>n/d</span> <span class='key-hint'>1</span> <span class='key-hint'>enter</span> <span class='key-hint'>2</span> then <span class='key-hint'>+</span>, then <span class='key-hint'>n/d</span> <span class='key-hint'>1</span> <span class='key-hint'>enter</span> <span class='key-hint'>3</span> then <span class='key-hint'>enter</span>. Result: 5/6.",keys:["frac","add","enter"]},
+      {title:"Step 3 of 4 — fraction to decimal",text:"After getting a fraction answer, press <span class='key-hint'>enter</span> again to toggle between fraction and decimal form. ¾ becomes 0.75. This is handy for checking your work!",keys:["enter"]},
+      {title:"Step 4 of 4 — mixed numbers",text:"For mixed numbers like 2½, enter: <span class='key-hint'>2</span>, then <span class='key-hint'>n/d</span>, then the fraction part. The calculator handles the rest automatically.",keys:["2","frac"]}
+    ],
+    quiz:[
+      {q:"Which key do you press first to enter a fraction on the TI-30XS?",choices:["x²","n/d","( )","2nd"],ans:1},
+      {q:"After pressing n/d and entering the numerator 3, what do you press to move to the denominator?",choices:["clear","2nd","enter (▼)","del"],ans:2},
+      {q:"You entered ¾ and see it as a fraction. How do you see it as a decimal?",choices:["Press 2nd","Press enter again","Press clear","Press del"],ans:1}
+    ]
+  },
+  {
+    title:"Powers & square roots",
+    desc:"Use x² for squaring and the ^ key for other powers. The 2nd key unlocks the square root above x².",
+    tip:"Remember: √ is the 2nd function above x². Press 2nd FIRST, then x² to get √. The orange label above each key shows its 2nd function.",
+    highlight:["xsq","pow","2nd"],
+    steps:[
+      {title:"Step 1 of 4 — squaring a number",text:"To find 7², press <span class='key-hint'>7</span> then <span class='key-hint'>x²</span> then <span class='key-hint'>enter</span>. Answer: 49. The x² key squares whatever number came before it.",keys:["7","xsq","enter"]},
+      {title:"Step 2 of 4 — square roots",text:"√ is the 2nd function of x². To find √49: press <span class='key-hint'>2nd</span> then <span class='key-hint'>x²</span> (this activates √), type <span class='key-hint'>4</span> <span class='key-hint'>9</span>, then <span class='key-hint'>enter</span>. Answer: 7.",keys:["2nd","xsq","4","9","enter"]},
+      {title:"Step 3 of 4 — other powers with ^",text:"For powers like 2⁵, press <span class='key-hint'>2</span> <span class='key-hint'>^</span> <span class='key-hint'>5</span> <span class='key-hint'>enter</span>. The ^ key means 'raised to the power of'. Answer: 32.",keys:["2","pow","5","enter"]},
+      {title:"Step 4 of 4 — cube roots & nth roots",text:"For ∛8, press <span class='key-hint'>3</span> <span class='key-hint'>2nd</span> <span class='key-hint'>^</span> (this activates x√y), then <span class='key-hint'>8</span> <span class='key-hint'>enter</span>. The 2nd function of ^ is the nth root.",keys:["3","2nd","pow","8","enter"]}
+    ],
+    quiz:[
+      {q:"To find the square root of 64, you press 2nd and then which key?",choices:["^","ln","x²","log"],ans:2},
+      {q:"To calculate 3⁴ (3 to the 4th power), which key do you press between 3 and 4?",choices:["x²","×","^","n/d"],ans:2},
+      {q:"What does the orange label above a key mean?",choices:["The key is broken","Press 2nd first to use that function","Press clear first","It's for advanced users only"],ans:1}
+    ]
+  },
+  {
+    title:"Percentages",
+    desc:"The % key converts a number to its decimal equivalent. It's essential for percent-of problems on the HiSET.",
+    tip:"To find 15% of 80: type 80 × 15 then press the % key, then enter. The % key divides by 100 automatically.",
+    highlight:["perc"],
+    steps:[
+      {title:"Step 1 of 3 — what % does",text:"The <span class='key-hint'>%</span> key divides a number by 100 instantly. Pressing <span class='key-hint'>1</span> <span class='key-hint'>5</span> <span class='key-hint'>%</span> gives you 0.15 — which is 15 out of 100.",keys:["1","5","perc"]},
+      {title:"Step 2 of 3 — percent of a number",text:"Find 30% of 250: press <span class='key-hint'>2</span> <span class='key-hint'>5</span> <span class='key-hint'>0</span> <span class='key-hint'>×</span> <span class='key-hint'>3</span> <span class='key-hint'>0</span> <span class='key-hint'>%</span> <span class='key-hint'>enter</span>. Answer: 75.",keys:["2","5","0","mul","3","0","perc","enter"]},
+      {title:"Step 3 of 3 — percent increase/decrease",text:"A shirt costs $40 and is 25% off. Discount = 40 × 25% = 10. New price = 40 − 10 = 30. Or shortcut: 40 × 75% = 30 (what you pay is 100%−25%=75%).",keys:["mul","perc","enter"]}
+    ],
+    quiz:[
+      {q:"What does the % key do to the number you enter?",choices:["Multiplies by 100","Divides by 100","Finds square root","Takes the reciprocal"],ans:1},
+      {q:"To find 20% of 150, what do you type? (in order)",choices:["150 + 20 % enter","20 % × 150 enter","150 × 20 % enter","% 20 × 150 enter"],ans:2},
+      {q:"A $60 item is 10% off. What keys find the sale price?",choices:["60 × 10 % enter","60 − 60 × 10 % enter","Both A and B give the discount, not the price","60 × 90 % enter"],ans:3}
+    ]
+  },
+  {
+    title:"Negative numbers",
+    desc:"The TI-30XS has a special (−) key for negative numbers — it is NOT the same as the subtraction key!",
+    tip:"Use the (−) key (bottom left) for negative numbers. Use the − key (right side) only for subtraction. Mixing them up is a very common mistake!",
+    highlight:["neg","sub"],
+    steps:[
+      {title:"Step 1 of 3 — the (−) key",text:"To enter −5, press <span class='key-hint'>(−)</span> then <span class='key-hint'>5</span>. Do NOT use the subtraction <span class='key-hint'>−</span> key to start a negative number — the calculator will error.",keys:["neg","5"]},
+      {title:"Step 2 of 3 — arithmetic with negatives",text:"Calculate −8 × 3: press <span class='key-hint'>(−)</span> <span class='key-hint'>8</span> <span class='key-hint'>×</span> <span class='key-hint'>3</span> <span class='key-hint'>enter</span>. Answer: −24. Try −12 + 5 too. (Answer: −7)",keys:["neg","8","mul","3","enter"]},
+      {title:"Step 3 of 3 — subtracting vs negatives",text:"5 − (−3) means five minus negative three. Press <span class='key-hint'>5</span> <span class='key-hint'>−</span> <span class='key-hint'>(−)</span> <span class='key-hint'>3</span> <span class='key-hint'>enter</span>. Answer: 8. Notice you use BOTH keys here.",keys:["5","sub","neg","3","enter"]}
+    ],
+    quiz:[
+      {q:"Which key should you press to enter a negative number?",choices:["The − (subtraction) key","The (−) key (bottom left)","The del key","The 2nd key"],ans:1},
+      {q:"To enter −7 on the calculator, what is the correct key sequence?",choices:["− then 7","7 then (−)","(−) then 7","del then 7"],ans:2},
+      {q:"What is the result of −6 × (−4)?",choices:["−24","24","−10","10"],ans:1}
+    ]
+  },
+  {
+    title:"Order of operations (PEMDAS)",
+    desc:"The TI-30XS follows PEMDAS automatically, but you still need to enter parentheses correctly for complex problems.",
+    tip:"When in doubt, use parentheses! Extra parentheses never hurt and they make sure the calculator computes in the order you intend.",
+    highlight:["paren"],
+    steps:[
+      {title:"Step 1 of 4 — PEMDAS on calculator",text:"Type <span class='key-hint'>2</span> <span class='key-hint'>+</span> <span class='key-hint'>3</span> <span class='key-hint'>×</span> <span class='key-hint'>4</span> <span class='key-hint'>enter</span>. The answer is 14, NOT 20, because the calculator multiplies 3×4 first (PEMDAS). Good news: it handles this for you!",keys:["2","add","3","mul","4","enter"]},
+      {title:"Step 2 of 4 — using parentheses ( )",text:"The <span class='key-hint'>( )</span> key opens a parenthesis. Press it once for ( and again for ). To compute (2+3)×4, press <span class='key-hint'>( )</span> <span class='key-hint'>2</span> <span class='key-hint'>+</span> <span class='key-hint'>3</span> <span class='key-hint'>( )</span> <span class='key-hint'>×</span> <span class='key-hint'>4</span> <span class='key-hint'>enter</span>. Answer: 20.",keys:["paren","2","add","3","paren","mul","4","enter"]},
+      {title:"Step 3 of 4 — fractions require parens!",text:"Be careful with (3+5)/4. You must press <span class='key-hint'>( )</span> <span class='key-hint'>3</span> <span class='key-hint'>+</span> <span class='key-hint'>5</span> <span class='key-hint'>( )</span> <span class='key-hint'>÷</span> <span class='key-hint'>4</span>. Without parens, only 5 would be divided by 4!",keys:["paren","3","add","5","paren","div","4","enter"]},
+      {title:"Step 4 of 4 — nested expressions",text:"For a problem like √(16+9), press <span class='key-hint'>2nd</span> <span class='key-hint'>x²</span> (√), then <span class='key-hint'>( )</span> <span class='key-hint'>1</span> <span class='key-hint'>6</span> <span class='key-hint'>+</span> <span class='key-hint'>9</span> <span class='key-hint'>( )</span> <span class='key-hint'>enter</span>. Answer: 5. The parentheses make the calculator add before taking the root.",keys:["2nd","xsq","paren","1","6","add","9","paren","enter"]}
+    ],
+    quiz:[
+      {q:"What is 8 + 2 × 5 on the TI-30XS?",choices:["50","18","13","40"],ans:1},
+      {q:"To force the calculator to add before multiplying in (4+6)×2, which key creates the parentheses?",choices:["n/d","( )","2nd","del"],ans:1},
+      {q:"You want to compute (10−4)/3. Why do you need parentheses?",choices:["You don't — order of ops handles it","Without them, only 4/3 is computed, not (10-4)/3","Parentheses are optional on this calculator","The calculator can't do division"],ans:1}
+    ]
+  }
+];
+
+let curLesson = 0, curStep = 0, inQuiz = false, quizIdx = 0, quizAnswered = false;
+let expression = "", result = "0", parenOpen = 0, is2nd = false;
+
+function kh(arr){return arr.map(k=>`<span class='key-hint'>${k}</span>`).join(" ")}
+
+function loadLesson(idx){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  curLesson=idx; curStep=0; inQuiz=false;
+  document.getElementById('quiz-box').style.display='none';
+  document.getElementById('lesson-box').style.display='block';
+  renderStep(); updateHighlights();
+}
+
+function renderStep(){
+  const L = lessons[curLesson];
+  document.getElementById('lesson-title').textContent = L.title;
+  document.getElementById('lesson-desc').textContent = L.desc;
+  const pct = Math.round(((curStep+1)/L.steps.length)*100);
+  document.getElementById('progress-bar').style.width=pct+'%';
+  const S = L.steps[curStep];
+  document.getElementById('step-title').textContent = S.title;
+  document.getElementById('step-text').innerHTML = S.text;
+  document.getElementById('tip-bar').innerHTML = '<strong>Tip:</strong> '+L.tip;
+  updateHighlights(S.keys||[]);
+}
+
+function updateHighlights(keys){
+  document.querySelectorAll('.key').forEach(k=>k.classList.remove('highlight'));
+  if(!keys) return;
+  keys.forEach(k=>{
+    const el = document.querySelector(`[data-key="${k}"]`);
+    if(el) el.classList.add('highlight');
+  });
+}
+
+function nextStep(){
+  const L = lessons[curLesson];
+  if(curStep < L.steps.length-1){curStep++; renderStep();}
+}
+function prevStep(){
+  if(curStep>0){curStep--; renderStep();}
+}
+
+function startQuiz(){
+  inQuiz=true; quizIdx=0; quizAnswered=false;
+  document.getElementById('lesson-box').style.display='none';
+  document.getElementById('quiz-box').style.display='block';
+  updateHighlights([]);
+  renderQuiz();
+}
+
+function renderQuiz(){
+  const Q = lessons[curLesson].quiz[quizIdx];
+  const total = lessons[curLesson].quiz.length;
+  document.getElementById('quiz-counter').textContent=`Question ${quizIdx+1} of ${total}`;
+  document.getElementById('quiz-q').textContent=Q.q;
+  document.getElementById('quiz-feedback').textContent='';
+  document.getElementById('btn-quiz-next').style.display='none';
+  quizAnswered=false;
+  const ch = document.getElementById('quiz-choices');
+  ch.innerHTML='';
+  Q.choices.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='choice'; b.textContent=c;
+    b.onclick=()=>checkAnswer(i,Q.ans);
+    ch.appendChild(b);
+  });
+}
+
+function checkAnswer(i,ans){
+  if(quizAnswered) return;
+  quizAnswered=true;
+  const btns=document.querySelectorAll('.choice');
+  btns.forEach((b,idx)=>{
+    if(idx===ans) b.classList.add('correct');
+    else if(idx===i && i!==ans) b.classList.add('wrong');
+  });
+  const fb=document.getElementById('quiz-feedback');
+  if(i===ans){fb.style.color='var(--color-text-success)';fb.textContent='✓ Correct!';}
+  else{fb.style.color='var(--color-text-danger)';fb.textContent='✗ Not quite — the highlighted answer is correct.';}
+  document.getElementById('btn-quiz-next').style.display='inline-block';
+}
+
+function nextQuiz(){
+  const total=lessons[curLesson].quiz.length;
+  if(quizIdx<total-1){quizIdx++;renderQuiz();}
+  else{
+    document.getElementById('quiz-box').style.display='none';
+    document.getElementById('lesson-box').style.display='block';
+    renderStep();
+    document.getElementById('tip-bar').innerHTML='<strong>Great job!</strong> You finished the quiz. Try the next lesson tab above or practice on the calculator.';
+  }
+}
+
+/* ── Calculator logic ── */
+function updateDisplay(){
+  document.getElementById('entry-line').textContent = expression||'';
+  document.getElementById('result-line').textContent = result;
+  document.getElementById('m-2nd').style.display = is2nd?'inline':'none';
+}
+
+function flashKey(key){
+  const el=document.querySelector(`[data-key="${key}"]`);
+  if(!el) return;
+  el.classList.add('pressed');
+  setTimeout(()=>el.classList.remove('pressed'),150);
+}
+
+function pressKey(key){
+  flashKey(key);
+  if(key==='2nd'){is2nd=!is2nd; updateDisplay(); return;}
+  const second=is2nd; is2nd=false;
+
+  if(key==='clear'){expression='';result='0';parenOpen=0; updateDisplay(); return;}
+  if(key==='del'){expression=expression.slice(0,-1);updateDisplay();return;}
+
+  if(key==='enter'){
+    try{
+      let expr=expression
+        .replace(/×/g,'*').replace(/÷/g,'/')
+        .replace(/√\(/g,'Math.sqrt(')
+        .replace(/√/g,'Math.sqrt(')
+        .replace(/\^/g,'**')
+        .replace(/log\(/g,'Math.log10(')
+        .replace(/ln\(/g,'Math.log(')
+        .replace(/sin\(/g,'Math.sin(Math.PI/180*')
+        .replace(/cos\(/g,'Math.cos(Math.PI/180*')
+        .replace(/tan\(/g,'Math.tan(Math.PI/180*')
+        .replace(/π/g,'Math.PI')
+        .replace(/%/g,'/100')
+        .replace(/\|([^|]+)\|/g,'Math.abs($1)')
+        ;
+      // Close unclosed parens
+      let opens=(expr.match(/\(/g)||[]).length, closes=(expr.match(/\)/g)||[]).length;
+      expr += ')'.repeat(Math.max(0,opens-closes));
+      let val=Function('"use strict";return ('+expr+')')();
+      if(typeof val==='number'){
+        // Nice display
+        result = Number.isInteger(val)?val.toString():parseFloat(val.toFixed(10)).toString();
+      } else { result='Error'; }
+    }catch(e){result='Error';}
+    updateDisplay(); return;
+  }
+
+  // Build expression string
+  const map={
+    'add':'+','sub':'−','mul':'×','div':'÷',
+    'pow':'^','xsq':second?'√(':'²',
+    'sin':second?'sin⁻¹(':'sin(','cos':second?'cos⁻¹(':'cos(',
+    'tan':second?'tan⁻¹(':'tan(','log':second?'10^(':'log(',
+    'ln':second?'e^(':'ln(','neg':'(−','perc':'%',
+    'recip':second?'EE':'x⁻¹','abs':second?'π':'|',
+    'frac':'/','dot':'.','paren':'('
+  };
+
+  if(key==='paren'){
+    let opens=(expression.match(/\(/g)||[]).length,closes=(expression.match(/\)/g)||[]).length;
+    if(opens>closes && expression.length>0 && /[\d\)]/.test(expression.slice(-1))){expression+=')'}
+    else expression+='(';
+  } else if(key==='xsq'){
+    if(second) expression+='√(';
+    else expression+='²';
+  } else if(key==='neg'){
+    expression+='(−';
+  } else if(/^[0-9]$/.test(key)){
+    expression+=key;
+  } else if(map[key]){
+    expression+=map[key];
+  } else {
+    expression+=key;
+  }
+  updateDisplay();
+}
+
+// Key click listeners
+document.querySelectorAll('.key').forEach(k=>{
+  k.addEventListener('click',()=>pressKey(k.dataset.key));
+});
+
+// Init
+loadLesson(0);
+</script>

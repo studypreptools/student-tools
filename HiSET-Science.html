@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>HiSET Science Study Tool</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;color:#1a1a1a;background:#f0f4f0;min-height:100vh}
+.app{max-width:840px;margin:0 auto;padding:1rem 1rem 5rem}
+.header{background:#1a1a1a;color:#fff;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem}
+.header h1{font-size:22px;font-weight:700}
+.header p{font-size:13px;opacity:0.55;margin-top:3px}
+.weight-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:1rem}
+.wpill{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600}
+.wp1{background:#dcfce7;color:#14532d}
+.wp2{background:#dbeafe;color:#1e3a8a}
+.wp3{background:#fef9c3;color:#713f12}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:11px 15px;border:none;border-radius:10px;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 1px 3px rgba(0,0,0,0.07);transition:all 0.12s;white-space:nowrap}
+.nav-btn:active{transform:scale(0.97)}
+.nav-btn.active{background:#1a1a1a;color:#fff}
+.section{display:none}
+.section.active{display:block}
+.card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.sec-header{margin-bottom:1.25rem}
+.sec-header h2{font-size:19px;font-weight:700;margin-bottom:3px}
+.sec-header p{font-size:13px;color:#666;line-height:1.55}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:1.25rem}
+.topic-card{border-radius:14px;padding:1.25rem;cursor:pointer;transition:all 0.15s;border:2px solid transparent}
+.topic-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,0.1)}
+.topic-card:active{transform:scale(0.98)}
+.tc1{background:#f0fdf4;border-color:#bbf7d0}
+.tc2{background:#eff6ff;border-color:#bfdbfe}
+.tc3{background:#fefce8;border-color:#fde68a}
+.tc-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.tc1 .tc-lbl{color:#15803d}
+.tc2 .tc-lbl{color:#1d4ed8}
+.tc3 .tc-lbl{color:#a16207}
+.tc-title{font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.tc-sub{font-size:12px;color:#666;line-height:1.5}
+.tc-pct{font-size:30px;font-weight:800;margin-top:8px;line-height:1}
+.tc1 .tc-pct{color:#16a34a}
+.tc2 .tc-pct{color:#3b82f6}
+.tc3 .tc-pct{color:#ca8a04}
+.tc-pct-lbl{font-size:11px;color:#888;margin-top:2px}
+.proc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:1rem}
+.proc-card{padding:1rem;border-radius:12px;border-left:4px solid}
+.proc-a{background:#f0fdf4;border-color:#16a34a}
+.proc-b{background:#eff6ff;border-color:#3b82f6}
+.proc-c{background:#fdf4ff;border-color:#9333ea}
+.proc-card .pt{font-size:13px;font-weight:700;margin-bottom:4px}
+.proc-card .pd{font-size:12px;color:#555;line-height:1.5}
+.strat-section{margin-bottom:1.5rem}
+.strat-header{font-size:15px;font-weight:700;margin-bottom:0.75rem;padding:10px 14px;border-radius:10px;display:flex;align-items:center;gap:8px}
+.sh1{background:#f0fdf4;color:#15803d}
+.sh2{background:#eff6ff;color:#1d4ed8}
+.sh3{background:#fefce8;color:#a16207}
+.shp{background:#fdf4ff;color:#7e22ce}
+.strat-card{background:#f8f8f6;border-radius:10px;padding:1rem 1.1rem;margin-bottom:0.75rem;font-size:14px;line-height:1.65;color:#333;border-left:4px solid}
+.sc1{border-left-color:#16a34a}
+.sc2{border-left-color:#3b82f6}
+.sc3{border-left-color:#ca8a04}
+.scp{border-left-color:#9333ea}
+.strat-steps{margin-top:6px;padding-left:1.1rem}
+.strat-steps li{margin-bottom:5px;font-size:13px;color:#444;line-height:1.55}
+.fc-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.fc-filter button{padding:7px 13px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#555;font-family:inherit}
+.fc-filter button.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.flashcard{border-radius:16px;padding:2rem 1.5rem;min-height:230px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;margin-bottom:1rem;text-align:center;transition:all 0.18s}
+.flashcard:active{transform:scale(0.98)}
+.fc-front{background:#1a1a1a;color:#fff}
+.fc-back1{background:#f0fdf4;color:#14532d;border:2px solid #bbf7d0}
+.fc-back2{background:#eff6ff;color:#1e3a8a;border:2px solid #bfdbfe}
+.fc-back3{background:#fefce8;color:#713f12;border:2px solid #fde68a}
+.fc-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;opacity:0.45;margin-bottom:10px}
+.fc-term{font-size:22px;font-weight:700;line-height:1.3}
+.fc-hint{font-size:12px;opacity:0.35;margin-top:10px}
+.fc-def{font-size:14px;line-height:1.7;max-width:500px}
+.fc-ex{margin-top:10px;font-size:13px;background:rgba(0,0,0,0.06);padding:6px 12px;border-radius:8px;display:inline-block;font-style:italic}
+.fc-nav{display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.fc-nav button{padding:12px 22px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;font-size:14px;cursor:pointer;font-family:inherit;font-weight:600}
+.fc-nav button:active{transform:scale(0.97)}
+.fc-counter{font-size:13px;color:#888}
+.drill-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.drill-tab{padding:10px 15px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all 0.12s}
+.drill-tab:active{transform:scale(0.97)}
+.dt1{background:#f0fdf4;border-color:#16a34a;color:#14532d}
+.dt2{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a}
+.dt3{background:#fefce8;border-color:#ca8a04;color:#713f12}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:5px}
+.prog-bar-wrap{background:#e5e7eb;border-radius:6px;height:7px;overflow:hidden;margin-bottom:1rem}
+.prog-bar-fill{height:100%;border-radius:6px;background:#1a1a1a;transition:width 0.4s}
+.q-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.q-meta{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.q-tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px}
+.tag1{background:#dcfce7;color:#14532d}
+.tag2{background:#dbeafe;color:#1e3a8a}
+.tag3{background:#fef9c3;color:#713f12}
+.proc-tag{font-size:11px;color:#888;background:#f1f5f9;padding:3px 8px;border-radius:6px}
+.dok-tag{font-size:11px;color:#888;background:#f8f0ff;padding:3px 8px;border-radius:6px}
+.q-text{font-size:15px;font-weight:500;line-height:1.65;margin-bottom:1rem;color:#1a1a1a}
+.stimulus{background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:10px;padding:1rem 1.1rem;margin-bottom:1rem}
+.stim-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#0284c7;margin-bottom:6px}
+.stim-body{font-size:13px;line-height:1.75;color:#0c4a6e}
+.stim-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.stim-table th{background:#e0f2fe;padding:6px 10px;text-align:left;font-weight:700;color:#0c4a6e;border:1px solid #bae6fd}
+.stim-table td{padding:6px 10px;border:1px solid #bae6fd;color:#0c4a6e}
+.stim-table tr:nth-child(even) td{background:#f0f9ff}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border:1.5px solid #e5e7eb;border-radius:10px;cursor:pointer;font-size:14px;line-height:1.5;text-align:left;background:#fff;color:#1a1a1a;width:100%;font-family:inherit;min-height:48px;transition:border-color 0.12s,background 0.12s}
+.choice:hover:not(:disabled){border-color:#9ca3af;background:#fafafa}
+.choice.correct{border-color:#16a34a;background:#f0fdf4;color:#14532d}
+.choice.wrong{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
+.choice-letter{font-weight:700;min-width:22px;flex-shrink:0}
+.explanation{display:none;margin-top:10px;padding:12px 14px;background:#f0fdf4;border-radius:10px;font-size:13px;line-height:1.65;color:#14532d;border-left:3px solid #16a34a}
+.exp-title{font-weight:700;margin-bottom:6px}
+.strategy-note{margin-top:8px;padding:8px 10px;background:#fffbeb;border-radius:8px;font-size:12px;color:#92400e;border-left:3px solid #f59e0b;line-height:1.55}
+.tracker-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.tracker-row:last-child{border-bottom:none}
+.tracker-label{font-size:13px;font-weight:600;width:155px;flex-shrink:0}
+.tracker-bar-track{flex:1;height:10px;background:#e5e7eb;border-radius:5px;overflow:hidden}
+.tracker-bar-fill{height:100%;border-radius:5px;transition:width 0.5s}
+.tracker-val{font-size:12px;color:#888;width:44px;text-align:right;flex-shrink:0}
+.ts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:1rem}
+.ts-card{padding:1rem;border-radius:12px;text-align:center}
+.ts-card .tn{font-size:26px;font-weight:800}
+.ts-card .tl{font-size:11px;margin-top:3px;font-weight:500}
+.btn-outline{padding:13px 22px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;color:#1a1a1a;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-outline:active{transform:scale(0.97)}
+.badge-pass{display:inline-block;background:#dcfce7;color:#14532d;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+.badge-warn{display:inline-block;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+.badge-fail{display:inline-block;background:#fee2e2;color:#991b1b;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+@media(max-width:500px){.topic-grid{grid-template-columns:1fr}.tracker-label{width:110px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+  <h1>HiSET Science</h1>
+  <p>Study Tool &middot; 60 questions &middot; 80 minutes &middot; Graph, table &amp; experiment reading included</p>
+  <div class="weight-pills">
+    <span class="wpill wp1">I. Life Science &mdash; 49%</span>
+    <span class="wpill wp2">II. Physical Science &mdash; 28%</span>
+    <span class="wpill wp3">III. Earth Science &mdash; 23%</span>
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('home')">Home</button>
+  <button class="nav-btn" onclick="showSection('strategies')">Strategies</button>
+  <button class="nav-btn" onclick="showSection('flashcards')">Flashcards</button>
+  <button class="nav-btn" onclick="showSection('practice')">Practice</button>
+  <button class="nav-btn" onclick="showSection('tracker')">Progress</button>
+</div>
+
+<div id="section-home" class="section active">
+  <div class="card">
+    <div style="font-size:16px;font-weight:700;margin-bottom:1rem">What&rsquo;s on the HiSET Science test?</div>
+    <div class="topic-grid">
+      <div class="topic-card tc1" onclick="showSection('practice');showDrill('I')">
+        <div class="tc-lbl">Content Area I &middot; Most questions</div>
+        <div class="tc-title">Life Science</div>
+        <div class="tc-sub">Organisms, ecosystems, human body, DNA, cells, food webs, evolution</div>
+        <div class="tc-pct">49%</div>
+        <div class="tc-pct-lbl">&asymp; 29 of 60 questions</div>
+      </div>
+      <div class="topic-card tc2" onclick="showSection('practice');showDrill('II')">
+        <div class="tc-lbl">Content Area II</div>
+        <div class="tc-title">Physical Science</div>
+        <div class="tc-sub">Forces, motion, energy, matter, atomic structure, chemical reactions</div>
+        <div class="tc-pct">28%</div>
+        <div class="tc-pct-lbl">&asymp; 17 of 60 questions</div>
+      </div>
+      <div class="topic-card tc3" onclick="showSection('practice');showDrill('III')">
+        <div class="tc-lbl">Content Area III</div>
+        <div class="tc-title">Earth Science</div>
+        <div class="tc-sub">Rocks, plate tectonics, weather, water cycle, solar system, stars</div>
+        <div class="tc-pct">23%</div>
+        <div class="tc-pct-lbl">&asymp; 14 of 60 questions</div>
+      </div>
+    </div>
+    <div class="proc-grid">
+      <div class="proc-card proc-a"><div class="pt">A. Interpret &amp; Apply</div><div class="pd">Read graphs, tables, and diagrams. Apply science principles to new situations.</div></div>
+      <div class="proc-card proc-b"><div class="pt">B. Analyze</div><div class="pd">Identify research questions, evaluate experimental design, spot limitations.</div></div>
+      <div class="proc-card proc-c"><div class="pt">C. Evaluate &amp; Generalize</div><div class="pd">Distinguish hypothesis vs. data vs. conclusion. Judge source reliability.</div></div>
+    </div>
+    <div style="font-size:13px;color:#666;line-height:1.8;padding:0.75rem 1rem;background:#f8f8f6;border-radius:10px;margin-top:0.5rem">
+      <strong>Key fact:</strong> Most questions include a stimulus &mdash; a graph, table, or experiment description. You do NOT need to memorize every science fact. You need to <strong>read carefully and reason from the information given.</strong><br>
+      &middot; 80 minutes for 60 questions &asymp; 1 min 20 sec per question<br>
+      &middot; Tap any content area above to go straight to practice questions
+    </div>
+  </div>
+</div>
+
+<div id="section-strategies" class="section">
+  <div class="sec-header"><h2>Science Strategies</h2><p>The HiSET Science test is about reading and reasoning &mdash; not just memorizing facts.</p></div>
+  <div class="strat-section">
+    <div class="strat-header shp">&#128161; Test-Taking Strategies (all questions)</div>
+    <div class="strat-card scp"><strong>Read the stimulus before the question</strong><p style="margin-top:4px">Every question has a graph, table, or experiment description. Before reading the question, scan the stimulus: read the title, axis labels, column headers, and units. This builds context so the question makes sense immediately.</p></div>
+    <div class="strat-card scp"><strong>Know the difference: Hypothesis vs. Data vs. Conclusion</strong><ul class="strat-steps"><li><strong>Hypothesis:</strong> a testable prediction made BEFORE the experiment</li><li><strong>Data / Observation:</strong> what was actually measured or seen during the experiment</li><li><strong>Conclusion:</strong> what the data shows AFTER the experiment &mdash; must be supported by evidence</li><li><strong>Assumption:</strong> something taken for granted that was not directly tested</li></ul></div>
+    <div class="strat-card scp"><strong>Eliminate wrong answers using the stimulus</strong><ul class="strat-steps"><li>Any answer that goes BEYOND what the data shows is wrong</li><li>Any answer that contradicts the data is wrong</li><li>Watch for &ldquo;always,&rdquo; &ldquo;never,&rdquo; or &ldquo;proves&rdquo; &mdash; science rarely makes absolute claims</li><li>The correct answer is the most directly supported by the evidence given</li></ul></div>
+    <div class="strat-card scp"><strong>Reading graphs quickly</strong><ul class="strat-steps"><li>Read the TITLE first &mdash; it tells you what the whole graph is about</li><li>Read axis labels and UNITS &mdash; always check what is being measured</li><li>Look at the trend: going up? going down? leveling off? no pattern?</li><li>For line graphs: steep slope = fast change; flat = no change</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh1">&#129358; I. Life Science &mdash; 49% of the test</div>
+    <div class="strat-card sc1"><strong>Ecosystems and food webs</strong><ul class="strat-steps"><li>Producers (plants) make their own food via photosynthesis &mdash; base of every food chain</li><li>Energy flows: sun &rarr; producers &rarr; primary consumers &rarr; secondary consumers</li><li>Energy is lost at each level &mdash; producers have the most energy in the system</li><li>If one species declines, trace the direct effect up and down the chain</li></ul></div>
+    <div class="strat-card sc1"><strong>Cell biology key facts</strong><ul class="strat-steps"><li>Mitochondria: produces energy (ATP) &mdash; found in all cells</li><li>Chloroplasts: photosynthesis &mdash; plant cells ONLY</li><li>Nucleus: contains DNA, controls cell</li><li>Cell wall: plant cells only; animal cells have only a cell membrane</li><li>Ribosomes: make proteins</li></ul></div>
+    <div class="strat-card sc1"><strong>DNA and genetics</strong><ul class="strat-steps"><li>DNA carries genetic information; genes = segments of DNA</li><li>Mitosis = growth/repair (identical cells); Meiosis = sex cells (half chromosomes)</li><li>Dominant allele (capital) masks recessive (lowercase); only tt shows recessive trait</li><li>Punnett square: Tt &times; Tt gives 25% TT, 50% Tt, 25% tt &rarr; 75% show dominant trait</li></ul></div>
+    <div class="strat-card sc1"><strong>Photosynthesis vs. Cellular Respiration</strong><ul class="strat-steps"><li>Photosynthesis: CO&sup2; + H&sup2;O + sunlight &rarr; glucose + O&sup2; (in chloroplasts)</li><li>Cellular respiration: glucose + O&sup2; &rarr; CO&sup2; + H&sup2;O + energy (in mitochondria)</li><li>These two processes are essentially opposites of each other</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh2">&#9883; II. Physical Science &mdash; 28% of the test</div>
+    <div class="strat-card sc2"><strong>Newton&rsquo;s Three Laws</strong><ul class="strat-steps"><li>1st Law (Inertia): objects stay at rest or in motion unless a force acts on them</li><li>2nd Law: F = ma &mdash; friction causes deceleration; more mass needs more force</li><li>3rd Law: every action has an equal and opposite reaction</li></ul></div>
+    <div class="strat-card sc2"><strong>Energy types and conversion</strong><ul class="strat-steps"><li>Potential energy (PE): stored, due to position or condition</li><li>Kinetic energy (KE): energy of motion</li><li>Going downhill: PE decreases, KE increases (total stays constant)</li><li>Energy is conserved &mdash; never created or destroyed, only converted</li></ul></div>
+    <div class="strat-card sc2"><strong>Atoms and chemical reactions</strong><ul class="strat-steps"><li>Atomic number = protons; Neutrons = mass number &minus; atomic number</li><li>Chemical change = new substance formed (burning, rusting, cooking)</li><li>Physical change = same substance, different form (melting, dissolving)</li><li>pH: below 7 = acidic; 7 = neutral; above 7 = basic. Bases raise pH; acids lower it.</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh3">&#127757; III. Earth Science &mdash; 23% of the test</div>
+    <div class="strat-card sc3"><strong>Rock types &mdash; three to know</strong><ul class="strat-steps"><li>Igneous: cooled from magma or lava (no fossils, crystalline)</li><li>Sedimentary: compressed layers of sediment (may contain fossils)</li><li>Metamorphic: existing rock changed by heat and pressure (recrystallized)</li></ul></div>
+    <div class="strat-card sc3"><strong>Plate tectonics &mdash; three boundary types</strong><ul class="strat-steps"><li>Convergent: plates push together &rarr; mountains or ocean trenches</li><li>Divergent: plates pull apart &rarr; mid-ocean ridges</li><li>Transform: plates slide past each other &rarr; earthquakes (e.g. San Andreas Fault)</li></ul></div>
+    <div class="strat-card sc3"><strong>Earth&rsquo;s layers and cycles</strong><ul class="strat-steps"><li>Layers outside to inside: Crust &rarr; Mantle &rarr; Outer Core &rarr; Inner Core</li><li>Water cycle: evaporation &rarr; condensation &rarr; precipitation &rarr; runoff</li><li>Seasons: caused by Earth&rsquo;s axial tilt, NOT distance from the Sun</li><li>Planet order: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune</li></ul></div>
+  </div>
+</div>
+
+<div id="section-flashcards" class="section">
+  <div class="sec-header"><h2>Science Flashcards</h2><p>Tap the card to flip. Filter by content area.</p></div>
+  <div class="fc-filter">
+    <button class="active" onclick="filterCards('all',this)">All</button>
+    <button onclick="filterCards('I',this)">&#129358; Life Science</button>
+    <button onclick="filterCards('II',this)">&#9883; Physical Science</button>
+    <button onclick="filterCards('III',this)">&#127757; Earth Science</button>
+  </div>
+  <div class="flashcard fc-front" id="flashcard" onclick="flipCard()">
+    <div class="fc-cat" id="fc-cat"></div>
+    <div id="fc-front-content"><div class="fc-term" id="fc-term"></div><div class="fc-hint">Tap to see definition</div></div>
+    <div id="fc-back-content" style="display:none"><div class="fc-def" id="fc-def"></div><div class="fc-ex" id="fc-ex"></div></div>
+  </div>
+  <div class="fc-nav">
+    <button onclick="prevCard()">&larr; Back</button>
+    <span class="fc-counter" id="fc-counter">1 / 30</span>
+    <button onclick="nextCard()">Next &rarr;</button>
+  </div>
+</div>
+
+<div id="section-practice" class="section">
+  <div class="sec-header"><h2>Practice Questions</h2><p>Includes stimulus materials &mdash; graphs, tables, and experiment scenarios &mdash; just like the real test.</p></div>
+  <div class="drill-tabs">
+    <button class="drill-tab" id="tab-I" onclick="showDrill('I')">&#129358; I &middot; Life Science</button>
+    <button class="drill-tab" id="tab-II" onclick="showDrill('II')">&#9883; II &middot; Physical Science</button>
+    <button class="drill-tab" id="tab-III" onclick="showDrill('III')">&#127757; III &middot; Earth Science</button>
+  </div>
+  <div class="prog-row"><span id="prog-text">0 of 0 answered</span><span id="prog-score">0 correct</span></div>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-bar" style="width:0%"></div></div>
+  <div id="practice-container"></div>
+</div>
+
+<div id="section-tracker" class="section">
+  <div class="sec-header"><h2>My Progress</h2><p>Track your accuracy across all three content areas.</p></div>
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem">Accuracy by content area</div>
+    <div id="tracker-bars"></div>
+  </div>
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem">Session totals</div>
+    <div class="ts-grid" id="tracker-summary"></div>
+    <div style="margin-top:1rem"><button class="btn-outline" onclick="resetAll()">Reset all progress</button></div>
+  </div>
+  <div class="card" style="background:#f0fdf4;border:1.5px solid #bbf7d0">
+    <div style="font-size:14px;font-weight:700;margin-bottom:0.5rem;color:#14532d">&#128204; Scoring reminder</div>
+    <div style="font-size:13px;color:#555;line-height:1.8">
+      &middot; HiSET Science is scored 1&ndash;20 &middot; Passing = <strong>8 or higher</strong><br>
+      &middot; Focus most study time on <strong>Life Science (49%)</strong> &mdash; it&rsquo;s nearly half the test<br>
+      &middot; Read every stimulus carefully &mdash; many answers are IN the graph or table<br>
+      &middot; Aim for <strong>65%+ accuracy</strong> in practice to be on track for a passing score
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const CARDS = [{"area": "I", "cat": "I · Life Science", "term": "Photosynthesis", "def": "The process by which plants use sunlight, water, and CO₂ to produce glucose and oxygen. Occurs in chloroplasts.", "ex": "CO₂ + H₂O + sunlight → glucose + O₂"}, {"area": "I", "cat": "I · Life Science", "term": "Cellular Respiration", "def": "How cells break down glucose to release energy (ATP). Uses oxygen, produces CO₂ and water. Occurs in mitochondria.", "ex": "glucose + O₂ → CO₂ + H₂O + energy"}, {"area": "I", "cat": "I · Life Science", "term": "Mitochondria", "def": "Organelle that produces energy (ATP) through cellular respiration. Found in both plant and animal cells. Called the powerhouse of the cell.", "ex": "More mitochondria = more energy capacity"}, {"area": "I", "cat": "I · Life Science", "term": "Nucleus", "def": "The control center of the cell. Contains DNA and directs cell activities — growth, metabolism, reproduction.", "ex": "Every cell except red blood cells has a nucleus"}, {"area": "I", "cat": "I · Life Science", "term": "DNA", "def": "The molecule that carries genetic information. Found in the nucleus. Made of four bases: A, T, C, G.", "ex": "DNA determines inherited traits like eye color"}, {"area": "I", "cat": "I · Life Science", "term": "Natural Selection", "def": "The process by which organisms with traits better suited to their environment survive and reproduce more. The mechanism of evolution.", "ex": "Dark moths survived better in polluted industrial areas"}, {"area": "I", "cat": "I · Life Science", "term": "Food Web", "def": "A diagram of feeding relationships in an ecosystem. Energy flows from producers to consumers. Energy is lost at each level.", "ex": "Grass → mouse → snake → hawk"}, {"area": "I", "cat": "I · Life Science", "term": "Producer", "def": "An organism that makes its own food via photosynthesis. Forms the base of every food chain. Also called autotrophs.", "ex": "Plants, algae, phytoplankton"}, {"area": "I", "cat": "I · Life Science", "term": "Homeostasis", "def": "An organism's ability to maintain stable internal conditions despite external changes.", "ex": "Sweating when hot, shivering when cold"}, {"area": "I", "cat": "I · Life Science", "term": "Mitosis vs Meiosis", "def": "Mitosis: cell division for growth — produces 2 identical cells. Meiosis: division for reproduction — produces 4 sex cells with half the chromosomes.", "ex": "Skin healing = mitosis. Sperm/egg production = meiosis"}, {"area": "I", "cat": "I · Life Science", "term": "Dominant / Recessive", "def": "Dominant alleles (capital letter) are expressed when present. Recessive alleles (lowercase) only show when two copies are inherited.", "ex": "Tt = tall (dominant T present); tt = short (only recessive)"}, {"area": "I", "cat": "I · Life Science", "term": "Mutualism", "def": "A symbiotic relationship where BOTH species benefit.", "ex": "Bees pollinate flowers — bees get food, flowers get pollinated"}, {"area": "I", "cat": "I · Life Science", "term": "Parasitism", "def": "A symbiotic relationship where the parasite benefits and the host is harmed.", "ex": "A tick feeding on a deer"}, {"area": "II", "cat": "II · Physical Science", "term": "Newton's 1st Law", "def": "An object at rest stays at rest, and an object in motion stays in motion, unless acted on by an unbalanced force. Called the law of inertia.", "ex": "A ball keeps rolling until friction stops it"}, {"area": "II", "cat": "II · Physical Science", "term": "Newton's 2nd Law", "def": "Force = mass × acceleration (F = ma). Greater mass requires more force to achieve the same acceleration.", "ex": "Pushing a heavy box requires more force than a light box"}, {"area": "II", "cat": "II · Physical Science", "term": "Newton's 3rd Law", "def": "For every action there is an equal and opposite reaction. Forces always come in pairs.", "ex": "Rocket pushes gas down → gas pushes rocket up"}, {"area": "II", "cat": "II · Physical Science", "term": "Kinetic Energy", "def": "The energy of motion. Any moving object has kinetic energy. Increases with speed or mass.", "ex": "A rolling ball, a falling rock"}, {"area": "II", "cat": "II · Physical Science", "term": "Potential Energy", "def": "Stored energy due to position or condition. Converts to kinetic energy when released.", "ex": "A raised weight, a stretched spring, water at height"}, {"area": "II", "cat": "II · Physical Science", "term": "Conservation of Energy", "def": "Energy cannot be created or destroyed — only converted from one form to another. Total energy in a closed system stays constant.", "ex": "Roller coaster: PE at top → KE at bottom"}, {"area": "II", "cat": "II · Physical Science", "term": "Atomic Number", "def": "The number of protons in an atom's nucleus. It identifies the element and determines its position on the periodic table.", "ex": "Carbon has atomic number 6 (6 protons)"}, {"area": "II", "cat": "II · Physical Science", "term": "Chemical Reaction", "def": "A process where reactants transform into new products. Atoms are rearranged — not created or destroyed.", "ex": "Signs: color change, gas produced, heat released, precipitate forms"}, {"area": "II", "cat": "II · Physical Science", "term": "pH Scale", "def": "Measures how acidic or basic a solution is. 0–6 = acidic; 7 = neutral; 8–14 = basic. Pure water = 7.", "ex": "Lemon juice pH 2 (acidic); baking soda pH 9 (basic)"}, {"area": "II", "cat": "II · Physical Science", "term": "Hypothesis", "def": "A testable prediction made BEFORE an experiment. States what the researcher thinks will happen, based on prior knowledge.", "ex": "If I add fertilizer, then plant growth will increase"}, {"area": "III", "cat": "III · Earth Science", "term": "Plate Tectonics", "def": "Earth's crust is divided into large plates that move slowly. Their movement causes earthquakes, volcanoes, and mountain formation.", "ex": "Himalayas formed where two plates collided"}, {"area": "III", "cat": "III · Earth Science", "term": "Three Rock Types", "def": "Igneous: cooled from magma/lava. Sedimentary: compressed layers of sediment — may contain fossils. Metamorphic: existing rock changed by heat and pressure.", "ex": "Granite (igneous), sandstone (sedimentary), marble (metamorphic)"}, {"area": "III", "cat": "III · Earth Science", "term": "Water Cycle", "def": "The continuous movement of water through evaporation → condensation → precipitation → runoff → collection. Driven by solar energy.", "ex": "Ocean evaporates → clouds form → rain falls → rivers flow back"}, {"area": "III", "cat": "III · Earth Science", "term": "Greenhouse Effect", "def": "CO₂ and other gases trap heat in Earth's atmosphere. Enhanced by burning fossil fuels, leading to global warming.", "ex": "More CO₂ → more heat trapped → rising temperatures"}, {"area": "III", "cat": "III · Earth Science", "term": "Planet Order", "def": "Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune. Memory: My Very Educated Mother Just Served Us Nachos.", "ex": "Mars = 4th planet; Jupiter = 5th and largest"}, {"area": "III", "cat": "III · Earth Science", "term": "Earth's Layers", "def": "From outside to inside: Crust (thin, rocky) → Mantle (thick, semi-solid) → Outer Core (liquid iron/nickel) → Inner Core (solid iron/nickel).", "ex": "Memory trick: Can My Oven Cook?"}, {"area": "III", "cat": "III · Earth Science", "term": "Plate Boundary Types", "def": "Convergent: plates push together (mountains/trenches). Divergent: plates pull apart (mid-ocean ridges). Transform: plates slide past each other (earthquakes).", "ex": "San Andreas Fault = transform boundary"}];
+const QUESTIONS = {"I": [{"id": "i1", "tag": "I · Life Science", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Experiment: Plant Growth Under Different Light Conditions", "stim_text": "A scientist grew four groups of bean plants under different light conditions for 30 days.", "stim_table": {"headers": ["Group", "Light Condition", "Avg Height"], "rows": [["A", "Full sunlight (8 hrs/day)", "28 cm"], ["B", "Partial sunlight (4 hrs/day)", "19 cm"], ["C", "Artificial light (8 hrs/day)", "24 cm"], ["D", "No light", "6 cm"]]}, "text": "Based on the data, which conclusion is best supported?", "choices": ["Plants grow equally well under all light conditions.", "More light exposure is associated with greater plant height.", "Artificial light is more effective than sunlight for plant growth.", "Plants cannot survive without sunlight."], "correct": 1, "explain": "Group A (full sun, 28 cm) grew tallest; Group D (no light, 6 cm) grew least. More light = more growth. Option C is wrong — 24 cm (artificial) < 28 cm (sunlight). Option D is wrong — Group D still grew 6 cm.", "strategy": "Conclusions must match the data pattern across ALL groups, not just one."}, {"id": "i2", "tag": "I · Life Science", "proc": "B. Analyze", "dok": "DOK 3", "stim_title": "Study: Predator-Prey Relationship in a National Park", "stim_text": "Ecologists tracked wolves and deer over 20 years. When wolves were reintroduced in Year 1, the deer population was 2,400. By Year 5, deer declined to 1,600 and wolves grew from 20 to 85. By Year 10, both populations stabilized — deer at 1,800, wolves at 90.", "stim_table": null, "text": "What is the most likely explanation for the deer population stabilizing around Year 10?", "choices": ["The wolves ran out of food and stopped hunting.", "A balance was reached where the deer birth rate matched the predation rate.", "All the deer developed immunity to wolf predation.", "The wolves left the park by Year 10."], "correct": 1, "explain": "Predator-prey systems naturally reach equilibrium. Fewer deer → less food for wolves → wolf numbers stabilize → hunting pressure decreases → deer recover slightly. This is ecosystem balance, not immunity or departure.", "strategy": "Eliminate biologically impossible answers (immunity to predation). Think about what creates stability in a food chain."}, {"id": "i3", "tag": "I · Life Science", "proc": "C. Evaluate & Generalize", "dok": "DOK 2", "stim_title": "Vaccine Trial Report", "stim_text": "In a trial of 1,200 people, 600 received a new vaccine and 600 received a placebo. After six months: 12 people in the vaccine group (2%) developed the infection vs. 84 people in the placebo group (14%).", "stim_table": {"headers": ["Group", "People", "Infections", "Rate"], "rows": [["Vaccine", "600", "12", "2%"], ["Placebo", "600", "84", "14%"]]}, "text": "Which statement represents a valid conclusion based on this study?", "choices": ["The vaccine completely eliminates the risk of infection.", "Vaccinated participants were less likely to develop the infection than those who received a placebo.", "Everyone should immediately receive this vaccine.", "The placebo caused the infection in the control group."], "correct": 1, "explain": "2% vs 14% infection rate supports that the vaccine reduced risk. Option A is wrong (12 people still got infected). Option C goes beyond the data. Option D is scientifically incorrect — placebos do not cause disease.", "strategy": "Valid conclusions stay within what the data actually shows. Watch for absolute words like 'completely' or 'everyone.'"}, {"id": "i4", "tag": "I · Life Science", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "Cell Diagram Description", "stim_text": "A student examines a cell diagram. The cell has: a cell wall, a large central vacuole, chloroplasts, and a cell membrane.", "stim_table": null, "text": "Based on these features, what type of cell is most likely shown?", "choices": ["Animal cell", "Bacterial cell", "Plant cell", "Fungal cell"], "correct": 2, "explain": "Chloroplasts + cell wall = plant cell. Animal cells have neither. The large central vacuole is also characteristic of plant cells. Bacterial cells have no nucleus or membrane-bound organelles.", "strategy": "Cell wall + chloroplasts = plant cell. That combination is the key identifier."}, {"id": "i5", "tag": "I · Life Science", "proc": "B. Analyze", "dok": "DOK 3", "stim_title": "Genetics Cross", "stim_text": "In pea plants, tall (T) is dominant over short (t). A plant with genotype Tt is crossed with another Tt plant. Possible offspring: TT, Tt, Tt, tt.", "stim_table": {"headers": ["", "T", "t"], "rows": [["T", "TT", "Tt"], ["t", "Tt", "tt"]]}, "text": "What percentage of offspring would be expected to show the TALL phenotype?", "choices": ["25%", "50%", "75%", "100%"], "correct": 2, "explain": "Punnett square: TT (25%) + Tt (50%) + Tt (0%) + tt (25%). TT and both Tt offspring are tall (dominant T is present). Only tt is short. 75% of offspring are tall.", "strategy": "Dominant allele always wins. TT and Tt are both tall. Only tt is short. 3 out of 4 = 75%."}, {"id": "i6", "tag": "I · Life Science", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Meadow Ecosystem Food Web", "stim_text": "Grass is eaten by grasshoppers and rabbits. Grasshoppers are eaten by frogs and birds. Rabbits are eaten by foxes. Frogs are eaten by snakes. Snakes and birds are eaten by hawks.", "stim_table": null, "text": "If the frog population suddenly declined due to disease, which population would most likely increase in the SHORT term?", "choices": ["Hawks", "Grass", "Grasshoppers", "Foxes"], "correct": 2, "explain": "Frogs eat grasshoppers. Fewer frogs = fewer grasshopper predators = grasshoppers increase. Hawks and foxes are further removed and would not increase immediately in the short term.", "strategy": "Trace the DIRECT connection first. Fewer frogs → fewer predators of grasshoppers → grasshoppers increase."}, {"id": "i7", "tag": "I · Life Science", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "Biomolecules Reference", "stim_text": "Type 1: Made of amino acids — used for structure and as enzymes. Type 2: Made of sugar units — primary energy source for cells. Type 3: Made of fatty acids — used for long-term energy storage and cell membranes.", "stim_table": null, "text": "Which correctly matches the biomolecule types to their names?", "choices": ["Type 1 = carbohydrate, Type 2 = protein, Type 3 = lipid", "Type 1 = protein, Type 2 = carbohydrate, Type 3 = lipid", "Type 1 = lipid, Type 2 = carbohydrate, Type 3 = protein", "Type 1 = protein, Type 2 = lipid, Type 3 = carbohydrate"], "correct": 1, "explain": "Proteins are made of amino acids (Type 1). Carbohydrates are made of sugar units and are the primary energy source (Type 2). Lipids are made of fatty acids and store long-term energy (Type 3).", "strategy": "Memorize building blocks: proteins = amino acids; carbs = sugars; lipids = fatty acids."}, {"id": "i8", "tag": "I · Life Science", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Research Design: Fertilizer Study", "stim_text": "A biologist plants 200 corn seeds in identical pots with the same soil, water, and light. She gives 100 plants the new fertilizer and 100 plants plain water.", "stim_table": null, "text": "Why is it important that all conditions except the fertilizer are kept the same?", "choices": ["To make the experiment easier to manage", "To ensure that any difference in yield is caused by the fertilizer, not other factors", "To prevent the plants from growing too fast", "To reduce the number of plants needed"], "correct": 1, "explain": "This is the principle of controlled variables. When only ONE variable changes (the fertilizer), any difference in yield can be attributed to that variable. If multiple things changed, you would not know which caused the difference.", "strategy": "In experimental design: keeping everything the same except one variable isolates what is actually being tested."}, {"id": "i9", "tag": "I · Life Science", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "Patient Symptoms Report", "stim_text": "A patient has: rapid heart rate, shortness of breath during mild activity, swelling in the legs. Lab tests show a low red blood cell count.", "stim_table": null, "text": "These symptoms suggest a problem most likely affecting which body system?", "choices": ["Digestive system", "Nervous system", "Circulatory system", "Skeletal system"], "correct": 2, "explain": "Low red blood cell count means less oxygen is being transported. The heart compensates by beating faster. Shortness of breath and leg swelling also indicate poor circulation. These are classic signs of anemia — a circulatory condition.", "strategy": "Connect symptoms to body system functions. Red blood cells, heart rate, and oxygen delivery are all circulatory functions."}, {"id": "i10", "tag": "I · Life Science", "proc": "C. Evaluate & Generalize", "dok": "DOK 4", "stim_title": "Evolution Fossil Record", "stim_text": "Fossil records show modern horses evolved over approximately 55 million years from Eohippus — a dog-sized, four-toed ancestor living in forests. Modern horses are much larger, have single hooves, and live in open grasslands.", "stim_table": null, "text": "Which statement BEST explains this pattern according to evolutionary theory?", "choices": ["Horses chose to develop hooves because they preferred grasslands.", "Random genetic mutations combined with natural selection favored traits suited to open grassland environments over millions of years.", "A single large mutation caused small forest horses to become large grassland horses overnight.", "Horses evolved because they needed to adapt to their environment."], "correct": 1, "explain": "Evolution works through random mutations + natural selection over long time periods. Traits improving survival in grasslands (size, speed, hooves) became more common each generation. Organisms do not choose or need to evolve — it happens through random variation and selective survival.", "strategy": "Evolution key terms: random mutations + natural selection + long time. Wrong answers imply intention ('chose') or a single sudden event."}], "II": [{"id": "ii1", "tag": "II · Physical Science", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Speed of a Falling Object", "stim_text": "A scientist records the speed of an object dropped from rest.", "stim_table": {"headers": ["Time (seconds)", "Speed (m/s)"], "rows": [["0", "0"], ["1", "9.8"], ["2", "19.6"], ["3", "29.4"], ["4", "39.2"]]}, "text": "Based on the data table, what is the relationship between time and speed for a falling object?", "choices": ["Speed remains constant as time increases.", "Speed decreases as time increases.", "Speed increases at a constant rate as time increases.", "Speed increases rapidly at first, then levels off."], "correct": 2, "explain": "The speed increases by exactly 9.8 m/s every second — a constant rate. This is gravitational acceleration (9.8 m/s²). The data shows a linear, constant increase — not leveling off and not decreasing.", "strategy": "Look at the difference between each row: 0, 9.8, 19.6, 29.4, 39.2. The difference is always 9.8. Constant difference = constant rate."}, {"id": "ii2", "tag": "II · Physical Science", "proc": "B. Analyze", "dok": "DOK 3", "stim_title": "Ramp Angle Experiment", "stim_text": "A student rolls a ball down ramps at three angles and measures how far it travels on a flat surface. Each trial was repeated 5 times and averaged. Results: 15° = 1.2 m, 30° = 2.8 m, 45° = 4.1 m.", "stim_table": null, "text": "A classmate claims: 'A 60° ramp would make the ball travel exactly 5.0 meters.' Which best describes this claim?", "choices": ["It is a valid conclusion directly supported by the data.", "It is a hypothesis that could be tested but goes beyond the current data.", "It is an observation from the experiment.", "It is a fact proven by the experiment."], "correct": 1, "explain": "The claim predicts what would happen at 60°, which was never tested. A prediction that goes beyond existing data is a hypothesis — not a conclusion, observation, or proven fact.", "strategy": "Hypothesis = testable but not yet tested. Conclusion = supported by existing data. Any claim about untested conditions is a hypothesis."}, {"id": "ii3", "tag": "II · Physical Science", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "Physical vs. Chemical Changes", "stim_text": "A student observes four events: (1) Ice melting into liquid water. (2) Wood burning to produce ash and smoke. (3) Salt dissolving in water. (4) Iron rusting over time.", "stim_table": null, "text": "Which events represent CHEMICAL changes?", "choices": ["1 and 3 only", "2 and 4 only", "1, 2, and 3", "2, 3, and 4"], "correct": 1, "explain": "Chemical changes produce new substances. Burning wood creates ash and smoke (new substances). Iron rusting creates iron oxide (a new compound). Melting and dissolving are physical changes — the original substance can be recovered and no new substance is formed.", "strategy": "Chemical change = new substance formed. Physical change = same substance, different form. Burning and rusting are always chemical changes."}, {"id": "ii4", "tag": "II · Physical Science", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Skier Energy Diagram", "stim_text": "A skier starts at the top of a hill (Point A) and skis to the bottom (Point B). Ignore air resistance and friction.", "stim_table": null, "text": "How does the skier's energy change from Point A to Point B?", "choices": ["Potential energy increases; kinetic energy decreases.", "Potential energy decreases; kinetic energy increases.", "Both potential and kinetic energy increase.", "Both potential and kinetic energy remain the same."], "correct": 1, "explain": "At Point A (top), the skier has maximum potential energy and minimum kinetic energy. As they descend, height decreases (PE decreases) and speed increases (KE increases). Total energy is conserved.", "strategy": "Height = potential energy. Speed = kinetic energy. Going downhill: height down, speed up — always opposite when converting PE to KE."}, {"id": "ii5", "tag": "II · Physical Science", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "pH of Unknown Solutions", "stim_text": "A scientist tests five solutions.", "stim_table": {"headers": ["Solution", "pH"], "rows": [["1", "2"], ["2", "6"], ["3", "7"], ["4", "9"], ["5", "13"]]}, "text": "A student adds an antacid (a base) to Solution 1. What change would most likely occur?", "choices": ["The pH would decrease further.", "The pH would increase toward neutral.", "The solution would become more acidic.", "The pH would remain unchanged."], "correct": 1, "explain": "Solution 1 has pH 2 (strongly acidic). Adding a base (antacid) neutralizes the acid and raises the pH toward 7. Adding a base always increases pH. Adding an acid decreases pH.", "strategy": "Bases raise pH; acids lower pH. Antacids neutralize stomach acid — they raise pH toward neutral."}, {"id": "ii6", "tag": "II · Physical Science", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Soccer Ball Scenario", "stim_text": "A soccer player kicks a ball at rest. The ball rolls 20 meters before slowing to a stop.", "stim_table": null, "text": "Which of Newton's Laws BEST explains why the ball eventually stops rolling?", "choices": ["Newton's 1st Law — the ball wants to stay at rest", "Newton's 2nd Law — friction applies a force that causes deceleration", "Newton's 3rd Law — the ground pushes back on the ball equally", "The ball stops because it runs out of energy"], "correct": 1, "explain": "Friction is a force acting opposite to the ball's motion. According to F = ma (Newton's 2nd Law), this force causes negative acceleration (deceleration). The ball slows and stops because of this frictional force.", "strategy": "When an object slows down due to friction, think F=ma. Friction is the force; deceleration is the result. That's Newton's 2nd Law."}, {"id": "ii7", "tag": "II · Physical Science", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "Element Data", "stim_text": "Element X: atomic number 11, atomic mass 23. Element Y: atomic number 17, atomic mass 35.", "stim_table": null, "text": "How many neutrons does Element Y have?", "choices": ["17", "18", "35", "52"], "correct": 1, "explain": "Neutrons = atomic mass − atomic number = 35 − 17 = 18 neutrons. Atomic number (17) = protons. Atomic mass (35) = protons + neutrons.", "strategy": "Neutrons = mass number − atomic number. This formula covers most periodic table questions on the HiSET."}, {"id": "ii8", "tag": "II · Physical Science", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "Electromagnetic Spectrum", "stim_text": "The electromagnetic spectrum from lowest to highest energy: radio waves → microwaves → infrared → visible light → ultraviolet → X-rays → gamma rays.", "stim_table": null, "text": "Based on this information, which type of radiation has the most energy?", "choices": ["Radio waves", "Infrared light", "Ultraviolet light", "Gamma rays"], "correct": 3, "explain": "The passage lists the spectrum from lowest to highest energy. Gamma rays are at the highest-energy end. This can be answered directly from the stimulus — no outside knowledge required.", "strategy": "The answer is IN the stimulus. When a passage lists items in order (lowest to highest), the question usually asks about one end of that list. Read carefully."}, {"id": "ii9", "tag": "II · Physical Science", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Experimental Design: Caffeine Study", "stim_text": "A student gives 10 students a caffeinated drink and tests their memory with a list of 20 words. All 10 students remember an average of 16 words.", "stim_table": null, "text": "What is the MAIN flaw in this experimental design?", "choices": ["The number of words tested was too high.", "There is no control group that received a non-caffeinated drink.", "Caffeine cannot affect memory.", "A sample of 10 students is large enough for this study."], "correct": 1, "explain": "Without a control group (students who did NOT receive caffeine), there is no way to know if caffeine improved memory or if students would have scored 16/20 regardless. A control group is essential for comparison.", "strategy": "Experimental design questions: always look for a missing control group, an unclear variable, or too small a sample. A missing control group is the most common flaw tested."}, {"id": "ii10", "tag": "II · Physical Science", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "States of Matter", "stim_text": "A substance is liquid at room temperature. When cooled to −20°C it becomes solid. When heated to 150°C it becomes a gas.", "stim_table": null, "text": "What happens to the movement of molecules as the substance cools from liquid to solid?", "choices": ["Molecules move faster and spread further apart.", "Molecules move slower and pack closer together.", "Molecules stop moving entirely.", "Molecules change their chemical structure."], "correct": 1, "explain": "Cooling removes energy from molecules, causing them to slow down and pack closer together. In a solid, molecules vibrate in fixed positions. They do not stop completely, and their chemical structure does not change during a physical state change.", "strategy": "Temperature = molecular motion. Heat up = faster and further apart. Cool down = slower and closer together. Chemical structure only changes in a chemical reaction, not a state change."}], "III": [{"id": "iii1", "tag": "III · Earth Science", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Rock Sample Data", "stim_text": "Geologists analyze three rock samples.", "stim_table": {"headers": ["Sample", "Origin", "Characteristics"], "rows": [["A", "Cooled from lava", "Crystalline, no fossils, dark-colored"], ["B", "Compressed ocean sediment", "Layered, contains shell fossils, softer"], ["C", "Former limestone, high heat and pressure applied", "Recrystallized, dense, no original layers visible"]]}, "text": "Which sample is metamorphic rock?", "choices": ["Sample A", "Sample B", "Sample C", "All three samples"], "correct": 2, "explain": "Sample C was formed from limestone subjected to heat and pressure — the definition of metamorphic rock. Sample A is igneous (cooled from lava). Sample B is sedimentary (compressed layers with fossils).", "strategy": "Igneous = cooled magma or lava. Sedimentary = layered, may have fossils. Metamorphic = changed by heat and pressure, recrystallized."}, {"id": "iii2", "tag": "III · Earth Science", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "Earthquake Activity Data", "stim_text": "Seismologists recorded activity along three fault lines over 10 years. Fault A: 3 major earthquakes (magnitude >6.0). Fault B: no major quakes but consistent small tremors. Fault C: no recorded activity at all.", "stim_table": null, "text": "A geologist concludes: 'Fault C poses no earthquake risk.' Which best evaluates this conclusion?", "choices": ["The conclusion is valid because no activity was recorded over 10 years.", "The conclusion is too strong — absence of recent activity does not mean a fault is permanently safe.", "The conclusion is valid because 10 years is sufficient observation time for geological studies.", "The conclusion is invalid because all faults are equally dangerous."], "correct": 1, "explain": "Ten years is geologically very short. Faults can be dormant for centuries before becoming active. Absence of observed earthquakes cannot prove long-term safety. The conclusion overstates what the data supports.", "strategy": "Evaluate & Generalize: watch for conclusions that go too far beyond the data. 10 years of inactivity cannot prove geological safety over centuries or millennia."}, {"id": "iii3", "tag": "III · Earth Science", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "Water Cycle Diagram", "stim_text": "Step 1: Liquid ocean water is heated by the sun and rises as water vapor. Step 2: Vapor cools at high altitude and forms clouds. Step 3: Water falls as rain or snow. Step 4: Water flows into rivers and returns to the ocean.", "stim_table": null, "text": "What process is occurring in Step 1?", "choices": ["Condensation", "Precipitation", "Evaporation", "Runoff"], "correct": 2, "explain": "Liquid water turning into water vapor due to heat from the sun is evaporation. Condensation (Step 2) is vapor becoming liquid droplets forming clouds. Precipitation (Step 3) is water falling. Runoff (Step 4) is surface water flowing back to the ocean.", "strategy": "Water cycle terms: evaporation = liquid to gas. Condensation = gas to liquid. Precipitation = water falling (rain/snow). Runoff = water flowing across land."}, {"id": "iii4", "tag": "III · Earth Science", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Tectonic Plate Boundary Descriptions", "stim_text": "Location 1: A mountain range forms where two continental plates push into each other. Location 2: A mid-ocean ridge forms where two plates pull apart. Location 3: Frequent earthquakes occur where two plates slide horizontally past each other.", "stim_table": null, "text": "Which type of plate boundary is described at Location 3?", "choices": ["Convergent boundary", "Divergent boundary", "Transform boundary", "Subduction boundary"], "correct": 2, "explain": "Plates sliding horizontally past each other describes a transform boundary. Convergent = plates pushing together (mountains/trenches). Divergent = plates pulling apart (ridges). Transform = sliding past each other, causing earthquakes like the San Andreas Fault.", "strategy": "Pushing together = convergent. Pulling apart = divergent. Sliding past = transform. The key word at Location 3 is 'slide horizontally.'"}, {"id": "iii5", "tag": "III · Earth Science", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Planet Orbital Data", "stim_text": "Data from NASA on five planets.", "stim_table": {"headers": ["Planet", "Distance from Sun (AU)", "Orbital Period (years)"], "rows": [["Mercury", "0.39", "0.24"], ["Venus", "0.72", "0.62"], ["Earth", "1.00", "1.00"], ["Mars", "1.52", "1.88"], ["Jupiter", "5.20", "11.86"]]}, "text": "Based on the data, what is the relationship between a planet's distance from the Sun and its orbital period?", "choices": ["Planets farther from the Sun have shorter orbital periods.", "Planets farther from the Sun have longer orbital periods.", "Distance and orbital period are not related.", "All planets have the same orbital period."], "correct": 1, "explain": "As distance increases (0.39 to 5.20 AU), orbital period also increases (0.24 to 11.86 years). Both variables increase together — a positive relationship. Farther planets travel a longer path and move more slowly.", "strategy": "Read the table top to bottom. As distance goes UP, does orbital period go UP or DOWN? It goes UP — that means a positive (same direction) relationship."}, {"id": "iii6", "tag": "III · Earth Science", "proc": "C. Evaluate & Generalize", "dok": "DOK 3", "stim_title": "Ice Core Climate Data", "stim_text": "A research team analyzed Antarctic ice cores spanning 800,000 years. CO₂ levels and average global temperatures followed nearly identical patterns throughout. In the last 100 years, CO₂ levels have risen to their highest point in the 800,000-year record.", "stim_table": null, "text": "Which conclusion is MOST strongly supported by this data?", "choices": ["High CO₂ levels definitely cause high temperatures.", "The recent rise in CO₂ is unusual compared to the 800,000-year record and correlates with temperature change.", "CO₂ has no effect on global temperature.", "Temperatures were always higher in the past than today."], "correct": 1, "explain": "The data shows correlation between CO₂ and temperature over 800,000 years AND that current CO₂ is at record highs. Option A overstates — correlation does not prove causation. Option C directly contradicts the data. Option D is wrong — CO₂ is at its highest, suggesting current temps may be high too.", "strategy": "Correlation vs. causation: data shows CO₂ and temperature move together, but does not prove one causes the other. Stay within what the data actually says."}, {"id": "iii7", "tag": "III · Earth Science", "proc": "A. Interpret & Apply", "dok": "DOK 1", "stim_title": "Earth's Interior Description", "stim_text": "A textbook describes: the outermost layer is thin and rocky. Below it is a thick, hot layer of semi-solid rock. Below that is a layer of liquid iron and nickel. At the center is a solid ball of iron and nickel under extreme pressure.", "stim_table": null, "text": "Which correctly identifies the layers from outermost to innermost?", "choices": ["Mantle, crust, outer core, inner core", "Crust, mantle, outer core, inner core", "Crust, outer core, mantle, inner core", "Mantle, outer core, crust, inner core"], "correct": 1, "explain": "From outside to inside: crust (thin, rocky) → mantle (thick, semi-solid) → outer core (liquid iron/nickel) → inner core (solid iron/nickel). This matches the textbook description directly.", "strategy": "Memorize the order: Crust → Mantle → Outer Core → Inner Core. Memory trick: Can My Oven Cook?"}, {"id": "iii8", "tag": "III · Earth Science", "proc": "B. Analyze", "dok": "DOK 2", "stim_title": "Fossil Discovery in Canada", "stim_text": "Geologists find fossils of tropical plant species in rock layers in northern Canada, where the current climate is cold. The fossils are found in sedimentary rock dated to approximately 50 million years ago.", "stim_table": null, "text": "Which explanation is BEST supported by this evidence?", "choices": ["Tropical plants can survive in cold climates today.", "Canada had a warmer climate 50 million years ago, OR the landmass was in a different position relative to the equator.", "The fossils were carried to Canada by glaciers.", "Sedimentary rock only forms in tropical regions."], "correct": 1, "explain": "Tropical fossils in a now-cold region suggest either the climate was warmer 50 million years ago, or the continent was positioned differently due to plate tectonics. Both explanations are scientifically valid. Glaciers move rocks but not delicate plant fossils intact.", "strategy": "Fossils in unexpected climates: think plate tectonics (continents move over millions of years) AND past climate change. Both explain fossils in surprising locations."}, {"id": "iii9", "tag": "III · Earth Science", "proc": "C. Evaluate & Generalize", "dok": "DOK 4", "stim_title": "Star Life Cycle", "stim_text": "A nebula (cloud of gas and dust) collapses under gravity, forming a protostar. Nuclear fusion begins, creating a main sequence star. After billions of years, the star expands into a red giant. The outer layers disperse as a planetary nebula, leaving a dense white dwarf.", "stim_table": null, "text": "Which statement BEST generalizes what this passage suggests about the life cycle of stars?", "choices": ["All stars eventually become black holes.", "Stars undergo a series of stages driven by changes in nuclear fusion and gravitational forces.", "Our Sun will explode as a supernova.", "Stars are permanent and unchanging features of the universe."], "correct": 1, "explain": "The passage describes multiple stages driven by gravity (collapse) and nuclear fusion (energy). Only very massive stars become black holes — not stars like our Sun. The Sun will become a red giant then a white dwarf, not a supernova. Stars clearly change over time.", "strategy": "Generalization questions: choose the answer that captures the OVERALL pattern, not one detail. The overall pattern here is: stars change through stages driven by physical forces."}, {"id": "iii10", "tag": "III · Earth Science", "proc": "A. Interpret & Apply", "dok": "DOK 2", "stim_title": "Earth's Seasons", "stim_text": "Earth's axis is tilted at approximately 23.5° relative to its orbital plane. This tilt does not change significantly as Earth orbits the Sun throughout the year.", "stim_table": null, "text": "What is the PRIMARY cause of Earth's seasons?", "choices": ["Earth moves closer to the Sun in summer and farther away in winter.", "Earth's tilted axis causes different hemispheres to receive more direct sunlight at different times of year.", "The Sun produces more heat during summer months.", "Clouds block more sunlight in winter than in summer."], "correct": 1, "explain": "Seasons are caused by Earth's axial tilt, not its distance from the Sun. When the Northern Hemisphere tilts toward the Sun, sunlight is more direct — causing summer. When it tilts away, sunlight is less concentrated — causing winter. In fact, Earth is slightly CLOSER to the Sun in January (Northern Hemisphere winter).", "strategy": "Common misconception: seasons are NOT caused by distance from the Sun. They are caused by axial tilt, which changes how directly sunlight hits each hemisphere."}]};
+
+let filteredCards = [...CARDS];
+let fcIdx = 0, fcFlipped = false;
+
+function filterCards(area, btn) {
+  document.querySelectorAll('.fc-filter button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filteredCards = area === 'all' ? [...CARDS] : CARDS.filter(c => c.area === area);
+  fcIdx = 0; fcFlipped = false; renderCard();
+}
+
+function renderCard() {
+  const c = filteredCards[fcIdx];
+  const backMap = { I: 'fc-back1', II: 'fc-back2', III: 'fc-back3' };
+  document.getElementById('flashcard').className = 'flashcard ' + (fcFlipped ? backMap[c.area] : 'fc-front');
+  document.getElementById('fc-cat').textContent = c.cat;
+  document.getElementById('fc-term').textContent = c.term;
+  document.getElementById('fc-def').textContent = c.def;
+  const ex = document.getElementById('fc-ex');
+  if (c.ex) { ex.textContent = c.ex; ex.style.display = 'inline-block'; } else { ex.style.display = 'none'; }
+  document.getElementById('fc-front-content').style.display = fcFlipped ? 'none' : 'block';
+  document.getElementById('fc-back-content').style.display = fcFlipped ? 'block' : 'none';
+  document.getElementById('fc-counter').textContent = (fcIdx + 1) + ' / ' + filteredCards.length;
+}
+
+function flipCard() { fcFlipped = !fcFlipped; renderCard(); }
+function nextCard() { fcIdx = (fcIdx + 1) % filteredCards.length; fcFlipped = false; renderCard(); }
+function prevCard() { fcIdx = (fcIdx - 1 + filteredCards.length) % filteredCards.length; fcFlipped = false; renderCard(); }
+renderCard();
+
+let answered = {};
+let progress = { I: { c: 0, t: 0 }, II: { c: 0, t: 0 }, III: { c: 0, t: 0 } };
+let currentDrill = 'I';
+
+const TAG_CLASS = { I: 'tag1', II: 'tag2', III: 'tag3' };
+const DT_CLASS = { I: 'dt1', II: 'dt2', III: 'dt3' };
+const BAR_COLOR = { I: '#16a34a', II: '#3b82f6', III: '#ca8a04' };
+const LABELS = { I: 'I · Life Science', II: 'II · Physical Science', III: 'III · Earth Science' };
+
+function showDrill(key) {
+  currentDrill = key;
+  ['I','II','III'].forEach(k => {
+    const t = document.getElementById('tab-' + k);
+    t.className = 'drill-tab' + (k === key ? ' ' + DT_CLASS[k] : '');
+  });
+  renderDrill(key);
+}
+
+function buildStimHTML(q) {
+  if (!q.stim_title) return '';
+  let h = '<div class="stimulus"><div class="stim-label">' + q.stim_title + '</div>';
+  if (q.stim_text) h += '<div class="stim-body">' + q.stim_text + '</div>';
+  if (q.stim_table) {
+    h += '<table class="stim-table"><tr>' + q.stim_table.headers.map(hd => '<th>' + hd + '</th>').join('') + '</tr>';
+    q.stim_table.rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>'; });
+    h += '</table>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function renderDrill(key) {
+  const qs = QUESTIONS[key];
+  const done = qs.filter(q => answered[q.id] !== undefined).length;
+  const corr = qs.filter(q => answered[q.id] === q.correct).length;
+  document.getElementById('prog-text').textContent = done + ' of ' + qs.length + ' answered';
+  document.getElementById('prog-score').textContent = corr + ' correct';
+  document.getElementById('prog-bar').style.width = Math.round(done / qs.length * 100) + '%';
+
+  let html = '';
+  qs.forEach((q, qi) => {
+    const isAns = answered[q.id] !== undefined;
+    html += '<div class="q-card" id="qc-' + q.id + '">';
+    html += '<div class="q-meta"><span class="q-tag ' + TAG_CLASS[key] + '">' + q.tag + '</span>';
+    html += '<span class="proc-tag">' + q.proc + '</span><span class="dok-tag">' + q.dok + '</span></div>';
+    html += buildStimHTML(q);
+    html += '<div class="q-text">Q' + (qi + 1) + '. ' + q.text + '</div>';
+    html += '<div class="choices">';
+    q.choices.forEach((c, ci) => {
+      let cls = 'choice';
+      if (isAns) { if (ci === q.correct) cls += ' correct'; else if (ci === answered[q.id]) cls += ' wrong'; }
+      html += '<button class="' + cls + '" onclick="answerQ(' + JSON.stringify(q.id) + ',' + ci + ',' + q.correct + ',' + JSON.stringify(key) + ')" id="ch-' + q.id + '-' + ci + '">';
+      html += '<span class="choice-letter">' + String.fromCharCode(65 + ci) + '.</span>' + c + '</button>';
+    });
+    html += '</div>';
+    html += '<div class="explanation" id="exp-' + q.id + '" style="' + (isAns ? 'display:block' : '') + '">';
+    html += '<div class="exp-title">&#10003; Explanation:</div><p>' + q.explain + '</p>';
+    html += '<div class="strategy-note">&#128204; Strategy: ' + q.strategy + '</div></div></div>';
+  });
+  document.getElementById('practice-container').innerHTML = html;
+}
+
+function answerQ(qid, chosen, correct, key) {
+  if (answered[qid] !== undefined) return;
+  answered[qid] = chosen;
+  for (let i = 0; i < 4; i++) {
+    const b = document.getElementById('ch-' + qid + '-' + i);
+    if (!b) continue;
+    b.disabled = true;
+    if (i === correct) b.classList.add('correct');
+    else if (i === chosen) b.classList.add('wrong');
+  }
+  document.getElementById('exp-' + qid).style.display = 'block';
+  const qs = QUESTIONS[key];
+  const done = qs.filter(q => answered[q.id] !== undefined).length;
+  const corr = qs.filter(q => answered[q.id] === q.correct).length;
+  progress[key] = { c: corr, t: done };
+  document.getElementById('prog-text').textContent = done + ' of ' + qs.length + ' answered';
+  document.getElementById('prog-score').textContent = corr + ' correct';
+  document.getElementById('prog-bar').style.width = Math.round(done / qs.length * 100) + '%';
+}
+
+function renderTracker() {
+  let barsHtml = '', totalC = 0, totalT = 0;
+  ['I','II','III'].forEach(k => {
+    const v = progress[k];
+    const pct = v.t > 0 ? Math.round(v.c / v.t * 100) : 0;
+    totalC += v.c; totalT += v.t;
+    barsHtml += '<div class="tracker-row">';
+    barsHtml += '<span class="tracker-label">' + LABELS[k] + '</span>';
+    barsHtml += '<div class="tracker-bar-track"><div class="tracker-bar-fill" style="width:' + pct + '%;background:' + BAR_COLOR[k] + '"></div></div>';
+    barsHtml += '<span class="tracker-val">' + (v.t > 0 ? v.c + '/' + v.t : '—') + '</span></div>';
+  });
+  document.getElementById('tracker-bars').innerHTML = barsHtml;
+
+  const overall = totalT > 0 ? Math.round(totalC / totalT * 100) : 0;
+  let badgeCls = 'badge-fail', badgeTxt = 'Keep going';
+  if (overall >= 65) { badgeCls = 'badge-pass'; badgeTxt = 'On track!'; }
+  else if (overall >= 50) { badgeCls = 'badge-warn'; badgeTxt = 'Getting there'; }
+
+  const badgeHTML = totalT > 0 ? '<span class="' + badgeCls + '">' + badgeTxt + '</span>' : '—';
+  const overallHTML = totalT > 0 ? overall + '%' : '—';
+
+  document.getElementById('tracker-summary').innerHTML =
+    '<div class="ts-card" style="background:#f0fdf4"><div class="tn" style="color:#14532d">' + totalC + '</div><div class="tl" style="color:#14532d">Questions correct</div></div>' +
+    '<div class="ts-card" style="background:#eff6ff"><div class="tn" style="color:#1e3a8a">' + totalT + '</div><div class="tl" style="color:#1e3a8a">Questions answered</div></div>' +
+    '<div class="ts-card" style="background:#fefce8"><div class="tn" style="color:#a16207">' + overallHTML + '</div><div class="tl" style="color:#a16207">Overall accuracy</div></div>' +
+    '<div class="ts-card" style="background:#fdf4ff"><div class="tn" style="color:#7e22ce;font-size:18px">' + badgeHTML + '</div><div class="tl" style="color:#7e22ce">Goal: 65%+</div></div>';
+}
+
+function resetAll() {
+  if (!confirm('Reset all progress and answers?')) return;
+  answered = {};
+  progress = { I: { c: 0, t: 0 }, II: { c: 0, t: 0 }, III: { c: 0, t: 0 } };
+  renderDrill(currentDrill);
+  renderTracker();
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active');
+  });
+  if (id === 'tracker') renderTracker();
+}
+
+showDrill('I');
+</script>
+</body>
+</html>
