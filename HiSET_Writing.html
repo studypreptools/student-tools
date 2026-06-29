@@ -133,6 +133,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-siz
 .badge-warn{display:inline-block;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
 .badge-fail{display:inline-block;background:#fee2e2;color:#991b1b;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
 @media(max-width:500px){.topic-grid{grid-template-columns:1fr}.tracker-label{width:110px;font-size:12px}}
+
+.watermark{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#1a1a1a;
+  color:#fff;
+  text-align:center;
+  font-size:12px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  padding:8px 16px;
+  z-index:9999;
+  letter-spacing:0.03em;
+  opacity:0.92;
+}
+.watermark span{
+  opacity:0.5;
+  margin:0 8px;
+}
 </style>
 </head>
 <body>
@@ -507,65 +527,81 @@ function toggleRubric() {
 function scoreEssay() {
   const txt = document.getElementById('essay-text').value.trim();
   if (txt.length < 100) { alert('Please write at least a few paragraphs before scoring.'); return; }
-  const wordCount = txt.split(/\s+/).length;
   const fb = document.getElementById('essay-feedback');
   fb.style.display = 'block';
+  fb.style.background = '#f8f8f6';
+  fb.style.padding = '1.25rem';
+  fb.style.borderRadius = '10px';
+  fb.style.borderLeft = '3px solid #9333ea';
+  fb.style.marginTop = '1rem';
 
-  fb.innerHTML = `
-  <h4 style="margin-bottom:1rem">&#9997; Self-Score Your Essay</h4>
-  <p style="font-size:13px;color:#555;margin-bottom:1rem">Rate yourself honestly on each category below. Use the descriptions to guide your score. Your total will calculate your estimated HiSET essay score (1&ndash;6).</p>
+  const cats = [
+    { id: 'sc-a', label: 'A. Development of Central Position', desc: 'Clear argument with specific evidence from BOTH passages?' },
+    { id: 'sc-b', label: 'B. Organization of Ideas', desc: 'Clear intro, body paragraphs, and conclusion with transitions?' },
+    { id: 'sc-c', label: 'C. Language Facility', desc: 'Precise word choice and varied sentence structures?' },
+    { id: 'sc-d', label: 'D. Writing Conventions', desc: 'Grammar, punctuation, spelling, and capitalization?' }
+  ];
 
-  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
-    <div style="font-size:13px;font-weight:700;margin-bottom:6px">A. Development of Central Position</div>
-    <div style="font-size:12px;color:#666;margin-bottom:8px">Did you state a clear argument and support it with specific evidence from BOTH passages?</div>
-    <select id="sc-a" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
-      <option value="">-- Select --</option>
-      <option value="4">Strong (4pts) — Clear claim, well-developed, evidence from both passages</option>
-      <option value="3">Adequate (3pts) — Clear claim, some development, references passages</option>
-      <option value="2">Developing (2pts) — Claim present but weak development or limited passage use</option>
-      <option value="1">Beginning (1pt) — Unclear claim, little development, passages not used</option>
-    </select>
-  </div>
+  const opts = [
+    { val: '4', text: 'Strong (4pts) — Clear, well-developed, strong evidence' },
+    { val: '3', text: 'Adequate (3pts) — Generally good, some gaps' },
+    { val: '2', text: 'Developing (2pts) — Weak development or frequent issues' },
+    { val: '1', text: 'Beginning (1pt) — Unclear, little evidence, many errors' }
+  ];
 
-  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
-    <div style="font-size:13px;font-weight:700;margin-bottom:6px">B. Organization of Ideas</div>
-    <div style="font-size:12px;color:#666;margin-bottom:8px">Does your essay have a clear introduction, body paragraphs, and conclusion? Do ideas flow logically with transitions?</div>
-    <select id="sc-b" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
-      <option value="">-- Select --</option>
-      <option value="4">Strong (4pts) — Clear intro/conclusion, logical order, effective transitions</option>
-      <option value="3">Adequate (3pts) — Generally organized, transitions present but inconsistent</option>
-      <option value="2">Developing (2pts) — Some organization but hard to follow in places</option>
-      <option value="1">Beginning (1pt) — Little organization, ideas seem random</option>
-    </select>
-  </div>
+  fb.innerHTML = '';
 
-  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
-    <div style="font-size:13px;font-weight:700;margin-bottom:6px">C. Language Facility</div>
-    <div style="font-size:12px;color:#666;margin-bottom:8px">Is your word choice precise and appropriate? Do you use varied sentence structures?</div>
-    <select id="sc-c" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
-      <option value="">-- Select --</option>
-      <option value="4">Strong (4pts) — Precise word choice, varied sentences, consistent tone</option>
-      <option value="3">Adequate (3pts) — Generally clear, some variety, mostly appropriate tone</option>
-      <option value="2">Developing (2pts) — Basic vocabulary, repetitive sentences, tone inconsistent</option>
-      <option value="1">Beginning (1pt) — Vague words, simple/repetitive sentences</option>
-    </select>
-  </div>
+  const title = document.createElement('h4');
+  title.style.marginBottom = '0.75rem';
+  title.textContent = 'Self-Score Your Essay';
+  fb.appendChild(title);
 
-  <div style="margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb">
-    <div style="font-size:13px;font-weight:700;margin-bottom:6px">D. Writing Conventions</div>
-    <div style="font-size:12px;color:#666;margin-bottom:8px">How is your grammar, punctuation, spelling, and capitalization?</div>
-    <select id="sc-d" style="width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit" onchange="calcEssayScore()">
-      <option value="">-- Select --</option>
-      <option value="4">Strong (4pts) — Few or no errors, errors don't interfere with meaning</option>
-      <option value="3">Adequate (3pts) — Some errors but meaning is always clear</option>
-      <option value="2">Developing (2pts) — Frequent errors that sometimes interfere with meaning</option>
-      <option value="1">Beginning (1pt) — Many errors that make the essay hard to understand</option>
-    </select>
-  </div>
+  const intro = document.createElement('p');
+  intro.style.cssText = 'font-size:13px;color:#555;margin-bottom:1rem';
+  intro.textContent = 'Rate yourself on each category below. Your total will calculate your estimated HiSET essay score (1-6). Passing = 2 or higher.';
+  fb.appendChild(intro);
 
-  <div id="essay-score-result" style="display:none;padding:1rem;background:#f0fdf4;border-radius:10px;border-left:3px solid #16a34a;margin-top:0.5rem"></div>
-  `;
+  cats.forEach(function(cat) {
+    const box = document.createElement('div');
+    box.style.cssText = 'margin-bottom:1rem;padding:0.75rem;background:#fff;border-radius:8px;border:1px solid #e5e7eb';
+
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'font-size:13px;font-weight:700;margin-bottom:4px';
+    lbl.textContent = cat.label;
+    box.appendChild(lbl);
+
+    const desc = document.createElement('div');
+    desc.style.cssText = 'font-size:12px;color:#666;margin-bottom:8px';
+    desc.textContent = cat.desc;
+    box.appendChild(desc);
+
+    const sel = document.createElement('select');
+    sel.id = cat.id;
+    sel.style.cssText = 'width:100%;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:13px;font-family:inherit';
+    sel.addEventListener('change', calcEssayScore);
+
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = '-- Select your level --';
+    sel.appendChild(blank);
+
+    opts.forEach(function(o) {
+      const opt = document.createElement('option');
+      opt.value = o.val;
+      opt.textContent = o.text;
+      sel.appendChild(opt);
+    });
+
+    box.appendChild(sel);
+    fb.appendChild(box);
+  });
+
+  const result = document.createElement('div');
+  result.id = 'essay-score-result';
+  result.style.cssText = 'display:none;padding:1rem;background:#f0fdf4;border-radius:10px;border-left:3px solid #16a34a;margin-top:0.5rem';
+  fb.appendChild(result);
 }
+
 
 function calcEssayScore() {
   const a = parseInt(document.getElementById('sc-a').value) || 0;
@@ -577,22 +613,54 @@ function calcEssayScore() {
   const total = a + b + c + d;
   let score, label, tips;
 
-  if (total >= 14) { score = 6; label = 'Exceptional'; tips = 'Outstanding work! Your essay shows strong development, clear organization, precise language, and solid conventions. You are well prepared for the HiSET essay.'; }
-  else if (total >= 12) { score = 5; label = 'Strong'; tips = 'Great essay! Focus on making your passage evidence even more specific and vary your sentence structures a bit more to push toward a 6.'; }
-  else if (total >= 10) { score = 4; label = 'Adequate'; tips = 'Solid effort. Strengthen your argument by adding more specific quotes or details from both passages. Work on smoother transitions between paragraphs.'; }
-  else if (total >= 8) { score = 3; label = 'Developing'; tips = 'Your essay has potential. Make sure your thesis is stated clearly in the first paragraph. Add at least one specific detail from each passage to support your claim.'; }
-  else if (total >= 6) { score = 2; label = 'Beginning'; tips = 'Focus on three things: (1) Write a clear one-sentence thesis stating your position. (2) Use at least one specific detail from each passage. (3) Write an intro and a conclusion.'; }
-  else { score = 1; label = 'Needs Work'; tips = 'Start over with a plan: decide your position, write one clear thesis sentence, then write 2-3 body paragraphs each with one reason and one piece of evidence from the passages.'; }
+  if (total >= 14) {
+    score = 6; label = 'Exceptional';
+    tips = 'Outstanding work! Strong development, clear organization, precise language, and solid conventions. You are well prepared for the HiSET essay.';
+  } else if (total >= 12) {
+    score = 5; label = 'Strong';
+    tips = 'Great essay! Make your passage evidence more specific and vary your sentence structures a bit more to push toward a 6.';
+  } else if (total >= 10) {
+    score = 4; label = 'Adequate';
+    tips = 'Solid effort. Add more specific details from both passages and work on smoother transitions between paragraphs.';
+  } else if (total >= 8) {
+    score = 3; label = 'Developing';
+    tips = 'Make sure your thesis is stated clearly in the first paragraph. Add at least one specific detail from each passage.';
+  } else if (total >= 6) {
+    score = 2; label = 'Beginning';
+    tips = 'Focus on: (1) A clear one-sentence thesis. (2) One specific detail from each passage. (3) A clear intro and conclusion.';
+  } else {
+    score = 1; label = 'Needs Work';
+    tips = 'Start with a plan: decide your position, write one clear thesis, then write 2-3 body paragraphs each with one reason and one piece of passage evidence.';
+  }
 
   const passing = score >= 2;
-  const cls = passing ? 'badge-pass' : 'badge-fail';
   const result = document.getElementById('essay-score-result');
   result.style.display = 'block';
-  result.innerHTML =
-    '<p style="font-size:16px;font-weight:700;margin-bottom:8px">Estimated score: <span class="' + cls + '">' + score + ' / 6 &mdash; ' + label + '</span></p>' +
-    '<p style="font-size:13px;color:#444;margin-bottom:8px">' + tips + '</p>' +
-    '<p style="font-size:12px;color:#888">Passing = 2 or higher &middot; Raw points: ' + total + '/16</p>';
+
+  const badge = document.createElement('span');
+  badge.style.cssText = passing
+    ? 'background:#dcfce7;color:#14532d;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;display:inline-block'
+    : 'background:#fee2e2;color:#991b1b;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;display:inline-block';
+  badge.textContent = score + ' / 6 — ' + label;
+
+  result.innerHTML = '';
+  const scoreLine = document.createElement('p');
+  scoreLine.style.cssText = 'font-size:16px;font-weight:700;margin-bottom:8px';
+  scoreLine.textContent = 'Estimated score: ';
+  scoreLine.appendChild(badge);
+  result.appendChild(scoreLine);
+
+  const tipsLine = document.createElement('p');
+  tipsLine.style.cssText = 'font-size:13px;color:#444;margin-bottom:8px';
+  tipsLine.textContent = tips;
+  result.appendChild(tipsLine);
+
+  const note = document.createElement('p');
+  note.style.cssText = 'font-size:12px;color:#888';
+  note.textContent = 'Passing = 2 or higher. Raw points: ' + total + '/16';
+  result.appendChild(note);
 }
+
 
 function renderTracker() {
   let barsHtml = '', totalC = 0, totalT = 0;
@@ -639,5 +707,6 @@ function showSection(id) {
 buildEssayPrompts();
 showDrill('II');
 </script>
+<div class="watermark">Ashley Tate<span>|</span>Adult Ed Study Prep<span>|</span>&copy; 2026 &mdash; All Rights Reserved</div>
 </body>
 </html>
