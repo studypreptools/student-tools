@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>HiSET Math Study Tool</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;color:#1c1c1e;background:#f5f4f0;min-height:100vh}
+.app{max-width:840px;margin:0 auto;padding:1rem 1rem 5rem}
+
+/* HEADER */
+.header{background:#1c1c1e;color:#fff;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.header h1{font-size:22px;font-weight:700;letter-spacing:-0.3px}
+.header p{font-size:13px;opacity:0.55;margin-top:3px}
+.weight-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:1rem}
+.wpill{padding:5px 11px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:0.01em}
+.wpill-i{background:#fef3c7;color:#92400e}
+.wpill-ii{background:#dbeafe;color:#1e3a8a}
+.wpill-iii{background:#d1fae5;color:#065f46}
+.wpill-iv{background:#ede9fe;color:#4c1d95}
+.wpill-iv span{font-size:13px}
+
+/* NAV */
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:11px 15px;border:none;border-radius:10px;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 1px 3px rgba(0,0,0,0.07);transition:all 0.12s;white-space:nowrap}
+.nav-btn:active{transform:scale(0.97)}
+.nav-btn.active{background:#1c1c1e;color:#fff}
+
+/* SECTIONS */
+.section{display:none}
+.section.active{display:block}
+
+/* CARDS */
+.card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+
+/* HOME — topic weight grid */
+.topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.25rem}
+.topic-card{border-radius:14px;padding:1.25rem;cursor:pointer;transition:all 0.15s;border:2px solid transparent}
+.topic-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.topic-card:active{transform:scale(0.98)}
+.tc-i{background:#fef9ec;border-color:#fde68a}
+.tc-ii{background:#eff6ff;border-color:#bfdbfe}
+.tc-iii{background:#ecfdf5;border-color:#a7f3d0}
+.tc-iv{background:#f5f3ff;border-color:#ddd6fe}
+.tc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.tc-i .tc-label{color:#92400e}
+.tc-ii .tc-label{color:#1e3a8a}
+.tc-iii .tc-label{color:#065f46}
+.tc-iv .tc-label{color:#4c1d95}
+.tc-title{font-size:15px;font-weight:700;color:#1c1c1e;margin-bottom:4px}
+.tc-sub{font-size:12px;color:#666;line-height:1.5}
+.tc-pct{font-size:28px;font-weight:800;margin-top:8px;line-height:1}
+.tc-i .tc-pct{color:#d97706}
+.tc-ii .tc-pct{color:#3b82f6}
+.tc-iii .tc-pct{color:#10b981}
+.tc-iv .tc-pct{color:#7c3aed}
+.tc-pct-lbl{font-size:11px;color:#888;margin-top:2px}
+
+/* FORMULA SHEET */
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px}
+.formula-box{background:#f8f8f6;border-radius:10px;padding:1rem 1.1rem;border-left:4px solid #e5e7eb}
+.formula-box.fn{border-left-color:#d97706}
+.formula-box.fg{border-left-color:#3b82f6}
+.formula-box.fa{border-left-color:#7c3aed}
+.formula-box.fd{border-left-color:#10b981}
+.formula-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#999;margin-bottom:6px}
+.formula-name{font-size:13px;font-weight:600;color:#1c1c1e;margin-bottom:3px}
+.formula-eq{font-size:16px;font-weight:700;color:#1c1c1e;font-family:'Courier New',monospace;margin-bottom:3px}
+.formula-note{font-size:11px;color:#666;line-height:1.5}
+.memorize-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:#fee2e2;color:#991b1b;margin-left:6px;vertical-align:middle}
+
+/* CALCULATOR */
+.calc-wrap{background:#1c1c1e;border-radius:16px;padding:1.25rem;max-width:340px;margin:0 auto}
+.calc-display{font-size:32px;font-weight:300;text-align:right;color:#fff;padding:8px 4px 12px;min-height:56px;word-break:break-all;letter-spacing:-0.5px}
+.calc-expr{font-size:13px;color:rgba(255,255,255,0.4);text-align:right;min-height:20px;margin-bottom:4px}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cb{padding:18px 8px;border:none;border-radius:10px;font-size:17px;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.1s}
+.cb:active{transform:scale(0.93)}
+.cb-num{background:#333;color:#fff}
+.cb-num:hover{background:#444}
+.cb-op{background:#7c3aed;color:#fff}
+.cb-op:hover{background:#6d28d9}
+.cb-ac{background:#555;color:#fff;font-size:15px}
+.cb-ac:hover{background:#666}
+.cb-eq{background:#d97706;color:#fff}
+.cb-eq:hover{background:#b45309}
+.cb-zero{grid-column:span 2}
+.calc-note{font-size:12px;color:#888;text-align:center;margin-top:0.75rem}
+
+/* FLASHCARDS */
+.flashcard{border-radius:16px;padding:2rem 1.5rem;min-height:220px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;margin-bottom:1rem;transition:all 0.2s;text-align:center}
+.flashcard:active{transform:scale(0.98)}
+.fc-front{background:#1c1c1e;color:#fff}
+.fc-back-i{background:#fef9ec;color:#1c1c1e;border:2px solid #fde68a}
+.fc-back-ii{background:#eff6ff;color:#1c1c1e;border:2px solid #bfdbfe}
+.fc-back-iii{background:#ecfdf5;color:#1c1c1e;border:2px solid #a7f3d0}
+.fc-back-iv{background:#f5f3ff;color:#1c1c1e;border:2px solid #ddd6fe}
+.fc-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;opacity:0.5;margin-bottom:10px}
+.fc-term{font-size:22px;font-weight:700;line-height:1.3;margin-bottom:6px}
+.fc-hint{font-size:12px;opacity:0.4;margin-top:8px}
+.fc-def{font-size:15px;line-height:1.65;max-width:500px}
+.fc-example{margin-top:10px;font-size:13px;font-family:'Courier New',monospace;background:rgba(0,0,0,0.06);padding:6px 12px;border-radius:8px;display:inline-block}
+.fc-nav{display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.fc-nav button{padding:12px 22px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;font-size:14px;cursor:pointer;font-family:inherit;font-weight:600}
+.fc-nav button:active{transform:scale(0.96)}
+.fc-counter{font-size:13px;color:#888}
+.fc-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.fc-filter button{padding:7px 13px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#555;font-family:inherit}
+.fc-filter button.active{background:#1c1c1e;color:#fff;border-color:#1c1c1e}
+
+/* PRACTICE */
+.drill-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.drill-tab{padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all 0.12s}
+.drill-tab:active{transform:scale(0.97)}
+.drill-tab.act-i{background:#fef9ec;border-color:#d97706;color:#92400e}
+.drill-tab.act-ii{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a}
+.drill-tab.act-iii{background:#ecfdf5;border-color:#10b981;color:#065f46}
+.drill-tab.act-iv{background:#f5f3ff;border-color:#7c3aed;color:#4c1d95}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:5px}
+.prog-bar-wrap{background:#e5e7eb;border-radius:6px;height:7px;overflow:hidden;margin-bottom:1rem}
+.prog-bar-fill{height:100%;border-radius:6px;background:#1c1c1e;transition:width 0.4s}
+.q-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.q-meta{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.q-tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px}
+.tag-i{background:#fef3c7;color:#92400e}
+.tag-ii{background:#dbeafe;color:#1e3a8a}
+.tag-iii{background:#d1fae5;color:#065f46}
+.tag-iv{background:#ede9fe;color:#4c1d95}
+.dok-tag{font-size:11px;color:#888;background:#f1f5f9;padding:3px 8px;border-radius:6px}
+.q-text{font-size:15px;font-weight:500;line-height:1.65;margin-bottom:1rem;color:#1c1c1e}
+.q-context{font-size:13px;color:#555;background:#f8f8f6;border-left:3px solid #d1d5db;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:1rem;line-height:1.65;font-family:'Courier New',monospace}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border:1.5px solid #e5e7eb;border-radius:10px;cursor:pointer;font-size:14px;line-height:1.5;text-align:left;background:#fff;color:#1c1c1e;width:100%;font-family:inherit;min-height:48px;transition:border-color 0.12s,background 0.12s}
+.choice:hover:not(:disabled){border-color:#9ca3af;background:#fafafa}
+.choice.correct{border-color:#16a34a;background:#f0fdf4;color:#14532d}
+.choice.wrong{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
+.choice-letter{font-weight:700;min-width:22px;flex-shrink:0}
+.explanation{display:none;margin-top:10px;padding:12px 14px;background:#f0fdf4;border-radius:10px;font-size:13px;line-height:1.65;color:#14532d;border-left:3px solid #16a34a}
+.exp-title{font-weight:700;margin-bottom:6px}
+.exp-steps{margin-top:6px;padding-left:1rem}
+.exp-steps li{margin-bottom:4px;font-size:13px;line-height:1.55}
+.strategy-note{margin-top:8px;padding:8px 10px;background:#fffbeb;border-radius:8px;font-size:12px;color:#92400e;border-left:3px solid #f59e0b;line-height:1.55}
+
+/* STRATEGIES */
+.strat-section{margin-bottom:1.5rem}
+.strat-header{font-size:15px;font-weight:700;margin-bottom:0.75rem;display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px}
+.sh-i{background:#fef9ec;color:#92400e}
+.sh-ii{background:#eff6ff;color:#1e3a8a}
+.sh-iii{background:#ecfdf5;color:#065f46}
+.sh-iv{background:#f5f3ff;color:#4c1d95}
+.strat-card{background:#f8f8f6;border-radius:10px;padding:1rem 1.1rem;margin-bottom:0.75rem;border-left:4px solid #d1d5db;font-size:14px;line-height:1.65;color:#333}
+.strat-card.si{border-left-color:#d97706}
+.strat-card.sii{border-left-color:#3b82f6}
+.strat-card.siii{border-left-color:#10b981}
+.strat-card.siv{border-left-color:#7c3aed}
+.strat-steps{margin-top:6px;padding-left:1.1rem}
+.strat-steps li{margin-bottom:5px;font-size:13px;color:#444;line-height:1.55}
+
+/* TRACKER */
+.tracker-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.tracker-row:last-child{border-bottom:none}
+.tracker-label{font-size:13px;font-weight:600;width:155px;flex-shrink:0;color:#1c1c1e}
+.tracker-bar-track{flex:1;height:10px;background:#e5e7eb;border-radius:5px;overflow:hidden}
+.tracker-bar-fill{height:100%;border-radius:5px;transition:width 0.5s}
+.tracker-val{font-size:12px;color:#888;width:44px;text-align:right;flex-shrink:0}
+.tracker-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:1rem}
+.tc-stat{padding:1rem;border-radius:12px;text-align:center}
+.tc-stat .sn{font-size:26px;font-weight:800}
+.tc-stat .sl{font-size:11px;margin-top:3px;font-weight:500}
+
+/* UTILS */
+.btn{padding:13px 22px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn:active{transform:scale(0.97)}
+.btn-dark{background:#1c1c1e;color:#fff}
+.btn-outline{background:#fff;color:#1c1c1e;border:1.5px solid #e5e7eb}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.sec-header{margin-bottom:1.25rem}
+.sec-header h2{font-size:19px;font-weight:700;margin-bottom:3px}
+.sec-header p{font-size:13px;color:#666;line-height:1.55}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px}
+.badge-pass{background:#d1fae5;color:#065f46}
+.badge-warn{background:#fef3c7;color:#92400e}
+.badge-fail{background:#fee2e2;color:#991b1b}
+
+@media(max-width:500px){
+  .topic-grid{grid-template-columns:1fr}
+  .formula-grid{grid-template-columns:1fr}
+  .tracker-label{width:110px;font-size:12px}
+}
+
+.watermark-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#1a1a1a;color:#fff;
+  text-align:center;font-size:12px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  padding:8px 16px;z-index:9999;
+  letter-spacing:0.03em;opacity:0.92;
+}
+.watermark-bar span{opacity:0.45;margin:0 8px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>HiSET Mathematics</h1>
+      <p>Study Tool · 55 questions · 90 minutes · Calculator neutral</p>
+    </div>
+  </div>
+  <div class="weight-pills">
+    <span class="wpill wpill-i">I. Numbers & Operations — 19%</span>
+    <span class="wpill wpill-ii">II. Measurement & Geometry — 18%</span>
+    <span class="wpill wpill-iii">III. Data & Statistics — 18%</span>
+    <span class="wpill wpill-iv">IV. Algebraic Concepts — <span>45%</span></span>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('home')">Home</button>
+  <button class="nav-btn" onclick="showSection('strategies')">Strategies</button>
+  <button class="nav-btn" onclick="showSection('formulas')">Formulas</button>
+  <button class="nav-btn" onclick="showSection('flashcards')">Flashcards</button>
+  <button class="nav-btn" onclick="showSection('practice')">Practice</button>
+  <button class="nav-btn" onclick="showSection('calc')">Calculator</button>
+  <button class="nav-btn" onclick="showSection('tracker')">Progress</button>
+</div>
+
+<!-- ══════════ HOME ══════════ -->
+<div id="section-home" class="section active">
+  <div class="card">
+    <div style="font-size:16px;font-weight:700;margin-bottom:1rem">What's on the HiSET Math test?</div>
+    <div class="topic-grid">
+      <div class="topic-card tc-iv" onclick="showSection('practice');showDrill('IV')">
+        <div class="tc-label">Content Area IV · Most questions</div>
+        <div class="tc-title">Algebraic Concepts</div>
+        <div class="tc-sub">Equations, inequalities, functions, quadratics, systems, graphing</div>
+        <div class="tc-pct">45%</div>
+        <div class="tc-pct-lbl">≈ 25 of 55 questions</div>
+      </div>
+      <div class="topic-card tc-i" onclick="showSection('practice');showDrill('I')">
+        <div class="tc-label">Content Area I</div>
+        <div class="tc-title">Numbers & Operations</div>
+        <div class="tc-sub">Fractions, decimals, percents, ratios, scientific notation, real numbers</div>
+        <div class="tc-pct">19%</div>
+        <div class="tc-pct-lbl">≈ 10 of 55 questions</div>
+      </div>
+      <div class="topic-card tc-ii" onclick="showSection('practice');showDrill('II')">
+        <div class="tc-label">Content Area II</div>
+        <div class="tc-title">Measurement & Geometry</div>
+        <div class="tc-sub">Area, perimeter, volume, Pythagorean theorem, angles, transformations</div>
+        <div class="tc-pct">18%</div>
+        <div class="tc-pct-lbl">≈ 10 of 55 questions</div>
+      </div>
+      <div class="topic-card tc-iii" onclick="showSection('practice');showDrill('III')">
+        <div class="tc-label">Content Area III</div>
+        <div class="tc-title">Data, Probability & Statistics</div>
+        <div class="tc-sub">Mean, median, graphs, scatter plots, probability, data interpretation</div>
+        <div class="tc-pct">18%</div>
+        <div class="tc-pct-lbl">≈ 10 of 55 questions</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:#666;line-height:1.75;padding:0.75rem 1rem;background:#f8f8f6;border-radius:10px">
+      <strong>Test-day reminders:</strong><br>
+      · 90 minutes for 55 questions — about 1 min 38 sec per question<br>
+      · Calculator neutral — a calculator is available if you request one<br>
+      · A formula sheet is provided, but <strong>some formulas are NOT on it</strong> (see Formulas tab)<br>
+      · Some questions won't count toward your score (unscored pilot questions)<br>
+      · Tap any content area above to jump to practice questions
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ STRATEGIES ══════════ -->
+<div id="section-strategies" class="section">
+  <div class="sec-header">
+    <h2>Math Strategies</h2>
+    <p>Start with Algebra (45%) — that's where almost half the test lives.</p>
+  </div>
+
+  <div class="strat-section">
+    <div class="strat-header sh-iv">🟣 IV. Algebraic Concepts · 45% of the test</div>
+    <div class="strat-card siv">
+      <strong>Solving linear equations — work step by step</strong>
+      <p style="margin-top:4px">Every linear equation follows the same logic: undo what was done to x in reverse order. Get x alone.</p>
+      <ul class="strat-steps">
+        <li>Distribute first (remove parentheses)</li>
+        <li>Combine like terms on each side</li>
+        <li>Move variable terms to one side using addition/subtraction</li>
+        <li>Divide (or multiply) both sides to isolate x</li>
+        <li>Check: plug your answer back into the original equation</li>
+      </ul>
+    </div>
+    <div class="strat-card siv">
+      <strong>Quadratic equations — 3 methods to know</strong>
+      <ul class="strat-steps">
+        <li><strong>Factoring:</strong> works when the quadratic factors cleanly. Set each factor = 0.</li>
+        <li><strong>Quadratic formula:</strong> x = [−b ± √(b²−4ac)] / 2a — always works. MEMORIZE THIS (not on formula sheet)</li>
+        <li><strong>Square roots:</strong> if no "bx" term: x² = k → x = ±√k</li>
+        <li>The <em>discriminant</em> (b²−4ac) tells you: positive = 2 real solutions, zero = 1 solution, negative = no real solutions</li>
+      </ul>
+    </div>
+    <div class="strat-card siv">
+      <strong>Functions — key ideas</strong>
+      <ul class="strat-steps">
+        <li>A function gives exactly ONE output for each input</li>
+        <li>f(3) means plug 3 into the function — substitute 3 for x</li>
+        <li>Slope = rise ÷ run = (y₂−y₁) / (x₂−x₁)</li>
+        <li>y = mx + b: m is slope, b is y-intercept (where line crosses y-axis)</li>
+        <li>To find x-intercept: set y = 0 and solve</li>
+      </ul>
+    </div>
+    <div class="strat-card siv">
+      <strong>Systems of equations</strong>
+      <ul class="strat-steps">
+        <li><strong>Substitution:</strong> solve one equation for a variable, plug into the other</li>
+        <li><strong>Elimination:</strong> add or subtract equations to cancel a variable</li>
+        <li>Parallel lines → 0 solutions; same line → infinite solutions; crossing lines → 1 solution</li>
+      </ul>
+    </div>
+    <div class="strat-card siv">
+      <strong>Inequalities</strong>
+      <ul class="strat-steps">
+        <li>Solve like an equation — but FLIP the inequality sign when multiplying or dividing by a negative number</li>
+        <li>Graph on a number line: open circle = doesn't include the value; closed circle = includes it</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="strat-section">
+    <div class="strat-header sh-i">🟡 I. Numbers & Operations · 19% of the test</div>
+    <div class="strat-card si">
+      <strong>Fractions, decimals, and percents — convert freely</strong>
+      <ul class="strat-steps">
+        <li>Percent → decimal: divide by 100 (35% = 0.35)</li>
+        <li>Decimal → percent: multiply by 100 (0.07 = 7%)</li>
+        <li>Fraction → decimal: divide top by bottom (3/4 = 0.75)</li>
+        <li>Percent of a number: multiply (15% of 80 = 0.15 × 80 = 12)</li>
+      </ul>
+    </div>
+    <div class="strat-card si">
+      <strong>Ratios and proportions</strong>
+      <ul class="strat-steps">
+        <li>Set up as a fraction: a/b = c/d → cross-multiply: ad = bc</li>
+        <li>Always check your units — label everything</li>
+        <li>Percent change = (new − old) / old × 100</li>
+      </ul>
+    </div>
+    <div class="strat-card si">
+      <strong>Scientific notation</strong>
+      <ul class="strat-steps">
+        <li>Format: a × 10ⁿ where 1 ≤ a &lt; 10</li>
+        <li>Positive exponent → large number (move decimal right)</li>
+        <li>Negative exponent → small number (move decimal left)</li>
+        <li>To multiply: multiply the a values, add the exponents</li>
+        <li>To divide: divide the a values, subtract the exponents</li>
+      </ul>
+    </div>
+    <div class="strat-card si">
+      <strong>Rational vs. irrational numbers</strong>
+      <ul class="strat-steps">
+        <li>Rational: can be written as a fraction (1/2, 0.75, −3)</li>
+        <li>Irrational: cannot (π, √2, √3)</li>
+        <li>√ of a perfect square is rational: √25 = 5 ✓</li>
+        <li>Rational + rational = rational; rational × irrational = irrational</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="strat-section">
+    <div class="strat-header sh-ii">🔵 II. Measurement & Geometry · 18% of the test</div>
+    <div class="strat-card sii">
+      <strong>Area and perimeter — label everything</strong>
+      <ul class="strat-steps">
+        <li>Rectangle: Area = l × w, Perimeter = 2l + 2w</li>
+        <li>Triangle: Area = ½ × base × height</li>
+        <li>Circle: Area = πr², Circumference = 2πr (use π ≈ 3.14)</li>
+        <li>Always check: are you solving for area (square units) or perimeter (linear units)?</li>
+      </ul>
+    </div>
+    <div class="strat-card sii">
+      <strong>Pythagorean Theorem — MEMORIZE (not on formula sheet)</strong>
+      <ul class="strat-steps">
+        <li>a² + b² = c² (c is always the longest side — the hypotenuse)</li>
+        <li>To find hypotenuse: c = √(a² + b²)</li>
+        <li>To find a leg: a = √(c² − b²)</li>
+        <li>Common triples to memorize: 3-4-5, 5-12-13, 8-15-17</li>
+      </ul>
+    </div>
+    <div class="strat-card sii">
+      <strong>Angles</strong>
+      <ul class="strat-steps">
+        <li>Supplementary angles add up to 180°</li>
+        <li>Complementary angles add up to 90°</li>
+        <li>Vertical angles are equal (opposite angles formed by two crossing lines)</li>
+        <li>Triangle interior angles always sum to 180°</li>
+      </ul>
+    </div>
+    <div class="strat-card sii">
+      <strong>Volume and surface area</strong>
+      <ul class="strat-steps">
+        <li>Rectangular prism: V = l × w × h</li>
+        <li>Cylinder: V = πr²h</li>
+        <li>These formulas ARE on the provided formula sheet</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="strat-section">
+    <div class="strat-header sh-iii">🟢 III. Data, Probability & Statistics · 18% of the test</div>
+    <div class="strat-card siii">
+      <strong>Mean, median, mode</strong>
+      <ul class="strat-steps">
+        <li><strong>Mean (average):</strong> add all values ÷ how many values</li>
+        <li><strong>Median:</strong> middle value when data is ordered from least to greatest</li>
+        <li><strong>Mode:</strong> the value that appears most often</li>
+        <li>Outliers affect the mean more than the median — if data has an extreme value, median is often more useful</li>
+      </ul>
+    </div>
+    <div class="strat-card siii">
+      <strong>Probability</strong>
+      <ul class="strat-steps">
+        <li>P(event) = favorable outcomes ÷ total possible outcomes</li>
+        <li>Probability is always between 0 and 1</li>
+        <li>P(A and B) for independent events: multiply the probabilities</li>
+        <li>P(A or B): add probabilities, subtract overlap</li>
+      </ul>
+    </div>
+    <div class="strat-card siii">
+      <strong>Reading graphs and charts</strong>
+      <ul class="strat-steps">
+        <li>Always read the title, axis labels, and units FIRST</li>
+        <li>Scatter plot with upward trend = positive correlation</li>
+        <li>Line of best fit: use it to predict values — slope means rate of change</li>
+        <li>Box plot: shows minimum, Q1, median, Q3, maximum</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="background:#fffbeb;border:1.5px solid #fde68a">
+    <div style="font-size:15px;font-weight:700;margin-bottom:0.75rem">⚠️ Formulas NOT on the test's formula sheet — memorize these</div>
+    <div style="font-size:14px;line-height:1.9;color:#444">
+      <p>📌 <strong>Distance = rate × time</strong> (d = rt)</p>
+      <p>📌 <strong>Pythagorean Theorem:</strong> a² + b² = c²</p>
+      <p>📌 <strong>Quadratic Formula:</strong> x = [−b ± √(b²−4ac)] / 2a</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FORMULAS ══════════ -->
+<div id="section-formulas" class="section">
+  <div class="sec-header">
+    <h2>Formula Reference Sheet</h2>
+    <p>The test provides some formulas — but NOT all. Items marked <span class="memorize-tag">MEMORIZE</span> are not on the sheet.</p>
+  </div>
+
+  <div class="card" style="background:#fffbeb;border:1.5px solid #fde68a;margin-bottom:1.25rem">
+    <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#92400e">⚠️ Must memorize — NOT provided on test day</div>
+    <div class="formula-grid">
+      <div class="formula-box fn" style="background:#fff">
+        <div class="formula-cat">Numbers & Algebra</div>
+        <div class="formula-name">Distance formula <span class="memorize-tag">MEMORIZE</span></div>
+        <div class="formula-eq">d = r × t</div>
+        <div class="formula-note">d = distance, r = rate/speed, t = time</div>
+      </div>
+      <div class="formula-box fg" style="background:#fff">
+        <div class="formula-cat">Geometry</div>
+        <div class="formula-name">Pythagorean Theorem <span class="memorize-tag">MEMORIZE</span></div>
+        <div class="formula-eq">a² + b² = c²</div>
+        <div class="formula-note">c = hypotenuse (longest side), a &amp; b = legs</div>
+      </div>
+      <div class="formula-box fa" style="background:#fff">
+        <div class="formula-cat">Algebra</div>
+        <div class="formula-name">Quadratic Formula <span class="memorize-tag">MEMORIZE</span></div>
+        <div class="formula-eq">x = (−b ± √(b²−4ac)) / 2a</div>
+        <div class="formula-note">Used when ax² + bx + c = 0 and a ≠ 0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem;color:#065f46">✅ Provided on the test formula sheet</div>
+    <div class="formula-grid">
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Area</div>
+        <div class="formula-name">Rectangle</div>
+        <div class="formula-eq">A = l × w</div>
+      </div>
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Area</div>
+        <div class="formula-name">Triangle</div>
+        <div class="formula-eq">A = ½ × b × h</div>
+      </div>
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Area</div>
+        <div class="formula-name">Circle</div>
+        <div class="formula-eq">A = π r²</div>
+      </div>
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Perimeter</div>
+        <div class="formula-name">Rectangle</div>
+        <div class="formula-eq">P = 2l + 2w</div>
+      </div>
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Circumference</div>
+        <div class="formula-name">Circle</div>
+        <div class="formula-eq">C = 2πr  or  C = πd</div>
+      </div>
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Volume</div>
+        <div class="formula-name">Rectangular Prism</div>
+        <div class="formula-eq">V = l × w × h</div>
+      </div>
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Volume</div>
+        <div class="formula-name">Cylinder</div>
+        <div class="formula-eq">V = π r² h</div>
+      </div>
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Volume</div>
+        <div class="formula-name">Cone</div>
+        <div class="formula-eq">V = ⅓ π r² h</div>
+      </div>
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Volume</div>
+        <div class="formula-name">Sphere</div>
+        <div class="formula-eq">V = (4/3) π r³</div>
+      </div>
+      <div class="formula-box fg">
+        <div class="formula-cat">Geometry — Volume</div>
+        <div class="formula-name">Pyramid</div>
+        <div class="formula-eq">V = ⅓ × B × h</div>
+        <div class="formula-note">B = area of base</div>
+      </div>
+      <div class="formula-box fa">
+        <div class="formula-cat">Algebra</div>
+        <div class="formula-name">Slope of a line</div>
+        <div class="formula-eq">m = (y₂−y₁) / (x₂−x₁)</div>
+      </div>
+      <div class="formula-box fa">
+        <div class="formula-cat">Algebra</div>
+        <div class="formula-name">Slope-intercept form</div>
+        <div class="formula-eq">y = mx + b</div>
+        <div class="formula-note">m = slope, b = y-intercept</div>
+      </div>
+      <div class="formula-box fa">
+        <div class="formula-cat">Algebra</div>
+        <div class="formula-name">Simple interest</div>
+        <div class="formula-eq">I = P × r × t</div>
+        <div class="formula-note">P = principal, r = rate, t = time</div>
+      </div>
+      <div class="formula-box fn">
+        <div class="formula-cat">Numbers</div>
+        <div class="formula-name">Percent</div>
+        <div class="formula-eq">% = (part / whole) × 100</div>
+      </div>
+      <div class="formula-box fn">
+        <div class="formula-cat">Numbers</div>
+        <div class="formula-name">Percent change</div>
+        <div class="formula-eq">% change = (new−old)/old × 100</div>
+      </div>
+      <div class="formula-box fd">
+        <div class="formula-cat">Data & Statistics</div>
+        <div class="formula-name">Mean (average)</div>
+        <div class="formula-eq">mean = sum / count</div>
+      </div>
+      <div class="formula-box fd">
+        <div class="formula-cat">Data & Statistics</div>
+        <div class="formula-name">Probability</div>
+        <div class="formula-eq">P = favorable / total</div>
+      </div>
+      <div class="formula-box fn">
+        <div class="formula-cat">Numbers</div>
+        <div class="formula-name">π (pi) ≈</div>
+        <div class="formula-eq">3.14159</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FLASHCARDS ══════════ -->
+<div id="section-flashcards" class="section">
+  <div class="sec-header">
+    <h2>Math Vocabulary Flashcards</h2>
+    <p>Tap the card to flip. Filter by content area or study all at once.</p>
+  </div>
+  <div class="fc-filter">
+    <button class="active" onclick="filterCards('all',this)">All</button>
+    <button onclick="filterCards('I',this)">I · Numbers</button>
+    <button onclick="filterCards('II',this)">II · Geometry</button>
+    <button onclick="filterCards('III',this)">III · Data</button>
+    <button onclick="filterCards('IV',this)">IV · Algebra</button>
+  </div>
+  <div class="flashcard fc-front" id="flashcard" onclick="flipCard()">
+    <div class="fc-cat" id="fc-cat">Category</div>
+    <div id="fc-front-content">
+      <div class="fc-term" id="fc-term">Term</div>
+      <div class="fc-hint">Tap to see definition</div>
+    </div>
+    <div id="fc-back-content" style="display:none">
+      <div class="fc-def" id="fc-def">Definition</div>
+      <div class="fc-example" id="fc-example"></div>
+    </div>
+  </div>
+  <div class="fc-nav">
+    <button onclick="prevCard()">← Back</button>
+    <span class="fc-counter" id="fc-counter">1 / 32</span>
+    <button onclick="nextCard()">Next →</button>
+  </div>
+</div>
+
+<!-- ══════════ PRACTICE ══════════ -->
+<div id="section-practice" class="section">
+  <div class="sec-header">
+    <h2>Practice Questions</h2>
+    <p>Organized by content area. Start with Algebra — it's 45% of the test.</p>
+  </div>
+  <div class="drill-tabs">
+    <button class="drill-tab" id="tab-IV" onclick="showDrill('IV')">🟣 IV · Algebra</button>
+    <button class="drill-tab" id="tab-I" onclick="showDrill('I')">🟡 I · Numbers</button>
+    <button class="drill-tab" id="tab-II" onclick="showDrill('II')">🔵 II · Geometry</button>
+    <button class="drill-tab" id="tab-III" onclick="showDrill('III')">🟢 III · Data</button>
+  </div>
+  <div class="prog-row">
+    <span id="prog-text">0 of 0 answered</span>
+    <span id="prog-score">0 correct</span>
+  </div>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-bar" style="width:0%"></div></div>
+  <div id="practice-container"></div>
+</div>
+
+<!-- ══════════ CALCULATOR ══════════ -->
+<div id="section-calc" class="section">
+  <div class="sec-header">
+    <h2>Calculator</h2>
+    <p>On the real test you can request a calculator. Practice with and without it.</p>
+  </div>
+  <div class="calc-wrap">
+    <div class="calc-expr" id="calc-expr"></div>
+    <div class="calc-display" id="calc-disp">0</div>
+    <div class="calc-grid">
+      <button class="cb cb-ac" onclick="calcAC()">AC</button>
+      <button class="cb cb-ac" onclick="calcSign()">+/−</button>
+      <button class="cb cb-ac" onclick="calcPct()">%</button>
+      <button class="cb cb-op" onclick="calcOp('÷')">÷</button>
+      <button class="cb cb-num" onclick="calcNum('7')">7</button>
+      <button class="cb cb-num" onclick="calcNum('8')">8</button>
+      <button class="cb cb-num" onclick="calcNum('9')">9</button>
+      <button class="cb cb-op" onclick="calcOp('×')">×</button>
+      <button class="cb cb-num" onclick="calcNum('4')">4</button>
+      <button class="cb cb-num" onclick="calcNum('5')">5</button>
+      <button class="cb cb-num" onclick="calcNum('6')">6</button>
+      <button class="cb cb-op" onclick="calcOp('−')">−</button>
+      <button class="cb cb-num" onclick="calcNum('1')">1</button>
+      <button class="cb cb-num" onclick="calcNum('2')">2</button>
+      <button class="cb cb-num" onclick="calcNum('3')">3</button>
+      <button class="cb cb-op" onclick="calcOp('+')">+</button>
+      <button class="cb cb-num cb-zero" onclick="calcNum('0')">0</button>
+      <button class="cb cb-num" onclick="calcDot()">.</button>
+      <button class="cb cb-eq" onclick="calcEq()">=</button>
+    </div>
+    <div class="calc-note">Tap AC to clear · % divides by 100</div>
+  </div>
+  <div class="card" style="margin-top:1rem">
+    <div style="font-size:14px;font-weight:700;margin-bottom:0.5rem">Should I use the calculator?</div>
+    <div style="font-size:13px;color:#555;line-height:1.8">
+      <p>· Use it for multi-step arithmetic, large numbers, and decimals</p>
+      <p>· Don't rely on it for simple calculations you can do mentally — saves time</p>
+      <p>· Always estimate first to check if your calculator answer is reasonable</p>
+      <p>· The test is "calculator neutral" — some questions are designed so a calculator doesn't help</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TRACKER ══════════ -->
+<div id="section-tracker" class="section">
+  <div class="sec-header">
+    <h2>My Progress</h2>
+    <p>Track your accuracy in each content area as you practice.</p>
+  </div>
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem">Accuracy by content area</div>
+    <div id="tracker-bars"></div>
+  </div>
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem">Session totals</div>
+    <div class="tracker-summary" id="tracker-summary"></div>
+    <div class="btn-row"><button class="btn btn-outline" onclick="resetAll()">Reset all progress</button></div>
+  </div>
+  <div class="card" style="background:#f5f3ff;border:1.5px solid #ddd6fe">
+    <div style="font-size:14px;font-weight:700;margin-bottom:0.5rem;color:#4c1d95">📌 Scoring reminder</div>
+    <div style="font-size:13px;color:#555;line-height:1.8">
+      <p>· HiSET Math is scored 1–20</p>
+      <p>· Passing = score of <strong>8 or higher</strong></p>
+      <p>· To push your total score above 45, aim for <strong>10–12+</strong> on this subtest</p>
+      <p>· Focus practice time on Algebra (45%) for the biggest score impact</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ── FLASHCARD DATA ────────────────────────────────────────
+const ALL_CARDS=[
+  {cat:'IV · Algebra',area:'IV',term:'Variable',def:'A letter that represents an unknown number.',ex:'In 3x + 5 = 11, x is the variable.'},
+  {cat:'IV · Algebra',area:'IV',term:'Coefficient',def:'The number multiplied by a variable in a term.',ex:'In 7x, the coefficient is 7.'},
+  {cat:'IV · Algebra',area:'IV',term:'Linear equation',def:'An equation whose graph is a straight line. The highest power of the variable is 1.',ex:'y = 2x + 3'},
+  {cat:'IV · Algebra',area:'IV',term:'Slope',def:'The steepness of a line — rise over run. Slope = (y₂−y₁)/(x₂−x₁).',ex:'A slope of 3 means: go up 3 for every 1 right.'},
+  {cat:'IV · Algebra',area:'IV',term:'y-intercept',def:'Where a line crosses the y-axis (when x = 0). In y = mx + b, b is the y-intercept.',ex:'y = 2x + 5 → y-intercept is 5.'},
+  {cat:'IV · Algebra',area:'IV',term:'Quadratic equation',def:'An equation with a variable raised to the second power (x²). Its graph is a parabola.',ex:'x² − 5x + 6 = 0'},
+  {cat:'IV · Algebra',area:'IV',term:'Quadratic formula',def:'x = [−b ± √(b²−4ac)] / 2a · NOT on the formula sheet — must memorize.',ex:'For x² − 5x + 6 = 0: a=1, b=−5, c=6'},
+  {cat:'IV · Algebra',area:'IV',term:'Discriminant',def:'The expression b²−4ac inside the quadratic formula. Tells you how many real solutions exist.',ex:'>0: two solutions; =0: one solution; <0: no real solutions'},
+  {cat:'IV · Algebra',area:'IV',term:'Function',def:'A rule where each input (x) gives exactly one output (y). Written as f(x).',ex:'f(x) = 2x + 1 → f(3) = 7'},
+  {cat:'IV · Algebra',area:'IV',term:'Domain',def:'All possible input values (x values) of a function.',ex:'For f(x) = √x, domain is x ≥ 0.'},
+  {cat:'IV · Algebra',area:'IV',term:'Range',def:'All possible output values (y values) of a function.',ex:'For f(x) = x², range is y ≥ 0.'},
+  {cat:'IV · Algebra',area:'IV',term:'System of equations',def:'Two or more equations with the same variables. Solved by finding values that satisfy all equations.',ex:'x + y = 5 and x − y = 1 → x=3, y=2'},
+  {cat:'IV · Algebra',area:'IV',term:'Inequality',def:'A mathematical statement that two expressions are not equal, using <, >, ≤, or ≥.',ex:'3x + 2 > 11 → x > 3'},
+  {cat:'I · Numbers',area:'I',term:'Rational number',def:'Any number that can be written as a fraction p/q where q ≠ 0. Includes integers, decimals that terminate or repeat.',ex:'½, 0.75, −3, 0.333...'},
+  {cat:'I · Numbers',area:'I',term:'Irrational number',def:'A number that cannot be written as a fraction. Its decimal goes on forever without repeating.',ex:'π ≈ 3.14159..., √2 ≈ 1.41421...'},
+  {cat:'I · Numbers',area:'I',term:'Scientific notation',def:'A way to write very large or small numbers as a × 10ⁿ where 1 ≤ a < 10.',ex:'3,200,000 = 3.2 × 10⁶ · 0.00045 = 4.5 × 10⁻⁴'},
+  {cat:'I · Numbers',area:'I',term:'Percent',def:'A ratio out of 100. Convert to decimal by dividing by 100.',ex:'35% = 35/100 = 0.35'},
+  {cat:'I · Numbers',area:'I',term:'Proportion',def:'An equation stating that two ratios are equal. Solve using cross-multiplication.',ex:'3/4 = x/12 → 4x = 36 → x = 9'},
+  {cat:'I · Numbers',area:'I',term:'Percent change',def:'How much something increased or decreased, expressed as a percent of the original value.',ex:'% change = (new−old)/old × 100'},
+  {cat:'II · Geometry',area:'II',term:'Pythagorean Theorem',def:'In a right triangle: a² + b² = c², where c is the hypotenuse. NOT on formula sheet — memorize.',ex:'Legs of 3 and 4 → hypotenuse = √(9+16) = 5'},
+  {cat:'II · Geometry',area:'II',term:'Hypotenuse',def:'The longest side of a right triangle — always opposite the right angle (90°).',ex:'In a 3-4-5 triangle, 5 is the hypotenuse.'},
+  {cat:'II · Geometry',area:'II',term:'Supplementary angles',def:'Two angles that add up to 180°.',ex:'If one angle is 65°, its supplement is 115°.'},
+  {cat:'II · Geometry',area:'II',term:'Complementary angles',def:'Two angles that add up to 90°.',ex:'If one angle is 30°, its complement is 60°.'},
+  {cat:'II · Geometry',area:'II',term:'Vertical angles',def:'The opposite angles formed when two lines intersect. Vertical angles are always equal.',ex:'Two lines cross → opposite angles are equal.'},
+  {cat:'II · Geometry',area:'II',term:'Congruent',def:'Exactly the same size and shape. Congruent figures are identical — one could be flipped or rotated.',ex:'Two triangles are congruent if all sides and angles match.'},
+  {cat:'II · Geometry',area:'II',term:'Similar figures',def:'Same shape but different size. Corresponding angles are equal; sides are proportional.',ex:'A 3-4-5 and 6-8-10 triangle are similar.'},
+  {cat:'III · Data',area:'III',term:'Mean',def:'The average. Add all values and divide by how many there are.',ex:'Mean of 4, 7, 9 = (4+7+9)/3 = 20/3 ≈ 6.67'},
+  {cat:'III · Data',area:'III',term:'Median',def:'The middle value when data is ordered from least to greatest. If even count, average the two middle values.',ex:'Median of 2, 5, 8, 11 = (5+8)/2 = 6.5'},
+  {cat:'III · Data',area:'III',term:'Mode',def:'The value that appears most often in a data set. A set can have no mode, one mode, or multiple modes.',ex:'Mode of 3, 5, 5, 7, 9 = 5'},
+  {cat:'III · Data',area:'III',term:'Outlier',def:'A data value that is much higher or lower than the rest. Outliers affect the mean more than the median.',ex:'In {2, 3, 4, 5, 100}, 100 is an outlier.'},
+  {cat:'III · Data',area:'III',term:'Probability',def:'The likelihood of an event happening. P = favorable outcomes ÷ total outcomes. Always between 0 and 1.',ex:'P(rolling a 3 on a die) = 1/6'},
+  {cat:'III · Data',area:'III',term:'Scatter plot',def:'A graph of plotted points showing the relationship between two variables. A trend line (line of best fit) can be drawn.',ex:'Points trending upward = positive correlation.'}
+];
+
+let filteredCards=[...ALL_CARDS];
+let fcIdx=0, fcFlipped=false;
+
+function filterCards(area,btn){
+  document.querySelectorAll('.fc-filter button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  filteredCards=area==='all'?[...ALL_CARDS]:ALL_CARDS.filter(c=>c.area===area);
+  fcIdx=0;renderCard();
+}
+
+function renderCard(){
+  const c=filteredCards[fcIdx];
+  const card=document.getElementById('flashcard');
+  const backClasses={I:'fc-back-i',II:'fc-back-ii',III:'fc-back-iii',IV:'fc-back-iv'};
+  card.className='flashcard '+(fcFlipped?backClasses[c.area]:'fc-front');
+  document.getElementById('fc-cat').textContent=c.cat;
+  document.getElementById('fc-term').textContent=c.term;
+  document.getElementById('fc-def').textContent=c.def;
+  const ex=document.getElementById('fc-example');
+  ex.textContent=c.ex||'';
+  ex.style.display=c.ex?'inline-block':'none';
+  document.getElementById('fc-front-content').style.display=fcFlipped?'none':'block';
+  document.getElementById('fc-back-content').style.display=fcFlipped?'block':'none';
+  document.getElementById('fc-counter').textContent=(fcIdx+1)+' / '+filteredCards.length;
+}
+
+function flipCard(){fcFlipped=!fcFlipped;renderCard();}
+function nextCard(){fcIdx=(fcIdx+1)%filteredCards.length;fcFlipped=false;renderCard();}
+function prevCard(){fcIdx=(fcIdx-1+filteredCards.length)%filteredCards.length;fcFlipped=false;renderCard();}
+renderCard();
+
+// ── PRACTICE QUESTIONS ────────────────────────────────────
+const QUESTIONS={
+IV:[
+  {id:'iv1',tag:'IV · Algebra',dok:'DOK 1',text:'Solve for x: 4x − 3 = 17',choices:['x = 3','x = 5','x = 7','x = 4'],correct:1,
+   explain:'Add 3 to both sides: 4x = 20. Divide by 4: x = 5.',steps:['4x − 3 = 17','4x = 17 + 3 = 20','x = 20 ÷ 4 = 5'],strategy:'Undo in reverse order: +3 first, then ÷4.'},
+  {id:'iv2',tag:'IV · Algebra',dok:'DOK 1',text:'What is the slope of the line y = −3x + 7?',choices:['7','−3','3','−7'],correct:1,
+   explain:'In y = mx + b, m is the slope. Here m = −3.',steps:['y = mx + b format','m = −3, b = 7','Slope = −3'],strategy:'y = mx + b: the number multiplied by x is always the slope.'},
+  {id:'iv3',tag:'IV · Algebra',dok:'DOK 2',text:'Solve: 2(x + 5) = 3x − 1',choices:['x = 9','x = 11','x = −11','x = −9'],correct:1,
+   explain:'Distribute: 2x + 10 = 3x − 1. Subtract 2x: 10 = x − 1. Add 1: x = 11.',steps:['2x + 10 = 3x − 1','10 + 1 = 3x − 2x','11 = x'],strategy:'Distribute parentheses first, then move all x terms to one side.'},
+  {id:'iv4',tag:'IV · Algebra',dok:'DOK 2',text:'A line passes through (1, 4) and (3, 10). What is its equation?',choices:['y = 3x + 1','y = 2x + 2','y = 3x − 2','y = 2x + 4'],correct:0,
+   explain:'Slope = (10−4)/(3−1) = 6/2 = 3. Use point (1,4): 4 = 3(1) + b → b = 1. Equation: y = 3x + 1.',steps:['m = (10−4)/(3−1) = 3','4 = 3(1) + b → b = 1','y = 3x + 1'],strategy:'Find slope first. Then plug in one point to find b.'},
+  {id:'iv5',tag:'IV · Algebra',dok:'DOK 2',text:'Solve the system: x + y = 8 and x − y = 2',choices:['x=3, y=5','x=5, y=3','x=6, y=2','x=4, y=4'],correct:1,
+   explain:'Add the equations: 2x = 10, so x = 5. Substitute: 5 + y = 8, so y = 3.',steps:['Add: 2x = 10 → x = 5','Sub into x + y = 8: 5 + y = 8','y = 3'],strategy:'Elimination: add or subtract the equations to cancel one variable.'},
+  {id:'iv6',tag:'IV · Algebra',dok:'DOK 2',text:'If f(x) = x² − 3x + 2, what is f(4)?',choices:['6','8','10','4'],correct:0,
+   explain:'f(4) = 4² − 3(4) + 2 = 16 − 12 + 2 = 6.',steps:['Replace x with 4','= 16 − 12 + 2','= 6'],strategy:'f(4) means substitute 4 for every x. Calculate carefully using order of operations.'},
+  {id:'iv7',tag:'IV · Algebra',dok:'DOK 3',text:'What are the solutions to x² − 5x + 6 = 0?',choices:['x = 2 and x = 3','x = −2 and x = −3','x = 1 and x = 6','x = −1 and x = 6'],correct:0,
+   explain:'Factor: (x − 2)(x − 3) = 0. Set each factor to 0: x = 2 or x = 3.',steps:['Find two numbers that multiply to 6 and add to −5: −2 and −3','(x − 2)(x − 3) = 0','x = 2 or x = 3'],strategy:'Factoring: find two numbers that multiply to c (6) and add to b (−5).'},
+  {id:'iv8',tag:'IV · Algebra',dok:'DOK 2',text:'Which inequality is graphed as a dashed line with shading above?',choices:['y < 2x + 1','y > 2x + 1','y ≤ 2x + 1','y ≥ 2x + 1'],correct:1,
+   explain:'A dashed line means the boundary is not included (< or >). Shading above the line means y is greater than the line. So y > 2x + 1.',steps:['Dashed = strict inequality (< or >)','Shading above = y is greater','Answer: y > 2x + 1'],strategy:'Dashed = strict (< or >). Solid = includes boundary (≤ or ≥). Above = greater than.'},
+  {id:'iv9',tag:'IV · Algebra',dok:'DOK 3',text:'Use the quadratic formula to solve: x² + 2x − 8 = 0',choices:['x = 2 and x = −4','x = −2 and x = 4','x = 4 and x = 2','x = −4 and x = −2'],correct:0,
+   explain:'a=1, b=2, c=−8. Discriminant: 4+32=36. x = (−2±6)/2. So x = 4/2 = 2 or x = −8/2 = −4.',steps:['b²−4ac = 4−4(1)(−8) = 4+32 = 36','x = (−2 ± √36)/2 = (−2 ± 6)/2','x = 4/2 = 2 or x = −8/2 = −4'],strategy:'MEMORIZE the quadratic formula. Identify a, b, c then substitute carefully.'},
+  {id:'iv10',tag:'IV · Algebra',dok:'DOK 2',text:'Rearrange d = rt to solve for t.',choices:['t = dr','t = d/r','t = r/d','t = d−r'],correct:1,
+   explain:'Divide both sides by r: d/r = t. So t = d/r.',steps:['d = r × t','Divide both sides by r','t = d/r'],strategy:'Treat it like solving an equation. Whatever operation is being done to t, do the inverse to both sides.'}
+],
+I:[
+  {id:'i1',tag:'I · Numbers',dok:'DOK 1',text:'What is 35% of 260?',choices:['91','85','78','95'],correct:0,
+   explain:'35% × 260 = 0.35 × 260 = 91.',steps:['Convert 35% to decimal: 0.35','0.35 × 260 = 91'],strategy:'Percent × number = part. Always convert the percent to a decimal first.'},
+  {id:'i2',tag:'I · Numbers',dok:'DOK 1',text:'Write 0.000047 in scientific notation.',choices:['4.7 × 10⁻⁵','4.7 × 10⁵','47 × 10⁻⁶','0.47 × 10⁻⁴'],correct:0,
+   explain:'Move the decimal 5 places right to get 4.7, so the exponent is −5. Answer: 4.7 × 10⁻⁵.',steps:['Move decimal right until: 4.7','Counted 5 places → exponent = −5','4.7 × 10⁻⁵'],strategy:'For small numbers (< 1), the exponent is negative. Count how many places you move the decimal.'},
+  {id:'i3',tag:'I · Numbers',dok:'DOK 2',text:'A jacket costs $120 and is discounted 25%. What is the sale price?',choices:['$90','$95','$85','$100'],correct:0,
+   explain:'25% of $120 = 0.25 × 120 = $30. Sale price = $120 − $30 = $90.',steps:['Discount = 0.25 × 120 = $30','Sale price = 120 − 30 = $90'],strategy:'Discount amount = original × percent. Then subtract from original.'},
+  {id:'i4',tag:'I · Numbers',dok:'DOK 2',text:'A car travels 330 miles in 5.5 hours. What is its average speed?',choices:['55 mph','60 mph','65 mph','70 mph'],correct:1,
+   explain:'d = rt → r = d/t = 330/5.5 = 60 mph.',steps:['d = rt so r = d/t','r = 330 ÷ 5.5','r = 60 mph'],strategy:'MEMORIZE d = rt. Rearrange to find what you need: r = d/t or t = d/r.'},
+  {id:'i5',tag:'I · Numbers',dok:'DOK 1',text:'Which of the following is an irrational number?',choices:['√16','√9','√25','√7'],correct:3,
+   explain:'√7 ≈ 2.6457... — it cannot be written as a fraction and its decimal never repeats or terminates. The others are perfect squares (4, 3, 5).',steps:['√16 = 4 ✓ rational','√9 = 3 ✓ rational','√25 = 5 ✓ rational','√7 ≈ 2.645... ✗ irrational'],strategy:'Square roots of perfect squares are rational integers. All others are irrational.'},
+  {id:'i6',tag:'I · Numbers',dok:'DOK 2',text:'Simplify: (3 × 10⁴) × (2 × 10³)',choices:['6 × 10⁷','5 × 10⁷','6 × 10¹²','6 × 10⁶'],correct:0,
+   explain:'Multiply the coefficients: 3 × 2 = 6. Add the exponents: 4 + 3 = 7. Answer: 6 × 10⁷.',steps:['Multiply coefficients: 3 × 2 = 6','Add exponents: 4 + 3 = 7','6 × 10⁷'],strategy:'Multiplying scientific notation: multiply the front numbers, ADD the exponents.'},
+  {id:'i7',tag:'I · Numbers',dok:'DOK 2',text:'A store marks up a $40 item by 60%. What is the selling price?',choices:['$56','$64','$24','$100'],correct:1,
+   explain:'Markup = 60% × $40 = $24. Selling price = $40 + $24 = $64.',steps:['Markup = 0.60 × 40 = $24','Selling price = 40 + 24 = $64'],strategy:'Markup is added to the original price, not taken away. Selling price = cost + markup.'},
+  {id:'i8',tag:'I · Numbers',dok:'DOK 2',text:'A recipe uses ⅔ cup of sugar. To make 1.5 times the recipe, how much sugar is needed?',choices:['1 cup','1⅓ cups','¾ cup','1½ cups'],correct:0,
+   explain:'⅔ × 1.5 = ⅔ × 3/2 = 6/6 = 1 cup.',steps:['⅔ × 3/2','= 6/6','= 1 cup'],strategy:'Multiply fractions: multiply numerators, then denominators. Simplify.'},
+  {id:'i9',tag:'I · Numbers',dok:'DOK 2',text:'The population of a town increased from 25,000 to 27,500. What is the percent increase?',choices:['10%','12%','8%','15%'],correct:0,
+   explain:'% change = (27500−25000)/25000 × 100 = 2500/25000 × 100 = 10%.',steps:['Change = 27500 − 25000 = 2500','2500/25000 = 0.10','0.10 × 100 = 10%'],strategy:'% change = (new − old)/old × 100. Always divide by the ORIGINAL value.'},
+  {id:'i10',tag:'I · Numbers',dok:'DOK 3',text:'If 4 workers can complete a job in 6 days, how many days would it take 8 workers (working at the same rate)?',choices:['3 days','4 days','12 days','2 days'],correct:0,
+   explain:'Total work = 4 × 6 = 24 worker-days. With 8 workers: 24 ÷ 8 = 3 days.',steps:['Total work = 4 workers × 6 days = 24 worker-days','Days = 24 ÷ 8 workers','= 3 days'],strategy:'More workers = fewer days (inverse proportion). Find total work units first.'}
+],
+II:[
+  {id:'ii1',tag:'II · Geometry',dok:'DOK 1',text:'What is the area of a triangle with base 14 cm and height 9 cm?',choices:['63 cm²','126 cm²','46 cm²','23 cm²'],correct:0,
+   explain:'Area = ½ × base × height = ½ × 14 × 9 = 63 cm².',steps:['A = ½ × b × h','A = ½ × 14 × 9','A = 63 cm²'],strategy:'Area of triangle = ½ × base × height. Don\'t forget the ½.'},
+  {id:'ii2',tag:'II · Geometry',dok:'DOK 2',text:'A right triangle has legs of 6 and 8. What is the length of the hypotenuse?',choices:['10','12','14','√100'],correct:0,
+   explain:'a² + b² = c² → 6² + 8² = 36 + 64 = 100 → c = √100 = 10.',steps:['a² + b² = c²','36 + 64 = c²','c = √100 = 10'],strategy:'Recognize the 6-8-10 triple (double of 3-4-5). Memorize common Pythagorean triples.'},
+  {id:'ii3',tag:'II · Geometry',dok:'DOK 1',text:'Two angles are supplementary. One measures 73°. What is the other?',choices:['107°','17°','90°','127°'],correct:0,
+   explain:'Supplementary angles add to 180°. 180° − 73° = 107°.',steps:['Supplementary = 180°','180 − 73 = 107°'],strategy:'Supplementary = 180°. Complementary = 90°. Don\'t mix them up.'},
+  {id:'ii4',tag:'II · Geometry',dok:'DOK 2',text:'What is the volume of a cylinder with radius 4 cm and height 10 cm? (Use π ≈ 3.14)',choices:['502.4 cm³','125.6 cm³','160 cm³','251.2 cm³'],correct:0,
+   explain:'V = πr²h = 3.14 × 4² × 10 = 3.14 × 16 × 10 = 502.4 cm³.',steps:['V = πr²h','= 3.14 × 16 × 10','= 502.4 cm³'],strategy:'Cylinder volume: V = πr²h. Square the radius FIRST, then multiply by π and h.'},
+  {id:'ii5',tag:'II · Geometry',dok:'DOK 2',text:'A circle has a diameter of 10 cm. What is its area? (Use π ≈ 3.14)',choices:['78.5 cm²','31.4 cm²','314 cm²','157 cm²'],correct:0,
+   explain:'Radius = 10/2 = 5. Area = πr² = 3.14 × 25 = 78.5 cm².',steps:['radius = diameter/2 = 5','A = πr² = 3.14 × 5²','= 3.14 × 25 = 78.5 cm²'],strategy:'Area uses RADIUS, not diameter. Always halve the diameter first.'},
+  {id:'ii6',tag:'II · Geometry',dok:'DOK 2',text:'A rectangle has a perimeter of 54 cm. Its length is 17 cm. What is its width?',choices:['10 cm','20 cm','37 cm','27 cm'],correct:0,
+   explain:'P = 2l + 2w → 54 = 2(17) + 2w → 54 = 34 + 2w → 2w = 20 → w = 10.',steps:['54 = 2(17) + 2w','54 = 34 + 2w','2w = 20 → w = 10 cm'],strategy:'Perimeter formula: P = 2l + 2w. Substitute what you know and solve for w.'},
+  {id:'ii7',tag:'II · Geometry',dok:'DOK 3',text:'Two similar triangles have corresponding sides in a ratio of 3:5. If a side of the smaller triangle is 9 cm, what is the corresponding side of the larger?',choices:['15 cm','12 cm','25 cm','18 cm'],correct:0,
+   explain:'Set up proportion: 3/5 = 9/x → 3x = 45 → x = 15 cm.',steps:['Ratio: 3/5 = 9/x','Cross multiply: 3x = 45','x = 15 cm'],strategy:'Similar figures: corresponding sides are proportional. Set up a proportion and cross-multiply.'},
+  {id:'ii8',tag:'II · Geometry',dok:'DOK 2',text:'Two lines intersect. One angle formed is 65°. What is the measure of the vertical angle?',choices:['65°','115°','25°','90°'],correct:0,
+   explain:'Vertical angles are equal — they are the opposite pair formed when two lines cross. So the vertical angle is also 65°.',steps:['Vertical angles are always equal','Opposite angle = 65°'],strategy:'Vertical angles = equal. Adjacent angles on a straight line are supplementary (= 180°).'},
+  {id:'ii9',tag:'II · Geometry',dok:'DOK 2',text:'What is the distance between points (1, 2) and (4, 6)?',choices:['5','7','3','√41'],correct:0,
+   explain:'a = 4−1 = 3, b = 6−2 = 4. Distance = √(3² + 4²) = √(9+16) = √25 = 5.',steps:['Horizontal change: 4−1 = 3','Vertical change: 6−2 = 4','Distance = √(9+16) = √25 = 5'],strategy:'Distance between points uses the Pythagorean theorem. The differences in x and y are the legs.'},
+  {id:'ii10',tag:'II · Geometry',dok:'DOK 1',text:'What is the circumference of a circle with radius 7? (Use π ≈ 3.14)',choices:['43.96','21.98','153.86','87.92'],correct:0,
+   explain:'C = 2πr = 2 × 3.14 × 7 = 43.96.',steps:['C = 2πr','= 2 × 3.14 × 7','= 43.96'],strategy:'Circumference uses r (radius), not diameter. C = 2πr or C = πd (where d = 2r).'}
+],
+III:[
+  {id:'iii1',tag:'III · Data',dok:'DOK 1',text:'Find the mean of: 12, 18, 9, 21, 15',choices:['15','18','14','16'],correct:0,
+   explain:'Mean = (12+18+9+21+15)/5 = 75/5 = 15.',steps:['Sum = 12+18+9+21+15 = 75','Mean = 75 ÷ 5','= 15'],strategy:'Mean = sum of all values ÷ count of values.'},
+  {id:'iii2',tag:'III · Data',dok:'DOK 1',text:'Find the median of: 3, 17, 8, 5, 12',choices:['8','9','10','12'],correct:0,
+   explain:'Order: 3, 5, 8, 12, 17. The middle value (3rd of 5) is 8.',steps:['Order from least to greatest: 3, 5, 8, 12, 17','Middle value = 8 (position 3 of 5)'],strategy:'Always order the data first! Median = middle value.'},
+  {id:'iii3',tag:'III · Data',dok:'DOK 2',text:'A bag has 4 red, 6 blue, and 2 green marbles. What is the probability of picking blue?',choices:['½','⅓','¼','⅔'],correct:0,
+   explain:'Total = 12. P(blue) = 6/12 = ½.',steps:['Total marbles = 4+6+2 = 12','P(blue) = 6/12','= ½'],strategy:'P = favorable outcomes ÷ total outcomes. Always count total first.'},
+  {id:'iii4',tag:'III · Data',dok:'DOK 2',text:'The ages of 6 employees are: 24, 27, 30, 31, 33, 65. Which measure of center best describes the typical age?',choices:['Mean','Median','Mode','Range'],correct:1,
+   explain:'The outlier (65) pulls the mean up significantly. The median (30.5) is not affected by outliers and better represents the typical age.',steps:['Mean ≈ 35 (pulled up by 65)','Median = (30+31)/2 = 30.5','Median better represents the group'],strategy:'When data has an outlier, use the median. The mean is affected by extreme values; the median is not.'},
+  {id:'iii5',tag:'III · Data',dok:'DOK 2',text:'A scatter plot shows that as study hours increase, test scores increase. This is an example of:',choices:['Negative correlation','No correlation','Positive correlation','Causation'],correct:2,
+   explain:'When both variables increase together, that is a positive correlation. The scatter plot points would trend upward from left to right.',steps:['Both variables increase together','= positive correlation','(Note: correlation does not mean causation)'],strategy:'Positive correlation = both go up together. Negative = one goes up as the other goes down. No correlation = no clear pattern.'},
+  {id:'iii6',tag:'III · Data',dok:'DOK 2',text:'If you roll a standard 6-sided die twice, what is the probability of rolling a 4 both times?',choices:['1/36','1/6','1/12','2/6'],correct:0,
+   explain:'P(4 first roll) = 1/6. P(4 second roll) = 1/6. Independent events: multiply. 1/6 × 1/6 = 1/36.',steps:['P(4) = 1/6 each roll','Independent events: multiply','1/6 × 1/6 = 1/36'],strategy:'For independent events (one doesn\'t affect the other), multiply the probabilities.'},
+  {id:'iii7',tag:'III · Data',dok:'DOK 2',text:'A data set has a mean of 20. One value is 38. If the 38 is an outlier and removed, the mean will most likely:',choices:['Decrease','Increase','Stay the same','Cannot be determined'],correct:0,
+   explain:'The outlier 38 is above the mean of 20, so it is pulling the mean upward. Removing it will lower the mean.',steps:['38 > 20 (mean)','38 is pulling the mean upward','Removing it decreases the mean'],strategy:'If the outlier is above the mean, it pulls the mean up — removing it brings the mean down.'},
+  {id:'iii8',tag:'III · Data',dok:'DOK 3',text:'A survey of 500 people found that 120 prefer Brand A. Predict how many people out of 2,000 would prefer Brand A.',choices:['480','240','600','120'],correct:0,
+   explain:'Rate = 120/500 = 0.24. Predict: 0.24 × 2000 = 480.',steps:['Proportion: 120/500 = x/2000','x = 120 × 2000/500','x = 480'],strategy:'Use a proportion: sample rate × new total. Or: find the fraction and multiply by the new population.'},
+  {id:'iii9',tag:'III · Data',dok:'DOK 2',text:'A class of 30 students has a mean score of 78 on a test. If 5 students retake the test and their mean improves from 60 to 80, what happens to the class mean?',choices:['It increases','It decreases','It stays the same','It depends on individual scores'],correct:0,
+   explain:'The 5 students\' scores increased by an average of 20 points, adding 100 total points. New mean ≈ (30×78 + 100)/30 = 2440/30 ≈ 81.3. The mean increases.',steps:['Original total = 30 × 78 = 2,340','Gain = 5 × (80−60) = 100 points','New total = 2,440 → new mean ≈ 81.3'],strategy:'Think about total points, not just averages. Multiplying mean × count gives you total points.'},
+  {id:'iii10',tag:'III · Data',dok:'DOK 1',text:'In a box plot, the median is represented by:',choices:['The line inside the box','The left edge of the box','The right edge of the box','The ends of the whiskers'],correct:0,
+   explain:'In a box plot: left edge = Q1, right edge = Q3, line inside the box = median, whiskers = min and max.',steps:['Box plot: left edge = Q1','Line in middle = median','Right edge = Q3'],strategy:'Memorize box plot parts: min — Q1 — median — Q3 — max. The median is always the line INSIDE the box.'}
+]
+};
+
+let answered={};
+let progress={IV:{c:0,t:0},I:{c:0,t:0},II:{c:0,t:0},III:{c:0,t:0}};
+let currentDrill='IV';
+
+function showDrill(key){
+  currentDrill=key;
+  const styleMap={IV:'act-iv',I:'act-i',II:'act-ii',III:'act-iii'};
+  document.querySelectorAll('.drill-tab').forEach(t=>{
+    t.className='drill-tab';
+  });
+  document.getElementById('tab-'+key).classList.add(styleMap[key]);
+  renderDrill(key);
+}
+
+function renderDrill(key){
+  const qs=QUESTIONS[key];
+  const done=qs.filter(q=>answered[q.id]!==undefined).length;
+  const corr=qs.filter(q=>answered[q.id]===q.correct).length;
+  document.getElementById('prog-text').textContent=`${done} of ${qs.length} answered`;
+  document.getElementById('prog-score').textContent=`${corr} correct`;
+  document.getElementById('prog-bar').style.width=Math.round(done/qs.length*100)+'%';
+
+  let html='';
+  qs.forEach((q,qi)=>{
+    const isAns=answered[q.id]!==undefined;
+    html+=`<div class="q-card" id="qc-${q.id}">
+    <div class="q-meta">
+      <span class="q-tag tag-${key.toLowerCase()}">${q.tag}</span>
+      <span class="dok-tag">${q.dok}</span>
+    </div>
+    <div class="q-text">Q${qi+1}. ${q.text}</div>
+    <div class="choices">`;
+    q.choices.forEach((c,ci)=>{
+      let cls='choice';
+      if(isAns){if(ci===q.correct)cls+=' correct';else if(ci===answered[q.id])cls+=' wrong';}
+      html+=`<button class="${cls}" onclick="answerQ('${q.id}',${ci},${q.correct},'${key}')" id="ch-${q.id}-${ci}"><span class="choice-letter">${String.fromCharCode(65+ci)}.</span>${c}</button>`;
+    });
+    html+=`</div>
+    <div class="explanation" id="exp-${q.id}" style="${isAns?'display:block':''}">
+      <div class="exp-title">✓ Step-by-step solution:</div>
+      <ol class="exp-steps">${q.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+      <p style="margin-top:6px;font-size:13px">${q.explain}</p>
+      <div class="strategy-note">📌 Strategy: ${q.strategy}</div>
+    </div></div>`;
+  });
+  document.getElementById('practice-container').innerHTML=html;
+}
+
+function answerQ(qid,chosen,correct,key){
+  if(answered[qid]!==undefined)return;
+  answered[qid]=chosen;
+  for(let i=0;i<4;i++){
+    const b=document.getElementById('ch-'+qid+'-'+i);
+    if(!b)continue;
+    b.disabled=true;
+    if(i===correct)b.classList.add('correct');
+    else if(i===chosen)b.classList.add('wrong');
+  }
+  document.getElementById('exp-'+qid).style.display='block';
+  const qs=QUESTIONS[key];
+  const done=qs.filter(q=>answered[q.id]!==undefined).length;
+  const corr=qs.filter(q=>answered[q.id]===q.correct).length;
+  progress[key]={c:corr,t:done};
+  document.getElementById('prog-text').textContent=`${done} of ${qs.length} answered`;
+  document.getElementById('prog-score').textContent=`${corr} correct`;
+  document.getElementById('prog-bar').style.width=Math.round(done/qs.length*100)+'%';
+}
+
+// ── CALCULATOR ──────────────────────────────────────────────
+let cDisp='0',cOp=null,cPrev=null,cReset=false;
+function calcNum(n){
+  if(cReset){cDisp='0';cReset=false;}
+  cDisp=cDisp==='0'&&n!=='.'?n:(cDisp.length<14?cDisp+n:cDisp);
+  upCalc();
+}
+function calcDot(){if(!cDisp.includes('.'))cDisp+='.';upCalc();}
+function calcAC(){cDisp='0';cOp=null;cPrev=null;cReset=false;document.getElementById('calc-expr').textContent='';upCalc();}
+function calcSign(){cDisp=String(-parseFloat(cDisp)||0);upCalc();}
+function calcPct(){cDisp=String(parseFloat(cDisp)/100);upCalc();}
+function calcOp(op){
+  cPrev=parseFloat(cDisp);cOp=op;cReset=true;
+  document.getElementById('calc-expr').textContent=cPrev+' '+op;
+}
+function calcEq(){
+  if(!cOp||cPrev===null)return;
+  const cur=parseFloat(cDisp);let r;
+  if(cOp==='÷')r=cur===0?'Error':cPrev/cur;
+  else if(cOp==='×')r=cPrev*cur;
+  else if(cOp==='−')r=cPrev-cur;
+  else r=cPrev+cur;
+  document.getElementById('calc-expr').textContent=cPrev+' '+cOp+' '+cur+' =';
+  cDisp=typeof r==='string'?r:String(Math.round(r*1e10)/1e10);
+  cOp=null;cPrev=null;cReset=true;upCalc();
+}
+function upCalc(){document.getElementById('calc-disp').textContent=cDisp;}
+
+// ── TRACKER ─────────────────────────────────────────────────
+function renderTracker(){
+  const labels={IV:'IV · Algebraic Concepts',I:'I · Numbers & Ops',II:'II ·   Measurement/Geo',III:'III · Data & Stats'};
+  const colors={IV:'#7c3aed',I:'#d97706',II:'#3b82f6',III:'#10b981'};
+  let barsHtml='';let totalC=0,totalT=0;
+  ['IV','I','II','III'].forEach(k=>{
+    const v=progress[k];
+    const pct=v.t>0?Math.round(v.c/v.t*100):0;
+    totalC+=v.c;totalT+=v.t;
+    barsHtml+=`<div class="tracker-row">
+      <span class="tracker-label">${labels[k]}</span>
+      <div class="tracker-bar-track"><div class="tracker-bar-fill" style="width:${pct}%;background:${colors[k]}"></div></div>
+      <span class="tracker-val">${v.t>0?v.c+'/'+v.t:'—'}</span>
+    </div>`;
+  });
+  document.getElementById('tracker-bars').innerHTML=barsHtml;
+  const overall=totalT>0?Math.round(totalC/totalT*100):0;
+  const badge=overall>=65?'badge-pass':overall>=50?'badge-warn':'badge-fail';
+  const label=overall>=65?'On track':'Keep going';
+  document.getElementById('tracker-summary').innerHTML=`
+    <div class="tc-stat" style="background:#f5f3ff"><div class="sn" style="color:#4c1d95">${totalC}</div><div class="sl" style="color:#4c1d95">Questions correct</div></div>
+    <div class="tc-stat" style="background:#eff6ff"><div class="sn" style="color:#1e3a8a">${totalT}</div><div class="sl" style="color:#1e3a8a">Questions answered</div></div>
+    <div class="tc-stat" style="background:#ecfdf5"><div class="sn" style="color:#065f46">${totalT>0?overall+'%':'—'}</div><div class="sl" style="color:#065f46">Overall accuracy</div></div>
+    <div class="tc-stat" style="background:#fef9ec"><div class="sn" style="color:#92400e">${totalT>0?'<span class=\'badge '+badge+'\'>'+label+'</span>':'—'}</div><div class="sl" style="color:#92400e">Goal: 65%+</div></div>`;
+}
+
+function resetAll(){
+  if(!confirm('Reset all progress and answers?'))return;
+  answered={};progress={IV:{c:0,t:0},I:{c:0,t:0},II:{c:0,t:0},III:{c:0,t:0}};
+  renderDrill(currentDrill);renderTracker();
+}
+
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active');
+  });
+  if(id==='tracker')renderTracker();
+}
+
+showDrill('IV');
+
+// Click handler fix — works regardless of how buttons were rendered
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.choice');
+  if (!btn) return;
+  const card = btn.closest('[id^="card-"], [id^="qc-"]');
+  if (!card) return;
+  // Extract onclick attribute and call it
+  const oc = btn.getAttribute('onclick');
+  if (oc) {
+    try { eval(oc); } catch(err) { console.log('click err', err); }
+  }
+});
+</script>
+<div class="watermark-bar">Ashley Tate<span>|</span>Adult Ed Study Prep<span>|</span>&copy; 2026 &mdash; All Rights Reserved</div>
+</body>
+</html>
