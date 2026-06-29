@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>HiSET Language Arts – Writing Study Tool</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;color:#1a1a1a;background:#f3f2f0;min-height:100vh}
+.app{max-width:840px;margin:0 auto;padding:1rem 1rem 5rem}
+.header{background:#1a1a1a;color:#fff;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem}
+.header h1{font-size:22px;font-weight:700}
+.header p{font-size:13px;opacity:0.55;margin-top:3px}
+.weight-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:1rem}
+.wpill{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600}
+.wp1{background:#dbeafe;color:#1e3a8a}
+.wp2{background:#fce7f3;color:#831843}
+.wp3{background:#d1fae5;color:#064e3b}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
+.nav-btn{padding:11px 15px;border:none;border-radius:10px;background:#fff;color:#555;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 1px 3px rgba(0,0,0,0.07);transition:all 0.12s;white-space:nowrap}
+.nav-btn:active{transform:scale(0.97)}
+.nav-btn.active{background:#1a1a1a;color:#fff}
+.section{display:none}.section.active{display:block}
+.card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.sec-header{margin-bottom:1.25rem}
+.sec-header h2{font-size:19px;font-weight:700;margin-bottom:3px}
+.sec-header p{font-size:13px;color:#666;line-height:1.55}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:1.25rem}
+.topic-card{border-radius:14px;padding:1.25rem;cursor:pointer;transition:all 0.15s;border:2px solid transparent}
+.topic-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,0.1)}
+.topic-card:active{transform:scale(0.98)}
+.tc1{background:#eff6ff;border-color:#bfdbfe}
+.tc2{background:#fdf2f8;border-color:#fbcfe8}
+.tc3{background:#ecfdf5;border-color:#a7f3d0}
+.tc-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.tc1 .tc-lbl{color:#1d4ed8}.tc2 .tc-lbl{color:#9d174d}.tc3 .tc-lbl{color:#047857}
+.tc-title{font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.tc-sub{font-size:12px;color:#666;line-height:1.5}
+.tc-pct{font-size:30px;font-weight:800;margin-top:8px;line-height:1}
+.tc1 .tc-pct{color:#3b82f6}.tc2 .tc-pct{color:#ec4899}.tc3 .tc-pct{color:#10b981}
+.tc-pct-lbl{font-size:11px;color:#888;margin-top:2px}
+.strat-section{margin-bottom:1.5rem}
+.strat-header{font-size:15px;font-weight:700;margin-bottom:0.75rem;padding:10px 14px;border-radius:10px;display:flex;align-items:center;gap:8px}
+.sh1{background:#eff6ff;color:#1d4ed8}.sh2{background:#fdf2f8;color:#9d174d}
+.sh3{background:#ecfdf5;color:#047857}.she{background:#fffbeb;color:#92400e}.shp{background:#fdf4ff;color:#7e22ce}
+.strat-card{background:#f8f8f6;border-radius:10px;padding:1rem 1.1rem;margin-bottom:0.75rem;font-size:14px;line-height:1.65;color:#333;border-left:4px solid}
+.sc1{border-left-color:#3b82f6}.sc2{border-left-color:#ec4899}
+.sc3{border-left-color:#10b981}.sce{border-left-color:#f59e0b}.scp{border-left-color:#9333ea}
+.strat-steps{margin-top:6px;padding-left:1.1rem}
+.strat-steps li{margin-bottom:5px;font-size:13px;color:#444;line-height:1.55}
+.fc-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.fc-filter button{padding:7px 13px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#555;font-family:inherit}
+.fc-filter button.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.flashcard{border-radius:16px;padding:2rem 1.5rem;min-height:230px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;margin-bottom:1rem;text-align:center;transition:all 0.18s}
+.flashcard:active{transform:scale(0.98)}
+.fc-front{background:#1a1a1a;color:#fff}
+.fc-back1{background:#eff6ff;color:#1e3a8a;border:2px solid #bfdbfe}
+.fc-back2{background:#fdf2f8;color:#831843;border:2px solid #fbcfe8}
+.fc-back3{background:#ecfdf5;color:#064e3b;border:2px solid #a7f3d0}
+.fc-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;opacity:0.45;margin-bottom:10px}
+.fc-term{font-size:21px;font-weight:700;line-height:1.3}
+.fc-hint{font-size:12px;opacity:0.35;margin-top:10px}
+.fc-def{font-size:14px;line-height:1.7;max-width:500px}
+.fc-ex{margin-top:10px;font-size:13px;background:rgba(0,0,0,0.06);padding:6px 12px;border-radius:8px;display:inline-block;font-style:italic}
+.fc-nav{display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.fc-nav button{padding:12px 22px;border:1.5px solid #e5e7eb;border-radius:10px;background:#fff;font-size:14px;cursor:pointer;font-family:inherit;font-weight:600}
+.fc-nav button:active{transform:scale(0.97)}
+.fc-counter{font-size:13px;color:#888}
+.drill-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.drill-tab{padding:10px 15px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all 0.12s}
+.drill-tab:active{transform:scale(0.97)}
+.dt1{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a}
+.dt2{background:#fdf2f8;border-color:#ec4899;color:#9d174d}
+.dt3{background:#ecfdf5;border-color:#10b981;color:#047857}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:5px}
+.prog-bar-wrap{background:#e5e7eb;border-radius:6px;height:7px;overflow:hidden;margin-bottom:1rem}
+.prog-bar-fill{height:100%;border-radius:6px;background:#1a1a1a;transition:width 0.4s}
+.q-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.q-meta{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.q-tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px}
+.tag1{background:#dbeafe;color:#1e3a8a}.tag2{background:#fce7f3;color:#831843}.tag3{background:#d1fae5;color:#064e3b}
+.dok-tag{font-size:11px;color:#888;background:#f8f0ff;padding:3px 8px;border-radius:6px}
+.passage-box{background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:1rem 1.1rem;margin-bottom:1rem}
+.passage-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#a16207;margin-bottom:6px}
+.passage-text{font-size:13px;line-height:1.8;color:#44403c}
+.q-text{font-size:15px;font-weight:500;line-height:1.65;margin-bottom:1rem;color:#1a1a1a}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border:1.5px solid #e5e7eb;border-radius:10px;cursor:pointer;font-size:14px;line-height:1.5;text-align:left;background:#fff;color:#1a1a1a;width:100%;font-family:inherit;min-height:48px;transition:border-color 0.12s,background 0.12s}
+.choice:hover:not(:disabled){border-color:#9ca3af;background:#fafafa}
+.choice.correct{border-color:#16a34a;background:#f0fdf4;color:#14532d}
+.choice.wrong{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
+.choice-letter{font-weight:700;min-width:22px;flex-shrink:0}
+.explanation{display:none;margin-top:10px;padding:12px 14px;background:#f0fdf4;border-radius:10px;font-size:13px;line-height:1.65;color:#14532d;border-left:3px solid #16a34a}
+.exp-title{font-weight:700;margin-bottom:6px}
+.strategy-note{margin-top:8px;padding:8px 10px;background:#fffbeb;border-radius:8px;font-size:12px;color:#92400e;border-left:3px solid #f59e0b;line-height:1.55}
+.essay-passage{background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:10px;padding:1rem 1.1rem;margin-bottom:1rem}
+.essay-passage-title{font-size:12px;font-weight:700;color:#0284c7;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.essay-passage-text{font-size:13px;line-height:1.75;color:#0c4a6e}
+.essay-prompt-box{background:#fdf4ff;border:1.5px solid #e9d5ff;border-radius:10px;padding:1rem 1.1rem;margin-bottom:1rem}
+.essay-prompt-label{font-size:11px;font-weight:700;color:#7e22ce;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.essay-prompt-text{font-size:14px;line-height:1.7;color:#44403c}
+.essay-area{width:100%;min-height:300px;padding:1rem;border:1.5px solid #d0d0d0;border-radius:10px;font-size:14px;line-height:1.75;font-family:inherit;resize:vertical;background:#fff;color:#1a1a1a}
+.essay-area:focus{outline:none;border-color:#9333ea;box-shadow:0 0 0 2px rgba(147,51,234,0.15)}
+.word-count{font-size:12px;color:#999;margin-top:5px;text-align:right}
+.prompt-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1rem}
+.prompt-tab{padding:7px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#555;font-family:inherit;transition:all 0.12s}
+.prompt-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.rubric-table{width:100%;border-collapse:collapse;font-size:13px}
+.rubric-table th{background:#f3f4f6;padding:8px 12px;text-align:left;font-weight:700;border:1px solid #e5e7eb}
+.rubric-table td{padding:8px 12px;border:1px solid #e5e7eb;line-height:1.55}
+.rubric-table tr:nth-child(even) td{background:#fafafa}
+.ai-feedback{font-size:14px;line-height:1.7;padding:1.25rem;background:#f8f8f6;border-radius:10px;margin-top:1rem;display:none;border-left:3px solid #9333ea}
+.ai-feedback h4{font-size:15px;font-weight:700;margin-bottom:0.75rem}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #e0e0e0;border-top-color:#9333ea;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn{padding:12px 22px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn:active{transform:scale(0.97)}
+.btn-dark{background:#1a1a1a;color:#fff}
+.btn-outline{background:#fff;color:#1a1a1a;border:1.5px solid #e5e7eb}
+.btn-purple{background:#7e22ce;color:#fff}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.tracker-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9}
+.tracker-row:last-child{border-bottom:none}
+.tracker-label{font-size:13px;font-weight:600;width:155px;flex-shrink:0}
+.tracker-bar-track{flex:1;height:10px;background:#e5e7eb;border-radius:5px;overflow:hidden}
+.tracker-bar-fill{height:100%;border-radius:5px;transition:width 0.5s}
+.tracker-val{font-size:12px;color:#888;width:44px;text-align:right;flex-shrink:0}
+.ts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:1rem}
+.ts-card{padding:1rem;border-radius:12px;text-align:center}
+.ts-card .tn{font-size:26px;font-weight:800}
+.ts-card .tl{font-size:11px;margin-top:3px;font-weight:500}
+.badge-pass{display:inline-block;background:#dcfce7;color:#14532d;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+.badge-warn{display:inline-block;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+.badge-fail{display:inline-block;background:#fee2e2;color:#991b1b;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+@media(max-width:500px){.topic-grid{grid-template-columns:1fr}.tracker-label{width:110px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+  <h1>HiSET Language Arts &ndash; Writing</h1>
+  <p>Study Tool &middot; 60 multiple-choice questions + 1 essay &middot; 120 minutes</p>
+  <div class="weight-pills">
+    <span class="wpill wp2">II. Language Facility &mdash; 43%</span>
+    <span class="wpill wp3">III. Writing Conventions &mdash; 35%</span>
+    <span class="wpill wp1">I. Organization of Ideas &mdash; 22%</span>
+  </div>
+</div>
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('home')">Home</button>
+  <button class="nav-btn" onclick="showSection('strategies')">Strategies</button>
+  <button class="nav-btn" onclick="showSection('flashcards')">Flashcards</button>
+  <button class="nav-btn" onclick="showSection('practice')">Practice</button>
+  <button class="nav-btn" onclick="showSection('essay')">Essay</button>
+  <button class="nav-btn" onclick="showSection('tracker')">Progress</button>
+</div>
+
+<div id="section-home" class="section active">
+  <div class="card">
+    <div style="font-size:16px;font-weight:700;margin-bottom:1rem">What&rsquo;s on the HiSET Writing test?</div>
+    <div class="topic-grid">
+      <div class="topic-card tc2" onclick="showSection('practice');showDrill('II')">
+        <div class="tc-lbl">Content Area II &middot; Largest section</div>
+        <div class="tc-title">Language Facility</div>
+        <div class="tc-sub">Parallel structure, modifiers, sentence variety, tone, word choice, idioms</div>
+        <div class="tc-pct">43%</div>
+        <div class="tc-pct-lbl">&asymp; 26 of 60 questions</div>
+      </div>
+      <div class="topic-card tc3" onclick="showSection('practice');showDrill('III')">
+        <div class="tc-lbl">Content Area III</div>
+        <div class="tc-title">Writing Conventions</div>
+        <div class="tc-sub">Grammar, punctuation, spelling, fragments, run-ons, capitalization</div>
+        <div class="tc-pct">35%</div>
+        <div class="tc-pct-lbl">&asymp; 21 of 60 questions</div>
+      </div>
+      <div class="topic-card tc1" onclick="showSection('practice');showDrill('I')">
+        <div class="tc-lbl">Content Area I</div>
+        <div class="tc-title">Organization of Ideas</div>
+        <div class="tc-sub">Transitions, logical order, relevance, opening and closing sentences</div>
+        <div class="tc-pct">22%</div>
+        <div class="tc-pct-lbl">&asymp; 13 of 60 questions</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:#666;line-height:1.8;padding:0.75rem 1rem;background:#f8f8f6;border-radius:10px;margin-top:0.5rem">
+      <strong>How this test works:</strong> Questions are embedded in COMPLETE TEXTS (letters, essays, articles) with underlined or highlighted portions. You choose the best revision for each underlined section &mdash; or identify which revision is NOT needed.<br>
+      &middot; 120 minutes total &middot; 60 multiple-choice + 1 essay<br>
+      &middot; Essay: read two passages, write an argumentative response<br>
+      &middot; Essay scored separately on a 1&ndash;6 scale (passing = 2 or higher)
+    </div>
+  </div>
+</div>
+
+<div id="section-strategies" class="section">
+  <div class="sec-header"><h2>Writing Strategies</h2><p>Most questions ask you to REVISE a draft — not write from scratch. Read the whole passage first for context.</p></div>
+  <div class="strat-section">
+    <div class="strat-header shp">&#128161; Universal Strategies</div>
+    <div class="strat-card scp"><strong>Read the whole passage first</strong><p style="margin-top:4px">Before answering any questions about a passage, read the entire text. Understanding the overall meaning, tone, and structure helps you make better revision decisions for individual sentences.</p></div>
+    <div class="strat-card scp"><strong>Read the sentence in context</strong><p style="margin-top:4px">Always read the sentence BEFORE and AFTER the underlined portion. Many errors — especially transitions, pronoun reference, and tense — only become visible when you see the surrounding sentences.</p></div>
+    <div class="strat-card scp"><strong>Eliminate wrong answers first</strong><ul class="strat-steps"><li>Eliminate choices that introduce NEW errors</li><li>Eliminate choices that change the meaning of the sentence</li><li>Eliminate choices that are awkward or wordy when a simpler option exists</li><li>The correct answer fixes the problem WITHOUT creating a new one</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh1">&#128196; I. Organization of Ideas &mdash; 22%</div>
+    <div class="strat-card sc1"><strong>Transitions &mdash; identify the relationship first</strong><ul class="strat-steps"><li>Contrast: however, although, on the other hand, yet, but, despite</li><li>Addition: furthermore, in addition, also, moreover, additionally</li><li>Result/Cause: therefore, consequently, as a result, thus</li><li>Time: meanwhile, subsequently, previously, at the same time</li><li>Example: for instance, for example, specifically, in particular</li></ul></div>
+    <div class="strat-card sc1"><strong>Relevance &mdash; does this sentence belong?</strong><ul class="strat-steps"><li>Ask: does this sentence directly support the main idea of the paragraph?</li><li>If it introduces a completely unrelated topic &rarr; remove it</li><li>If it contradicts the paragraph&rsquo;s argument without purpose &rarr; remove it</li><li>Be careful: a sentence that seems off-topic might connect if you read ahead</li></ul></div>
+    <div class="strat-card sc1"><strong>Sentence placement</strong><ul class="strat-steps"><li>Look for transition words as clues: &ldquo;As a result&rdquo; must follow a cause</li><li>Look for pronoun references: &ldquo;This idea&rdquo; must follow the idea being referenced</li><li>Test each position by reading the sentences before and after</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh2">&#9999; II. Language Facility &mdash; 43%</div>
+    <div class="strat-card sc2"><strong>Parallel structure &mdash; match the form</strong><ul class="strat-steps"><li>Find the FIRST item in the list and identify its form (gerund, infinitive, noun, clause)</li><li>Make ALL other items match that exact form</li><li>Common pairs: not only...but also, both...and, either...or, neither...nor</li><li>WRONG: She likes swimming, to run, and hikes. RIGHT: She likes swimming, running, and hiking.</li></ul></div>
+    <div class="strat-card sc2"><strong>Modifiers &mdash; who is doing the action?</strong><ul class="strat-steps"><li>The subject RIGHT AFTER the comma must be the one doing the introductory action</li><li>WRONG: Running down the street, the rain soaked us. (Rain wasn&rsquo;t running)</li><li>RIGHT: Running down the street, we got soaked by the rain.</li><li>If no logical subject follows the phrase &rarr; dangling modifier. Rewrite the whole sentence.</li></ul></div>
+    <div class="strat-card sc2"><strong>Tone and word choice</strong><ul class="strat-steps"><li>Match the formality level to the context (business letter = formal, diary = informal)</li><li>Choose precise words over vague ones (declared &gt; said; exhausted &gt; tired)</li><li>Avoid wordiness &mdash; if two words do the same job, cut one</li><li>Consistency: don&rsquo;t shift from formal to casual within the same piece</li></ul></div>
+    <div class="strat-card sc2"><strong>Comparative vs. superlative</strong><ul class="strat-steps"><li>Comparing TWO things: comparative (-er or more): faster, more effective</li><li>Comparing THREE or MORE: superlative (-est or most): fastest, most effective</li><li>For words with 3+ syllables: ALWAYS use more/most, never add -er/-est</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header sh3">&#10003; III. Writing Conventions &mdash; 35%</div>
+    <div class="strat-card sc3"><strong>Subject-verb agreement traps</strong><ul class="strat-steps"><li>Singular subjects: each, every, either, neither, anyone, everyone, someone &rarr; singular verb</li><li>Don&rsquo;t be fooled by prepositional phrases: &ldquo;Each of the students IS...&rdquo; (not &ldquo;are&rdquo;)</li><li>Compound subjects with &ldquo;and&rdquo; = plural. With &ldquo;or/nor&rdquo; = match the nearest subject</li></ul></div>
+    <div class="strat-card sc3"><strong>Run-ons and fragments</strong><ul class="strat-steps"><li>Run-on fix: (1) period, (2) semicolon, (3) comma + FANBOYS conjunction</li><li>Comma splice: two independent clauses with ONLY a comma = always wrong</li><li>Fragment: starts with because, although, when, if, since, while &rarr; needs an independent clause</li><li>Test: can it stand alone as a complete sentence? If no &rarr; fragment</li></ul></div>
+    <div class="strat-card sc3"><strong>Semicolon and conjunctive adverbs</strong><ul class="strat-steps"><li>SEMICOLON + however/therefore/moreover/furthermore + COMMA</li><li>This is one of the most tested punctuation patterns on the HiSET</li><li>WRONG: I studied hard, however I failed. RIGHT: I studied hard; however, I failed.</li></ul></div>
+    <div class="strat-card sc3"><strong>Pronoun rules</strong><ul class="strat-steps"><li>Subject pronouns (I, he, she, we, they): used as the subject of a verb</li><li>Object pronouns (me, him, her, us, them): used as objects of verbs or prepositions</li><li>WRONG: Him and me went. RIGHT: He and I went. WRONG: Give it to he. RIGHT: Give it to him.</li><li>Pronoun-antecedent: &ldquo;each student&rdquo; is singular &rarr; use his or her (not their)</li></ul></div>
+  </div>
+  <div class="strat-section">
+    <div class="strat-header she">&#9997; Essay Strategies</div>
+    <div class="strat-card sce"><strong>Before you write &mdash; spend 5 minutes planning</strong><ul class="strat-steps"><li>Read both passages and mark the key points in each</li><li>Decide your position BEFORE writing the intro</li><li>Jot down 2&ndash;3 reasons that support your position</li><li>Note which passage supports your argument and which one you need to address</li></ul></div>
+    <div class="strat-card sce"><strong>Essay structure &mdash; five paragraphs</strong><ul class="strat-steps"><li>Paragraph 1: Introduction &mdash; state your position clearly (thesis)</li><li>Paragraph 2: First reason + evidence from passages or personal experience</li><li>Paragraph 3: Second reason + evidence</li><li>Paragraph 4: Acknowledge the other side and explain why your position is stronger</li><li>Paragraph 5: Conclusion &mdash; restate your position, don&rsquo;t introduce new ideas</li></ul></div>
+    <div class="strat-card sce"><strong>Use evidence from BOTH passages</strong><ul class="strat-steps"><li>Don&rsquo;t just use the passage that agrees with you &mdash; engage with both</li><li>Quote or paraphrase specific details from each passage</li><li>You can agree with parts of the opposing passage while still arguing your position</li><li>Personal experience and knowledge can supplement passage evidence</li></ul></div>
+    <div class="strat-card sce"><strong>Essay scoring &mdash; what scorers look for</strong><ul class="strat-steps"><li>A clear, specific central claim (not vague: &ldquo;Both sides have good points&rdquo;)</li><li>Evidence from BOTH passages cited specifically</li><li>Logical organization with transitions between paragraphs</li><li>Varied sentence structure and precise word choice</li><li>Minimal grammar, punctuation, and spelling errors</li></ul></div>
+  </div>
+</div>
+
+<div id="section-flashcards" class="section">
+  <div class="sec-header"><h2>Writing Flashcards</h2><p>Tap to flip. Filter by content area.</p></div>
+  <div class="fc-filter">
+    <button class="active" onclick="filterCards('all',this)">All</button>
+    <button onclick="filterCards('I',this)">&#128196; Organization</button>
+    <button onclick="filterCards('II',this)">&#9999; Language</button>
+    <button onclick="filterCards('III',this)">&#10003; Conventions</button>
+  </div>
+  <div class="flashcard fc-front" id="flashcard" onclick="flipCard()">
+    <div class="fc-cat" id="fc-cat"></div>
+    <div id="fc-front-content"><div class="fc-term" id="fc-term"></div><div class="fc-hint">Tap to see definition</div></div>
+    <div id="fc-back-content" style="display:none"><div class="fc-def" id="fc-def"></div><div class="fc-ex" id="fc-ex"></div></div>
+  </div>
+  <div class="fc-nav">
+    <button onclick="prevCard()">&larr; Back</button>
+    <span class="fc-counter" id="fc-counter">1 / 22</span>
+    <button onclick="nextCard()">Next &rarr;</button>
+  </div>
+</div>
+
+<div id="section-practice" class="section">
+  <div class="sec-header"><h2>Practice Questions</h2><p>Questions are embedded in draft passages &mdash; just like the real test. Read the full passage before answering.</p></div>
+  <div class="drill-tabs">
+    <button class="drill-tab" id="tab-II" onclick="showDrill('II')">&#9999; II &middot; Language Facility</button>
+    <button class="drill-tab" id="tab-III" onclick="showDrill('III')">&#10003; III &middot; Conventions</button>
+    <button class="drill-tab" id="tab-I" onclick="showDrill('I')">&#128196; I &middot; Organization</button>
+  </div>
+  <div class="prog-row"><span id="prog-text">0 of 0 answered</span><span id="prog-score">0 correct</span></div>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-bar" style="width:0%"></div></div>
+  <div id="practice-container"></div>
+</div>
+
+<div id="section-essay" class="section">
+  <div class="sec-header"><h2>Essay Practice</h2><p>Read both passages, then write your argumentative essay. AI will score it on the official 1&ndash;6 rubric.</p></div>
+  <div class="card">
+    <div style="font-size:14px;font-weight:700;margin-bottom:0.75rem">Select a prompt:</div>
+    <div class="prompt-tabs" id="prompt-tabs"></div>
+    <div id="essay-passages"></div>
+    <div class="essay-prompt-box">
+      <div class="essay-prompt-label">Your writing task</div>
+      <div class="essay-prompt-text" id="essay-prompt-text"></div>
+    </div>
+    <textarea class="essay-area" id="essay-text" placeholder="Write your essay here. Aim for 4-6 well-developed paragraphs..." oninput="updateWordCount()"></textarea>
+    <div class="word-count" id="word-count">0 words</div>
+    <div class="btn-row">
+      <button class="btn btn-purple" onclick="scoreEssay()">Score my essay</button>
+      <button class="btn btn-outline" onclick="toggleRubric()">Show / hide rubric</button>
+    </div>
+    <div class="ai-feedback" id="essay-feedback"></div>
+  </div>
+  <div class="card" id="rubric-card" style="display:none">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem">HiSET Essay Rubric (scored 1&ndash;6)</div>
+    <table class="rubric-table">
+      <tr><th style="width:60px">Score</th><th>Description</th></tr>
+      <tr><td><strong>6</strong></td><td>Exceptional: Clearly focused argument with a strong central claim. Well-developed with specific, convincing evidence from both passages and personal knowledge. Varied sentence structure, precise word choice, and virtually no errors in grammar or mechanics.</td></tr>
+      <tr><td><strong>5</strong></td><td>Strong: Clear, focused argument with good development and relevant evidence from both passages. Minor errors in grammar or mechanics that do not interfere with meaning.</td></tr>
+      <tr><td><strong>4</strong></td><td>Adequate: Generally focused argument with relevant evidence, though development may be uneven. Some errors present but meaning is clear throughout.</td></tr>
+      <tr><td><strong>3</strong></td><td>Developing: Argument present but inconsistently focused. Limited use of passage evidence. Errors may occasionally interfere with meaning.</td></tr>
+      <tr><td><strong>2</strong></td><td>Beginning: Weak focus or underdeveloped argument. Little use of passage evidence. Frequent errors that interfere with communication.</td></tr>
+      <tr><td><strong>1</strong></td><td>Minimal: Little or no recognizable argument. Severe errors make the response difficult to understand.</td></tr>
+    </table>
+    <p style="font-size:12px;color:#999;margin-top:0.75rem">Passing = 2 or higher. Two raters score independently; scores are averaged.</p>
+  </div>
+</div>
+
+<div id="section-tracker" class="section">
+  <div class="sec-header"><h2>My Progress</h2><p>Track your accuracy across all three content areas.</p></div>
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem">Accuracy by content area</div>
+    <div id="tracker-bars"></div>
+  </div>
+  <div class="card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1rem">Session totals</div>
+    <div class="ts-grid" id="tracker-summary"></div>
+    <div style="margin-top:1rem"><button class="btn btn-outline" onclick="resetAll()">Reset all progress</button></div>
+  </div>
+  <div class="card" style="background:#fdf4ff;border:1.5px solid #e9d5ff">
+    <div style="font-size:14px;font-weight:700;margin-bottom:0.5rem;color:#7e22ce">&#128204; Scoring reminder</div>
+    <div style="font-size:13px;color:#555;line-height:1.8">
+      &middot; HiSET Writing is scored 1&ndash;20 &middot; Passing = <strong>8 or higher</strong><br>
+      &middot; Language Facility is 43% &mdash; it&rsquo;s the biggest section<br>
+      &middot; Essay is scored separately: 1&ndash;6 scale, passing = <strong>2 or higher</strong><br>
+      &middot; Aim for <strong>65%+ accuracy</strong> in practice to be on track
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const CARDS = [{"area": "I", "cat": "I · Organization of Ideas", "term": "Topic Sentence", "def": "The sentence that states the main idea of a paragraph. Usually the first sentence. Everything else in the paragraph should support it.", "ex": "'Social media has changed how young people communicate.' — everything after supports this claim"}, {"area": "I", "cat": "I · Organization of Ideas", "term": "Transitions", "def": "Words or phrases that connect ideas and show the relationship between sentences or paragraphs.", "ex": "Contrast: however, although, on the other hand. Addition: furthermore, in addition, also. Result: therefore, consequently, as a result"}, {"area": "I", "cat": "I · Organization of Ideas", "term": "Logical Order", "def": "Ideas arranged in a sequence that makes sense — chronological, order of importance, cause and effect, or compare and contrast.", "ex": "Steps in a process should be in time order; arguments should build from weakest to strongest"}, {"area": "I", "cat": "I · Organization of Ideas", "term": "Concluding Sentence", "def": "The final sentence of a paragraph or essay that wraps up the main idea. It should NOT introduce new information.", "ex": "'For these reasons, regular exercise is essential for long-term health.'"}, {"area": "I", "cat": "I · Organization of Ideas", "term": "Relevance", "def": "Whether a sentence or detail actually supports and belongs in the paragraph. Irrelevant sentences distract from the main idea and should be removed.", "ex": "A paragraph about climate change should not include a sentence about a specific celebrity's vacation"}, {"area": "II", "cat": "II · Language Facility", "term": "Parallel Structure", "def": "Using the same grammatical form for items in a list or paired ideas. All items must match — all nouns, all verbs, all phrases, etc.", "ex": "WRONG: She likes running, to swim, and hikes. RIGHT: She likes running, swimming, and hiking."}, {"area": "II", "cat": "II · Language Facility", "term": "Misplaced Modifier", "def": "A describing word or phrase placed too far from the word it describes, creating confusion or an unintended meaning.", "ex": "WRONG: She almost drove her kids to school every day. RIGHT: She drove her kids to school almost every day."}, {"area": "II", "cat": "II · Language Facility", "term": "Dangling Modifier", "def": "A modifier that has no clear subject to describe — it seems to modify the wrong word or nothing at all.", "ex": "WRONG: Running down the street, the rain soaked us. (The rain wasn't running.) RIGHT: Running down the street, we got soaked by the rain."}, {"area": "II", "cat": "II · Language Facility", "term": "Compound Sentence", "def": "Two independent clauses joined by a coordinating conjunction (FANBOYS: For, And, Nor, But, Or, Yet, So) with a comma before the conjunction.", "ex": "I studied hard, and I passed the test."}, {"area": "II", "cat": "II · Language Facility", "term": "Complex Sentence", "def": "An independent clause combined with a dependent clause using a subordinating conjunction (because, although, when, if, since, while).", "ex": "Although it was raining, we went to the park."}, {"area": "II", "cat": "II · Language Facility", "term": "Tone", "def": "The attitude or feeling conveyed by the writer's word choices. Tone should be consistent and appropriate for the audience and purpose.", "ex": "Formal tone for a business letter; conversational tone for a personal narrative"}, {"area": "II", "cat": "II · Language Facility", "term": "Precise Word Choice", "def": "Selecting the most exact, specific word rather than a vague or general one. Precise language makes writing clearer and more effective.", "ex": "Instead of 'said' → declared, whispered, argued, explained. Instead of 'good' → effective, remarkable, thorough"}, {"area": "II", "cat": "II · Language Facility", "term": "Idiom", "def": "A phrase whose meaning cannot be understood from the individual words alone. Idioms are figurative expressions common in everyday language.", "ex": "'To miss the boat' means to miss an opportunity. 'To cut corners' means to do something poorly to save time."}, {"area": "III", "cat": "III · Writing Conventions", "term": "Subject-Verb Agreement", "def": "The subject and verb in a sentence must match in number. Singular subjects take singular verbs; plural subjects take plural verbs.", "ex": "WRONG: The team play well. RIGHT: The team plays well. (team = singular collective noun)"}, {"area": "III", "cat": "III · Writing Conventions", "term": "Pronoun-Antecedent Agreement", "def": "A pronoun must agree in number and gender with the noun it replaces (the antecedent).", "ex": "WRONG: Every student must bring their book. RIGHT: Every student must bring his or her book. (or rewrite: All students must bring their books.)"}, {"area": "III", "cat": "III · Writing Conventions", "term": "Run-On Sentence", "def": "Two or more independent clauses joined incorrectly — either with no punctuation or only a comma (comma splice).", "ex": "WRONG: I love reading I read every night. WRONG: I love reading, I read every night. RIGHT: I love reading; I read every night. OR: I love reading, and I read every night."}, {"area": "III", "cat": "III · Writing Conventions", "term": "Sentence Fragment", "def": "An incomplete sentence missing a subject, a verb, or a complete thought. Cannot stand alone.", "ex": "WRONG: Because it was raining. (incomplete — what happened because it was raining?) RIGHT: Because it was raining, we stayed inside."}, {"area": "III", "cat": "III · Writing Conventions", "term": "Comma Rules", "def": "Key uses: before coordinating conjunction in compound sentence; after introductory element; to separate items in a list; to set off nonessential information.", "ex": "After the game, we went home. (introductory) · I need eggs, milk, and bread. (list) · My sister, who lives in Texas, called me. (nonessential)"}, {"area": "III", "cat": "III · Writing Conventions", "term": "Semicolon", "def": "Used to join two closely related independent clauses without a conjunction. Also used before conjunctive adverbs (however, therefore, moreover).", "ex": "I studied hard; I passed the test. · I studied hard; however, the test was difficult."}, {"area": "III", "cat": "III · Writing Conventions", "term": "Verb Tense Consistency", "def": "The verb tense should stay consistent throughout a piece of writing unless there is a logical reason to shift. Unnecessary tense shifts confuse readers.", "ex": "WRONG: She walked into the room and sees him. RIGHT: She walked into the room and saw him."}, {"area": "III", "cat": "III · Writing Conventions", "term": "Pronoun Case", "def": "Pronouns must be in the correct case: subjective (I, he, she, we, they) for subjects; objective (me, him, her, us, them) for objects.", "ex": "WRONG: Him and me went to the store. RIGHT: He and I went to the store. WRONG: She gave it to he. RIGHT: She gave it to him."}, {"area": "III", "cat": "III · Writing Conventions", "term": "Capitalization Rules", "def": "Capitalize: first word of a sentence, proper nouns (names of specific people, places, organizations), titles before names, days/months, and the word 'I'.", "ex": "Capitalize: President Lincoln, Monday, January, the South (as a region). Do NOT capitalize: the president (general reference), winter, north (as a direction)"}];
+const QUESTIONS = {"I": [{"id": "org1", "tag": "I · Organization of Ideas", "dok": "DOK 2", "passage_title": "Draft: A Letter to the Editor About Public Parks", "passage": "[1] Our city's public parks are in desperate need of attention. [2] Many of the playgrounds have broken equipment that has not been repaired in years. [3] The walking trails are overgrown and difficult to navigate safely. [4] My neighbor recently adopted a golden retriever puppy. [5] Without proper maintenance, these spaces cannot serve their purpose of providing safe recreation for families.", "text": "Which sentence should be REMOVED from this paragraph because it is not relevant to the main idea?", "choices": ["Sentence 1", "Sentence 2", "Sentence 4", "Sentence 5"], "correct": 2, "explain": "Sentence 4 ('My neighbor recently adopted a golden retriever puppy') has nothing to do with the condition of public parks. It interrupts the logical flow of the argument about park maintenance and should be removed.", "strategy": "Relevance questions: ask 'Does this sentence support the main idea of the paragraph?' If it introduces a completely unrelated topic, it must be removed."}, {"id": "org2", "tag": "I · Organization of Ideas", "dok": "DOK 2", "passage_title": "Draft: Essay on Healthy Eating", "passage": "[1] Eating a balanced diet provides numerous benefits for physical and mental health. [2] _______, many people struggle to make healthy choices due to cost and convenience. [3] Fast food restaurants are available on nearly every corner, while fresh produce can be expensive and time-consuming to prepare. [4] Understanding these barriers is the first step toward finding practical solutions.", "text": "Which transition word or phrase BEST fills the blank in Sentence 2?", "choices": ["Therefore", "In addition", "However", "Similarly"], "correct": 2, "explain": "Sentence 1 describes benefits of healthy eating (positive). Sentence 2 introduces a challenge/problem (negative). 'However' signals a contrast between two opposing ideas — exactly the relationship here. 'Therefore' signals a result; 'In addition' signals more of the same; 'Similarly' signals a comparison.", "strategy": "Transition questions: identify the relationship between the two ideas. Contrast = however, although, but, yet. Addition = furthermore, also, in addition. Result = therefore, consequently, as a result."}, {"id": "org3", "tag": "I · Organization of Ideas", "dok": "DOK 3", "passage_title": "Draft: Report on Renewable Energy", "passage": "[1] Solar energy has become increasingly affordable in recent years. [2] The cost of solar panels has dropped by more than 70% over the past decade. [3] Thousands of homeowners have installed panels to reduce their electricity bills. [4] Wind energy is another growing source of renewable power. [5] Wind turbines can generate electricity without producing greenhouse gas emissions.", "text": "Where would the following sentence fit BEST in this passage? 'As a result, more families than ever can afford to make the switch to clean energy.'", "choices": ["After Sentence 1", "After Sentence 2", "After Sentence 3", "After Sentence 5"], "correct": 2, "explain": "The new sentence says 'As a result' — meaning it must follow a cause. The cause is the 70% drop in solar panel costs (Sentence 2). The sentence also transitions naturally into the effect: homeowners installing panels (Sentence 3). Placing it after Sentence 3 would disrupt the flow into wind energy.", "strategy": "Sentence insertion questions: look for the transition word as a clue. 'As a result' must follow a cause. Find the sentence that explains WHY families can now afford it — that's where this sentence belongs."}, {"id": "org4", "tag": "I · Organization of Ideas", "dok": "DOK 3", "passage_title": "Draft: Personal Essay", "passage": "[1] Learning to cook was one of the most valuable skills I ever developed. [2] At first, I burned everything I tried to make. [3] Gradually, I learned to follow recipes more carefully and to pay attention to timing. [4] Now I prepare most of my own meals and rarely eat out. [5] Cooking has saved me money and helped me eat more healthfully.", "text": "Which best describes the organizational structure of this passage?", "choices": ["Compare and contrast — comparing cooking to eating out", "Problem and solution — presenting a problem then solving it", "Chronological order — describing events in the sequence they happened", "Order of importance — from least to most important idea"], "correct": 2, "explain": "The passage follows the writer's journey over time: first burning food (past), then learning (gradual progress), then cooking successfully now (present). This is a time-based sequence — chronological order. There is no problem/solution structure and no comparison being made.", "strategy": "Text structure questions: look for signal words. Chronological = first, then, gradually, now, later. Compare/contrast = however, similarly, on the other hand. Problem/solution = the problem is, one solution is."}, {"id": "org5", "tag": "I · Organization of Ideas", "dok": "DOK 2", "passage_title": "Draft: Business Email", "passage": "[1] Thank you for attending last week's training session. [2] We hope you found the information useful and applicable to your work. [3] Please complete the attached feedback form by Friday. [4] Your input will help us improve future sessions. [5] _______", "text": "Which sentence would make the BEST concluding sentence for this email?", "choices": ["The training covered topics such as communication and time management.", "We look forward to your continued participation in our professional development program.", "The session lasted approximately three hours.", "Training sessions are held every quarter throughout the year."], "correct": 1, "explain": "A strong concluding sentence wraps up the message with a forward-looking, positive note. Option B does this perfectly — it thanks the reader and looks ahead. Options A and C introduce details that should have appeared earlier. Option D adds new information that belongs in the body, not the conclusion.", "strategy": "Concluding sentences: should wrap up, not introduce new details. Look for a sentence that summarizes, thanks, or looks forward — not one that adds new information."}, {"id": "org6", "tag": "I · Organization of Ideas", "dok": "DOK 2", "passage_title": "Draft: Article on Exercise", "passage": "[1] Regular physical activity offers benefits that go far beyond losing weight. [2] Exercise strengthens the heart and improves circulation. [3] It also boosts mood by releasing endorphins, which reduce stress and anxiety. [4] _______, people who exercise regularly tend to sleep better and have more energy throughout the day. [5] These combined benefits make exercise one of the most powerful tools for overall health.", "text": "Which transition BEST fills the blank in Sentence 4?", "choices": ["However", "In contrast", "Furthermore", "As a result"], "correct": 2, "explain": "Sentences 2 and 3 list benefits of exercise (heart health, mood). Sentence 4 adds another benefit (better sleep, more energy). 'Furthermore' signals the addition of another point in the same direction. 'However' and 'In contrast' signal opposition, which doesn't fit. 'As a result' would imply sleep is caused by the endorphins, which is not what the sentence says.", "strategy": "When a sentence ADDS another example or point to a list, use addition transitions: furthermore, in addition, also, moreover. Save 'however' for contrast and 'as a result' for cause-effect."}, {"id": "org7", "tag": "I · Organization of Ideas", "dok": "DOK 3", "passage_title": "Draft: Persuasive Essay on Voting", "passage": "[1] Voting is one of the most fundamental rights in a democratic society. [2] Despite this, voter turnout in local elections often falls below 20%. [3] Many citizens feel their vote does not matter, but research consistently shows that local elections are frequently decided by very small margins. [4] Every vote genuinely counts, especially at the local level. [5] For this reason, every eligible citizen has a responsibility to participate in elections.", "text": "Which sentence BEST serves as the opening sentence (thesis) of this essay?", "choices": ["Sentence 2 — it presents the problem immediately", "Sentence 1 — it states the main idea and sets up the argument", "Sentence 4 — it makes the strongest claim", "Sentence 5 — it tells readers what to do"], "correct": 1, "explain": "Sentence 1 establishes the central claim — voting is fundamental to democracy — and sets up everything that follows. A thesis should introduce the main idea broadly before moving into specifics. Sentence 2 jumps into a statistic without context. Sentences 4 and 5 are conclusions, not openings.", "strategy": "Opening/thesis sentences: should be broad enough to introduce the whole topic, specific enough to make a clear point, and lead naturally into the rest of the passage."}, {"id": "org8", "tag": "I · Organization of Ideas", "dok": "DOK 2", "passage_title": "Draft: Paragraph on Technology in Education", "passage": "[1] Technology has transformed education in many positive ways. [2] Students can now access information instantly through the internet. [3] Online platforms allow teachers to provide personalized instruction. [4] Digital tools make collaboration between students easier than ever. [5] Some students find it difficult to stay focused when using devices. [6] Overall, technology has made learning more accessible and engaging for most students.", "text": "Sentence 5 disrupts the flow of the paragraph. What is the BEST way to handle it?", "choices": ["Move it to the beginning of the paragraph", "Remove it because it contradicts the main idea", "Keep it where it is — it adds balance", "Move it after Sentence 2 to connect with internet distractions"], "correct": 1, "explain": "The paragraph argues that technology has positive effects on education. Sentence 5 introduces a negative point (difficulty focusing) that contradicts and disrupts the positive argument being made. Since the paragraph has a clear pro-technology thesis and conclusion, this opposing sentence should be removed to maintain coherence.", "strategy": "When a sentence contradicts the paragraph's main argument and there is no indication the essay intends to address counterarguments, the sentence should be removed to maintain focus and coherence."}], "II": [{"id": "lf1", "tag": "II · Language Facility", "dok": "DOK 2", "passage_title": "Draft: Cover Letter", "passage": "I am writing to apply for the marketing coordinator position. In my previous role, I was responsible for managing social media accounts, to create content calendars, and the analysis of campaign performance.", "text": "Which revision corrects the underlined portion of the sentence to fix the parallel structure error?", "choices": ["managing social media accounts, creating content calendars, and analyzing campaign performance", "managed social media accounts, to create content calendars, and analyzing campaign performance", "manage social media accounts, create content calendars, and the analysis of campaign performance", "managing social media accounts, the creation of content calendars, and to analyze campaign performance"], "correct": 0, "explain": "Parallel structure requires all items in a list to use the same grammatical form. The first item uses a gerund (managing), so all items must be gerunds: managing, creating, analyzing. Option A is the only choice where all three items are gerunds (-ing form).", "strategy": "Parallel structure: identify the form of the FIRST item in the list, then make ALL other items match that form exactly. Gerund (running), infinitive (to run), or noun (runner) — pick one and stick with it."}, {"id": "lf2", "tag": "II · Language Facility", "dok": "DOK 2", "passage_title": "Draft: News Article", "passage": "Walking through the park, the flowers were blooming beautifully.", "text": "Which revision BEST corrects the dangling modifier in this sentence?", "choices": ["Walking through the park, the flowers bloomed beautifully.", "As I walked through the park, the flowers were blooming beautifully.", "The flowers, walking through the park, were blooming beautifully.", "While blooming beautifully, I walked through the park."], "correct": 1, "explain": "The original sentence implies the flowers were walking through the park, which is impossible. The modifier 'Walking through the park' must be followed immediately by the person who was actually walking. Option B fixes this by adding 'I' as the subject — making it clear who was walking.", "strategy": "Dangling modifier fix: ask 'Who or what is doing the action in the modifier?' That person/thing must be the subject immediately after the comma."}, {"id": "lf3", "tag": "II · Language Facility", "dok": "DOK 2", "passage_title": "Draft: Academic Essay", "passage": "The new policy will affect students who rely on financial aid. It will also impact faculty members. Furthermore, staff members throughout the university will experience changes in their benefits packages.", "text": "Which revision BEST combines these three sentences for variety and flow?", "choices": ["The new policy will affect students who rely on financial aid, it will also impact faculty members, and staff members throughout the university will experience changes in their benefits packages.", "The new policy will affect not only students who rely on financial aid and faculty members but also staff throughout the university, who will experience changes in their benefits packages.", "Students, faculty, and staff will all be affected by the new policy, but in different ways depending on their roles.", "The new policy affects students. It affects faculty. It affects staff too."], "correct": 1, "explain": "Option B combines all three ideas into one smooth, varied sentence using 'not only...but also' — a sophisticated structure that shows the relationship between all three groups clearly. Option A creates a run-on. Option C loses important detail about benefits. Option D is choppy and repetitive.", "strategy": "Sentence combining questions: look for the option that joins ideas smoothly WITHOUT creating a run-on, and WITHOUT losing important information. 'Not only...but also' and 'both...and' are powerful combining structures."}, {"id": "lf4", "tag": "II · Language Facility", "dok": "DOK 3", "passage_title": "Draft: Personal Narrative", "passage": "After the long hike, Maria felt __________ and ready for a meal and a long sleep.", "text": "Which word BEST fills the blank to convey that Maria was extremely tired but in a satisfied way?", "choices": ["exhausted", "sleepy", "tired", "depleted"], "correct": 0, "explain": "'Exhausted' captures complete physical tiredness while carrying a neutral-to-positive connotation — it's the word most naturally paired with satisfaction after physical effort. 'Sleepy' is too mild. 'Tired' is vague. 'Depleted' suggests a negative draining with no sense of satisfaction. Context clues (long hike, ready for a meal) suggest productive tiredness.", "strategy": "Word choice/nuance questions: eliminate words that are too weak or too negative for the context. Look at the surrounding sentence for clues about the tone and intensity needed."}, {"id": "lf5", "tag": "II · Language Facility", "dok": "DOK 2", "passage_title": "Draft: Report on Community Programs", "passage": "The community center offers programs for residents of all ages. There are art classes for children. Senior citizens can participate in fitness programs. Teenagers have access to tutoring services.", "text": "Which revision BEST improves the flow of these sentences?", "choices": ["The community center offers programs for residents of all ages, including art classes for children, fitness programs for senior citizens, and tutoring services for teenagers.", "The community center offers programs for residents of all ages. Art classes, fitness programs, and tutoring services are all available there for different groups.", "Programs for children, seniors, and teenagers are offered at the community center, which serves all ages of residents in the area.", "There are art classes, fitness programs, and tutoring services at the community center for all different age groups of people."], "correct": 0, "explain": "Option A combines all four choppy sentences into one clear, well-organized sentence that maintains all the specific details (who gets what program) while flowing naturally. The list structure (art classes for children, fitness programs for seniors, tutoring for teenagers) makes the information easy to follow.", "strategy": "When several short sentences all support one main idea, combine them into one sentence with a well-organized list. Keep specific details — don't drop who benefits from what."}, {"id": "lf6", "tag": "II · Language Facility", "dok": "DOK 2", "passage_title": "Draft: Email to a Professor", "passage": "Hey Prof! I wanted to touch base about the assignment. I'm gonna need a little more time since I've been super busy. Can you hook me up with an extension?", "text": "Which revision makes the tone of this email appropriate for a formal academic setting?", "choices": ["Dear Professor, I wanted to touch base about the assignment and get a little more time since I've been really busy. Thanks!", "Dear Professor [Name], I am writing to request an extension on the upcoming assignment. I have encountered some unforeseen circumstances that have affected my ability to complete it by the deadline. I would greatly appreciate your consideration.", "Hello Professor, I need more time on the assignment because I am busy. Please give me an extension.", "To Whom It May Concern, I am a student in your class and I need an extension on the assignment that is due soon."], "correct": 1, "explain": "Option B uses formal language appropriate for communicating with a professor: proper salutation, complete sentences, professional vocabulary ('encountered unforeseen circumstances,' 'greatly appreciate your consideration'), and a respectful tone throughout. Option A is still too casual ('touch base'). Option C is direct but too blunt. Option D uses the wrong salutation for someone you know.", "strategy": "Tone questions: identify the audience and purpose. Academic/professional writing = formal vocabulary, complete sentences, proper salutation, no slang or contractions. Match the level of formality to the situation."}, {"id": "lf7", "tag": "II · Language Facility", "dok": "DOK 2", "passage_title": "Draft: Essay on Leadership", "passage": "A good leader is someone who listens carefully to her team, makes decisions confidently, and they should always take responsibility for their mistakes.", "text": "Which revision corrects the parallel structure error in this sentence?", "choices": ["A good leader is someone who listens carefully to her team, makes decisions confidently, and always takes responsibility for her mistakes.", "A good leader is someone who listens carefully to her team, is confident in making decisions, and they always take responsibility for mistakes.", "A good leader listens carefully, is confident when making decisions, and responsibility for mistakes is always taken.", "A good leader is someone who listens, decides confidently, and taking responsibility for mistakes."], "correct": 0, "explain": "The sentence has three actions a good leader does: listens, makes decisions, and takes responsibility. All three must be in the same form — verb phrases using the same structure. Option A correctly uses: 'listens carefully,' 'makes decisions confidently,' and 'always takes responsibility' — all parallel verb phrases. It also fixes the pronoun shift from 'her' to 'they.'", "strategy": "Check every item in a list. If one item breaks the pattern, it needs to match the others. Also check for pronoun consistency — 'her team' then 'their mistakes' is an inconsistent pronoun shift."}, {"id": "lf8", "tag": "II · Language Facility", "dok": "DOK 3", "passage_title": "Draft: Article on Study Habits", "passage": "Students who study in short, focused sessions tend to retain information __________ than those who try to learn everything in one long session.", "text": "Which word BEST completes the sentence using the correct comparative form?", "choices": ["more effectively", "most effectively", "effectivelier", "more effective"], "correct": 0, "explain": "When comparing two things, use the comparative form. For long adjectives/adverbs like 'effectively,' the comparative is formed with 'more' — not by adding '-er.' 'Most effectively' is superlative (comparing three or more). 'Effectivelier' is not a real word. 'More effective' modifies an adjective, not the verb 'retain.'", "strategy": "Comparative vs. superlative: comparing TWO things = comparative (more, -er). Comparing THREE or MORE = superlative (most, -est). For words of 3+ syllables, always use 'more/most' — never add '-er/-est.'"}, {"id": "lf9", "tag": "II · Language Facility", "dok": "DOK 2", "passage_title": "Draft: Business Report", "passage": "The sales team exceeded their quarterly goals. _______, the marketing department launched three successful campaigns. The company as a whole had its most profitable year on record.", "text": "Which transition BEST connects these sentences?", "choices": ["However", "Meanwhile", "Therefore", "Nevertheless"], "correct": 1, "explain": "'Meanwhile' shows that two things were happening at the same time — the sales team was succeeding AND the marketing team was also launching campaigns during the same period. 'However' would suggest contrast. 'Therefore' would suggest the marketing campaigns caused the sales success. 'Nevertheless' suggests something happened despite an obstacle.", "strategy": "'Meanwhile' = at the same time. Use it when two parallel things are happening simultaneously. Don't confuse it with 'however' (contrast) or 'therefore' (cause-effect)."}, {"id": "lf10", "tag": "II · Language Facility", "dok": "DOK 2", "passage_title": "Draft: Personal Statement", "passage": "Growing up in a small town, opportunities were limited for young people like me.", "text": "This sentence contains a dangling modifier. Which revision BEST corrects it?", "choices": ["Growing up in a small town, I found that opportunities were limited for young people like me.", "Opportunities were limited growing up in a small town for people like me.", "For young people like me, growing up in a small town limited opportunities.", "Growing up, small towns have limited opportunities for young people."], "correct": 0, "explain": "The original implies opportunities were growing up, which makes no sense. The person was growing up in a small town — so 'I' must immediately follow the introductory phrase. Option A correctly places 'I' right after the comma, making it clear who was growing up.", "strategy": "Dangling modifier rule: the subject of the main clause must be the person or thing doing the action described in the opening phrase. After the comma, ask 'who was growing up?' — that person must be next."}], "III": [{"id": "wc1", "tag": "III · Writing Conventions", "dok": "DOK 1", "passage_title": "Draft: Community Newsletter", "passage": "Each of the volunteers __________ required to complete a background check before working with children.", "text": "Which verb form correctly completes this sentence?", "choices": ["are", "were", "is", "have been"], "correct": 2, "explain": "The subject is 'Each' — not 'volunteers.' 'Each' is always singular, even when followed by 'of the volunteers.' A singular subject requires a singular verb: 'is.' The phrase 'of the volunteers' is a prepositional phrase — it does not change the subject.", "strategy": "Subject-verb agreement trap: words like 'each,' 'every,' 'either,' 'neither,' 'anyone,' and 'everyone' are ALWAYS singular. Don't be fooled by the plural noun in the prepositional phrase after them."}, {"id": "wc2", "tag": "III · Writing Conventions", "dok": "DOK 2", "passage_title": "Draft: Student Essay", "passage": "Maria and her sister decided to start their own business they spent months planning and saving money before they were ready to launch.", "text": "Which revision BEST corrects this run-on sentence?", "choices": ["Maria and her sister decided to start their own business, they spent months planning and saving money before they were ready to launch.", "Maria and her sister decided to start their own business. They spent months planning and saving money before they were ready to launch.", "Maria and her sister decided to start their own business and they spent months planning and saving money before they were ready to launch.", "Maria and her sister decided to start their own business, spending months planning, and saving money before they were ready to launch."], "correct": 1, "explain": "The original is a run-on — two complete sentences with no punctuation between them. Option B correctly separates them into two complete sentences with a period. Option A is still a run-on (comma splice). Option C is missing a comma before 'and.' Option D changes the meaning by making the second part a participial phrase rather than an independent clause.", "strategy": "Run-on fix options: (1) add a period and start a new sentence, (2) add a semicolon, (3) add a comma + coordinating conjunction (FANBOYS). A comma alone between two independent clauses is NEVER enough."}, {"id": "wc3", "tag": "III · Writing Conventions", "dok": "DOK 1", "passage_title": "Draft: Work Report", "passage": "The manager told the employees that __________ responsible for submitting their timesheets by noon on Friday.", "text": "Which pronoun correctly completes this sentence?", "choices": ["they're", "their", "there", "they are"], "correct": 3, "explain": "The sentence needs a subject pronoun + verb: 'they are responsible.' 'They're' is a contraction for 'they are' and would work grammatically, but 'they are' (Option D) is more appropriate for formal writing. 'Their' is a possessive pronoun. 'There' refers to a place. In formal writing, avoid contractions.", "strategy": "They're / Their / There: They're = they are (contraction). Their = belonging to them (possessive). There = a place or filler word. Substitute 'they are' — if it makes sense, use they're or they are."}, {"id": "wc4", "tag": "III · Writing Conventions", "dok": "DOK 2", "passage_title": "Draft: Letter of Recommendation", "passage": "I have had the pleasure of working with James for three years. During this time, he demonstrate exceptional leadership skills and a strong commitment to teamwork.", "text": "Which revision corrects the verb tense error in the second sentence?", "choices": ["he demonstrated exceptional leadership skills and a strong commitment to teamwork", "he demonstrates exceptional leadership skills and a strong commitment to teamwork", "he had demonstrated exceptional leadership skills and a strong commitment to teamwork", "he is demonstrating exceptional leadership skills and a strong commitment to teamwork"], "correct": 0, "explain": "The letter describes what James did 'during this time' — a specific past period. Past tense 'demonstrated' is correct. The original 'demonstrate' is present tense and does not agree with 'During this time.' Present tense 'demonstrates' could work if describing current behavior, but the phrase 'during this time' indicates the past.", "strategy": "Tense consistency: look for time signal words. 'During this time' referring to three years of past work signals past tense. Match the verb to the time frame indicated in the sentence."}, {"id": "wc5", "tag": "III · Writing Conventions", "dok": "DOK 2", "passage_title": "Draft: Opinion Essay", "passage": "The committee made their decision after reviewing all of the evidence however many members of the public disagreed with the outcome.", "text": "Which punctuation correctly fixes this sentence?", "choices": ["The committee made their decision after reviewing all of the evidence, however many members of the public disagreed with the outcome.", "The committee made their decision after reviewing all of the evidence; however, many members of the public disagreed with the outcome.", "The committee made their decision after reviewing all of the evidence. However many members of the public disagreed with the outcome.", "The committee made their decision after reviewing all of the evidence, however, many members of the public disagreed with the outcome."], "correct": 1, "explain": "'However' as a conjunctive adverb joining two independent clauses needs a semicolon before it and a comma after it. Option B is the only choice that correctly uses a semicolon before 'however' and a comma after it. Option A (comma before however) creates a comma splice. Option C (period after evidence, no comma after however) creates a fragment feel. Option D (commas only) is a comma splice.", "strategy": "Conjunctive adverbs (however, therefore, moreover, consequently, furthermore) joining two independent clauses always need: SEMICOLON before + COMMA after. This is one of the most tested punctuation rules on the HiSET."}, {"id": "wc6", "tag": "III · Writing Conventions", "dok": "DOK 1", "passage_title": "Draft: Personal Essay", "passage": "Running down the street, I noticed that __________ car was parked in front of the wrong house.", "text": "Which word correctly completes this sentence?", "choices": ["their", "there", "they're", "its"], "correct": 0, "explain": "The blank needs a possessive pronoun showing the car belongs to someone ('their car'). 'Their' is the possessive form of 'they.' 'There' is a place or filler. 'They're' means 'they are.' 'Its' is possessive for a singular thing, not for a group of people.", "strategy": "'Their' = belonging to them (possessive). Always ask: am I showing ownership? If yes, use 'their.' Quick test: can you replace it with 'his or her'? If yes, use 'their.'"}, {"id": "wc7", "tag": "III · Writing Conventions", "dok": "DOK 2", "passage_title": "Draft: Report Introduction", "passage": "Because the survey results were inconclusive.", "text": "This is a sentence fragment. Which revision BEST corrects it?", "choices": ["Because the survey results were inconclusive, the team decided to conduct additional research.", "The survey results were inconclusive because.", "Because the survey results, they were inconclusive.", "The survey results were inconclusive, because of this."], "correct": 0, "explain": "'Because the survey results were inconclusive' is a dependent clause — it cannot stand alone as a sentence. It needs an independent clause to complete the thought. Option A adds 'the team decided to conduct additional research,' making it a complete complex sentence.", "strategy": "Fragment fix: if a sentence starts with a subordinating conjunction (because, although, when, if, since, while), it MUST be attached to an independent clause. Never leave a 'because' clause standing alone."}, {"id": "wc8", "tag": "III · Writing Conventions", "dok": "DOK 1", "passage_title": "Draft: Business Letter", "passage": "The meeting will be held on monday, january 15, at the downtown conference center.", "text": "Which revision corrects ALL capitalization errors in this sentence?", "choices": ["The meeting will be held on Monday, January 15, at the Downtown Conference Center.", "The meeting will be held on Monday, january 15, at the downtown conference center.", "The meeting will be held on monday, January 15, at the Downtown conference center.", "The meeting will be held on Monday, January 15, at the downtown conference center."], "correct": 0, "explain": "Days of the week (Monday) and months (January) are always capitalized. Proper nouns — specific named places like 'Downtown Conference Center' — are also capitalized. Option A correctly capitalizes Monday, January, Downtown, and Conference Center.", "strategy": "Capitalize: days of the week, months of the year, proper nouns (specific named places, people, organizations). Do NOT capitalize seasons (winter, summer) or general directions (go north) — only proper names."}]};
+const ESSAY_PROMPTS = [{"type": "Argumentative", "label": "Remote Work", "p1_title": "Passage 1: The Case for Remote Work", "p1": "Remote work has transformed the modern workplace, offering employees greater flexibility and autonomy. Studies show that remote workers report higher job satisfaction and lower stress levels than their office-based counterparts. Companies that offer remote options have seen reductions in overhead costs and access to a wider talent pool. Without the daily commute, employees gain back hours of productive time each week. Proponents argue that the results speak for themselves: productivity metrics at many organizations have held steady or improved since the shift to remote work began.", "p2_title": "Passage 2: The Value of the Office", "p2": "Despite the appeal of working from home, many business leaders argue that the office environment is irreplaceable. Spontaneous collaboration — the kind that happens when colleagues run into each other in hallways — drives innovation in ways that scheduled video calls cannot replicate. New employees, in particular, benefit enormously from in-person mentorship and the informal learning that comes from being physically present with experienced colleagues. Research also suggests that remote workers struggle more with feelings of isolation and disconnection from their organization's culture. For these reasons, a return to the office, at least in some capacity, may be essential for long-term organizational health.", "prompt": "Both passages address the debate over remote work versus working in an office. Write an essay in which you argue your position on whether employers should allow employees to work remotely, work in the office, or use a combination of both. Use evidence from BOTH passages as well as your own knowledge and experience to support your argument."}, {"type": "Argumentative", "label": "Social Media Age Limits", "p1_title": "Passage 1: Protecting Young Users", "p1": "Social media platforms were designed for adults, yet millions of children and teenagers use them daily. Research has linked heavy social media use among adolescents to increased rates of anxiety, depression, and poor body image. Unlike adults, young people are still developing the emotional resilience and critical thinking skills needed to navigate curated highlight reels and cyberbullying. Several countries have already moved to restrict social media access for users under 16, arguing that protecting mental health is more important than online access.", "p2_title": "Passage 2: Connection and Expression", "p2": "Social media, when used responsibly, can be a powerful tool for young people. It allows teenagers to connect with peers who share their interests, access support communities, and develop digital literacy skills that will be essential in adulthood. Banning or heavily restricting access may do more harm than good by cutting young people off from legitimate social connections and driving usage underground, where it is even harder for parents and educators to monitor. Many advocates argue that education and parental guidance — not age restrictions — are the more effective and appropriate response.", "prompt": "Both passages address the question of whether social media access should be restricted for young people. Write an essay arguing your position on whether social media platforms should set strict age limits for users. Support your argument with evidence from BOTH passages and your own knowledge or experience."}];
+
+let filteredCards = [...CARDS];
+let fcIdx = 0, fcFlipped = false;
+
+function filterCards(area, btn) {
+  document.querySelectorAll('.fc-filter button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filteredCards = area === 'all' ? [...CARDS] : CARDS.filter(c => c.area === area);
+  fcIdx = 0; fcFlipped = false; renderCard();
+}
+
+function renderCard() {
+  const c = filteredCards[fcIdx];
+  const backMap = { I: 'fc-back1', II: 'fc-back2', III: 'fc-back3' };
+  document.getElementById('flashcard').className = 'flashcard ' + (fcFlipped ? backMap[c.area] : 'fc-front');
+  document.getElementById('fc-cat').textContent = c.cat;
+  document.getElementById('fc-term').textContent = c.term;
+  document.getElementById('fc-def').textContent = c.def;
+  const ex = document.getElementById('fc-ex');
+  if (c.ex) { ex.textContent = c.ex; ex.style.display = 'inline-block'; } else { ex.style.display = 'none'; }
+  document.getElementById('fc-front-content').style.display = fcFlipped ? 'none' : 'block';
+  document.getElementById('fc-back-content').style.display = fcFlipped ? 'block' : 'none';
+  document.getElementById('fc-counter').textContent = (fcIdx + 1) + ' / ' + filteredCards.length;
+}
+
+function flipCard() { fcFlipped = !fcFlipped; renderCard(); }
+function nextCard() { fcIdx = (fcIdx + 1) % filteredCards.length; fcFlipped = false; renderCard(); }
+function prevCard() { fcIdx = (fcIdx - 1 + filteredCards.length) % filteredCards.length; fcFlipped = false; renderCard(); }
+renderCard();
+
+let answered = {};
+let progress = { I: { c: 0, t: 0 }, II: { c: 0, t: 0 }, III: { c: 0, t: 0 } };
+let currentDrill = 'II';
+
+const TAG_CLASS = { I: 'tag1', II: 'tag2', III: 'tag3' };
+const DT_CLASS = { I: 'dt1', II: 'dt2', III: 'dt3' };
+const BAR_COLOR = { I: '#3b82f6', II: '#ec4899', III: '#10b981' };
+const LABELS = { I: 'I · Organization', II: 'II · Language Facility', III: 'III · Conventions' };
+
+function showDrill(key) {
+  currentDrill = key;
+  ['I','II','III'].forEach(k => {
+    const t = document.getElementById('tab-' + k);
+    if (t) t.className = 'drill-tab' + (k === key ? ' ' + DT_CLASS[k] : '');
+  });
+  renderDrill(key);
+}
+
+function renderDrill(key) {
+  const qs = QUESTIONS[key];
+  const done = qs.filter(q => answered[q.id] !== undefined).length;
+  const corr = qs.filter(q => answered[q.id] === q.correct).length;
+  document.getElementById('prog-text').textContent = done + ' of ' + qs.length + ' answered';
+  document.getElementById('prog-score').textContent = corr + ' correct';
+  document.getElementById('prog-bar').style.width = Math.round(done / qs.length * 100) + '%';
+  let html = '';
+  qs.forEach((q, qi) => {
+    const isAns = answered[q.id] !== undefined;
+    html += '<div class="q-card" id="qc-' + q.id + '">';
+    html += '<div class="q-meta"><span class="q-tag ' + TAG_CLASS[key] + '">' + q.tag + '</span>';
+    html += '<span class="dok-tag">' + q.dok + '</span></div>';
+    html += '<div class="passage-box"><div class="passage-label">' + q.passage_title + '</div>';
+    html += '<div class="passage-text">' + q.passage + '</div></div>';
+    html += '<div class="q-text">Q' + (qi + 1) + '. ' + q.text + '</div>';
+    html += '<div class="choices">';
+    q.choices.forEach((c, ci) => {
+      let cls = 'choice';
+      if (isAns) { if (ci === q.correct) cls += ' correct'; else if (ci === answered[q.id]) cls += ' wrong'; }
+      html += '<button class="' + cls + '" onclick="answerQ(' + JSON.stringify(q.id) + ',' + ci + ',' + q.correct + ',' + JSON.stringify(key) + ')" id="ch-' + q.id + '-' + ci + '">';
+      html += '<span class="choice-letter">' + String.fromCharCode(65 + ci) + '.</span>' + c + '</button>';
+    });
+    html += '</div>';
+    html += '<div class="explanation" id="exp-' + q.id + '" style="' + (isAns ? 'display:block' : '') + '">';
+    html += '<div class="exp-title">&#10003; Explanation:</div><p>' + q.explain + '</p>';
+    html += '<div class="strategy-note">&#128204; Strategy: ' + q.strategy + '</div></div></div>';
+  });
+  document.getElementById('practice-container').innerHTML = html;
+}
+
+function answerQ(qid, chosen, correct, key) {
+  if (answered[qid] !== undefined) return;
+  answered[qid] = chosen;
+  for (let i = 0; i < 4; i++) {
+    const b = document.getElementById('ch-' + qid + '-' + i);
+    if (!b) continue;
+    b.disabled = true;
+    if (i === correct) b.classList.add('correct');
+    else if (i === chosen) b.classList.add('wrong');
+  }
+  document.getElementById('exp-' + qid).style.display = 'block';
+  const qs = QUESTIONS[key];
+  const done = qs.filter(q => answered[q.id] !== undefined).length;
+  const corr = qs.filter(q => answered[q.id] === q.correct).length;
+  progress[key] = { c: corr, t: done };
+  document.getElementById('prog-text').textContent = done + ' of ' + qs.length + ' answered';
+  document.getElementById('prog-score').textContent = corr + ' correct';
+  document.getElementById('prog-bar').style.width = Math.round(done / qs.length * 100) + '%';
+}
+
+let currentPromptIdx = 0;
+
+function buildEssayPrompts() {
+  const tabs = document.getElementById('prompt-tabs');
+  tabs.innerHTML = ESSAY_PROMPTS.map((p, i) =>
+    '<button class="prompt-tab ' + (i === 0 ? 'active' : '') + '" onclick="selectPrompt(' + i + ')">' + p.type + ': ' + p.label + '</button>'
+  ).join('');
+  selectPrompt(0);
+}
+
+function selectPrompt(i) {
+  currentPromptIdx = i;
+  const p = ESSAY_PROMPTS[i];
+  document.querySelectorAll('.prompt-tab').forEach((t, j) => t.classList.toggle('active', j === i));
+  document.getElementById('essay-passages').innerHTML =
+    '<div class="essay-passage"><div class="essay-passage-title">' + p.p1_title + '</div><div class="essay-passage-text">' + p.p1 + '</div></div>' +
+    '<div class="essay-passage"><div class="essay-passage-title">' + p.p2_title + '</div><div class="essay-passage-text">' + p.p2 + '</div></div>';
+  document.getElementById('essay-prompt-text').textContent = p.prompt;
+  document.getElementById('essay-text').value = '';
+  document.getElementById('word-count').textContent = '0 words';
+  document.getElementById('essay-feedback').style.display = 'none';
+}
+
+function updateWordCount() {
+  const txt = document.getElementById('essay-text').value.trim();
+  const n = txt ? txt.split(/\s+/).length : 0;
+  document.getElementById('word-count').textContent = n + ' word' + (n !== 1 ? 's' : '');
+}
+
+function toggleRubric() {
+  const rc = document.getElementById('rubric-card');
+  rc.style.display = rc.style.display === 'none' ? 'block' : 'none';
+}
+
+async function scoreEssay() {
+  const txt = document.getElementById('essay-text').value.trim();
+  if (txt.length < 100) { alert('Please write at least a few paragraphs before scoring.'); return; }
+  const fb = document.getElementById('essay-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = '<span class="spinner"></span> Scoring your essay — this may take a moment...';
+  const p = ESSAY_PROMPTS[currentPromptIdx];
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6', max_tokens: 1000,
+        messages: [{ role: 'user', content: 'You are a HiSET essay scorer. Score this essay on the official 1-6 HiSET rubric based on: Development of Central Position, Organization of Ideas, Language Facility, and Writing Conventions.\n\nPrompt topic: ' + p.label + '\n\nPassage 1: ' + p.p1 + '\n\nPassage 2: ' + p.p2 + '\n\nStudent essay:\n' + txt + '\n\nRespond in EXACTLY this format:\nSCORE: [1-6]\nSUMMARY: [1-2 sentence overall assessment]\nSTRENGTHS: [2-3 specific strengths]\nIMPROVEMENTS: [2-3 specific actionable suggestions]\nPASSAGE USE: [Did they use both passages? How well?]\nPASSING: [Yes or No and brief reason]' }]
+      })
+    });
+    const data = await res.json();
+    const reply = data.content && data.content[0] ? data.content[0].text : 'No response received.';
+    const lines = reply.split('\n').filter(l => l.trim());
+    let html = '<h4>Essay Feedback</h4>';
+    lines.forEach(l => {
+      if (l.startsWith('SCORE:')) {
+        const sc = l.replace('SCORE:', '').trim();
+        const n = parseInt(sc);
+        const cls = n >= 2 ? 'badge-pass' : 'badge-fail';
+        html += '<p><strong>Score:</strong> <span class="' + cls + '">' + sc + ' / 6</span></p>';
+      } else if (l.startsWith('SUMMARY:')) {
+        html += '<p style="margin-top:8px">' + l.replace('SUMMARY:', '').trim() + '</p>';
+      } else if (l.startsWith('STRENGTHS:')) {
+        html += '<p style="margin-top:10px"><strong>&#10003; Strengths:</strong><br>' + l.replace('STRENGTHS:', '').trim() + '</p>';
+      } else if (l.startsWith('IMPROVEMENTS:')) {
+        html += '<p style="margin-top:10px"><strong>&#128204; Areas to improve:</strong><br>' + l.replace('IMPROVEMENTS:', '').trim() + '</p>';
+      } else if (l.startsWith('PASSAGE USE:')) {
+        html += '<p style="margin-top:10px"><strong>&#128196; Passage use:</strong><br>' + l.replace('PASSAGE USE:', '').trim() + '</p>';
+      } else if (l.startsWith('PASSING:')) {
+        const pass = l.replace('PASSING:', '').trim();
+        const cls = pass.toLowerCase().startsWith('yes') ? 'badge-pass' : 'badge-fail';
+        html += '<p style="margin-top:10px"><strong>Passing (score &ge; 2):</strong> <span class="' + cls + '">' + pass + '</span></p>';
+      }
+    });
+    fb.innerHTML = html;
+  } catch(e) {
+    fb.innerHTML = '<strong>Could not reach essay scorer.</strong> Make sure you have an internet connection and try again.';
+  }
+}
+
+function renderTracker() {
+  let barsHtml = '', totalC = 0, totalT = 0;
+  ['II','III','I'].forEach(k => {
+    const v = progress[k];
+    const pct = v.t > 0 ? Math.round(v.c / v.t * 100) : 0;
+    totalC += v.c; totalT += v.t;
+    barsHtml += '<div class="tracker-row"><span class="tracker-label">' + LABELS[k] + '</span>';
+    barsHtml += '<div class="tracker-bar-track"><div class="tracker-bar-fill" style="width:' + pct + '%;background:' + BAR_COLOR[k] + '"></div></div>';
+    barsHtml += '<span class="tracker-val">' + (v.t > 0 ? v.c + '/' + v.t : '—') + '</span></div>';
+  });
+  document.getElementById('tracker-bars').innerHTML = barsHtml;
+  const overall = totalT > 0 ? Math.round(totalC / totalT * 100) : 0;
+  let badgeCls = 'badge-fail', badgeTxt = 'Keep going';
+  if (overall >= 65) { badgeCls = 'badge-pass'; badgeTxt = 'On track!'; }
+  else if (overall >= 50) { badgeCls = 'badge-warn'; badgeTxt = 'Getting there'; }
+  const badgeHTML = totalT > 0 ? '<span class="' + badgeCls + '">' + badgeTxt + '</span>' : '—';
+  document.getElementById('tracker-summary').innerHTML =
+    '<div class="ts-card" style="background:#fdf2f8"><div class="tn" style="color:#9d174d">' + totalC + '</div><div class="tl" style="color:#9d174d">Correct</div></div>' +
+    '<div class="ts-card" style="background:#eff6ff"><div class="tn" style="color:#1e3a8a">' + totalT + '</div><div class="tl" style="color:#1e3a8a">Answered</div></div>' +
+    '<div class="ts-card" style="background:#ecfdf5"><div class="tn" style="color:#047857">' + (totalT > 0 ? overall + '%' : '—') + '</div><div class="tl" style="color:#047857">Accuracy</div></div>' +
+    '<div class="ts-card" style="background:#fdf4ff"><div class="tn" style="color:#7e22ce;font-size:18px">' + badgeHTML + '</div><div class="tl" style="color:#7e22ce">Goal: 65%+</div></div>';
+}
+
+function resetAll() {
+  if (!confirm('Reset all progress and answers?')) return;
+  answered = {};
+  progress = { I: { c: 0, t: 0 }, II: { c: 0, t: 0 }, III: { c: 0, t: 0 } };
+  renderDrill(currentDrill);
+  renderTracker();
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active');
+  });
+  if (id === 'tracker') renderTracker();
+}
+
+buildEssayPrompts();
+showDrill('II');
+</script>
+</body>
+</html>
